@@ -20,44 +20,44 @@ options = {}
 opt_value = {}
 opt_value_def = {}
 
-options["drblsrv"] = (
-("f", "force-yes", "force yes, only for Debian-like distribution. It  should  not  be used except in very special situations. Using force-yes can potentially destroy your system!", "", "check"),
-#("i", "install", "install DRBL.", "", "check"),
-#("u", "uninstall", "uninstall DRBL.", "", "check"),
-("v", "verbose", "verbose mode.", "", "check"),
-("t", "testing", "use packages in testing branch or not.", "yn", "check"),
-("a", "unstable", "use packages in unstable branch or not.", "yn", "check"),
-("n", "netinstall", "install the network installation program or not.", "yn", "check"),
-("m", "smp-client", "use SMP kernel for DRBL clients or not.", "yn", "check"),
-("x", "set-proxy", "set proxy or not.", "yn", "check"),
-("c", "console-output", "set console output for client or not.", "yn", "check"),
-("g", "upgrade_system", "upgrade system or not.", "yn", "check"),
-("s", "skip-select-repository", "skip the question for selecting repository.", "", "check"),
-("k", "client_archi", "set the client's CPU arch.", {0:"i386",1:"i586",2:"DRBL"}, "combo"),
-("o", "client_kernel_from", "choose client's kernel image from ", {0:"",1:"DRBL server",2:"ayo repository"}, "combo"),
-("l", "language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
-)
+options["drblsrv"] = {
+#"i", "install", "install DRBL.", "", "check"),
+#"u", "uninstall", "uninstall DRBL.", "", "check"),
+"g":("upgrade_system", "upgrade system or not.", "yn", "check"),
+"t":("testing", "use packages in testing branch or not.", "yn", "check"),
+"a":("unstable", "use packages in unstable branch or not.", "yn", "check"),
+"s":("skip-select-repository", "skip the question for selecting repository.", "", "check"),
+"n":("netinstall", "install the network installation program or not.", "yn", "check"),
+"m":("smp-client", "use SMP kernel for DRBL clients or not.", "yn", "check"),
+"f":("force-yes", "force yes, only for Debian-like distribution. It  should  not  be used except in very special situations. Using force-yes can potentially destroy your system!", "", "check"),
+"v":("verbose", "verbose mode.", "", "check"),
+"x":("set-proxy", "set proxy or not.", "yn", "check"),
+"c":("console-output", "set console output for client or not.", "yn", "check"),
+"k":("client_archi", "set the client's CPU arch.", {0:"i386",1:"i586",2:"DRBL"}, "combo"),
+"o":("client_kernel_from", "choose client's kernel image from ", {0:"",1:"DRBL server",2:"ayo repository"}, "combo"),
+"l":("language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
+}
 
-options["drblpush"] = (
-("b", "not-add-start-drbl-srvi", "Do NOT add and start DRBL related services after the configuration is done", "", "check"),
-("c", "config", "The DRBL config file, text format", "", "file"),
-("d", "debug", "Turn on debug mode when run shell script", "", "check"),
-("e", "accept-one-nic", "Accept to run DRBL service in only one network card. ///NOTE/// This might mess up your network environment especially if there is an existing DHCP service in your network environment.", "", "check"),
+options["drblpush"] = {
 #("h", "help", "Show this help message", "", ""),
-("i", "interactive", "Interactive mode, setup step by step.", "", "check"),
-("k", "keep_clients", "Keep previously saved files for clients.", "yn", "check"),
-("m", "client_startup_mode", "Assign client mode", {"0":"","1":"graphic mode","2":"text mode"}, "combo"),
-("n", "no_deploy", "Just create files, do NOT deploy the files into system", "", "check"),
-("o", "clonezilla_home",  "Use DIR as the clonezilla image directory", "", "folder"),
-("p", "port_client_no", "The client no. in each NIC port.", "", "text"),
-("q", "quiet", "Be less verbose", "", "check"),
-("r", "drbl_mode", "Assign DRBL mode", {"0":"Full DRBL mode", "1":"DRBL SSI mode", "2":"Do NOT provide diskless Linux service to clients"}, "combo"),
-("s", "swap_create", "Switch to create and use local swap in clients", "yn", "check"),
-("u", "live_client_cpu_mode", "Assign the CPU mode for client when doing Clonezilla job with Clonezilla live", {"0": "i486", "1": "i686", "2": "amd64"}, "combo"),
-("v", "verbose", "Be more verbose", "", "check"),
-("z", "clonezilla_mode", "Assign Clonezilla mode", {"0": "Full DRBL mode", "1": "Clonezilla box mode", "2": "Do NOT provide clonezilla service to clients", "3": "Use Clonezilla live as the OS of clients"}, "combo"),
-("l", "language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
-)
+"b":("not-add-start-drbl-srvi", "Do NOT add and start DRBL related services after the configuration is done", "", "check"),
+"c":("config", "The DRBL config file, text format", "args", "file"),
+"d":("debug", "Turn on debug mode when run shell script", "", "check"),
+"e":("accept-one-nic", "Accept to run DRBL service in only one network card. ///NOTE/// This might mess up your network environment especially if there is an existing DHCP service in your network environment.", "", "check"),
+"i":("interactive", "Interactive mode, setup step by step.", "", "check"),
+"k":("keep_clients", "Keep previously saved files for clients.", "yn", "check"),
+"m":("client_startup_mode", "Assign client mode", {"0":"","1":"graphic mode","2":"text mode"}, "combo"),
+"n":("no_deploy", "Just create files, do NOT deploy the files into system", "", "check"),
+"o":("clonezilla_home",  "Use DIR as the clonezilla image directory", "args", "folder"),
+"p":("port_client_no", "The client no. in each NIC port.", "args", "text"),
+"q":("quiet", "Be less verbose", "", "check"),
+"r":("drbl_mode", "Assign DRBL mode", {"0":"Full DRBL mode", "1":"DRBL SSI mode", "2":"Do NOT provide diskless Linux service to clients"}, "combo"),
+"s":("swap_create", "Switch to create and use local swap in clients", "yn", "check"),
+"u":("live_client_cpu_mode", "Assign the CPU mode for client when doing Clonezilla job with Clonezilla live", {"0":"i486", "1":"i686", "2":"amd64"}, "combo"),
+"v":("verbose", "Be more verbose", "", "check"),
+"z":("clonezilla_mode", "Assign Clonezilla mode", {"0":"Full DRBL mode", "1":"Clonezilla box mode", "2":"Do NOT provide clonezilla service to clients", "3":"Use Clonezilla live as the OS of clients"}, "combo"),
+"l":("language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
+}
 
 opt_value_def["drblsrv"] = {
     "f":"",
@@ -87,7 +87,7 @@ opt_value_def["drblpush"] = {
     "m":"1",
     "n":"",
     "o":"/home/partimag",
-    "p":"",
+    "p":"12",
     "q":"",
     "r":"0",
     "s":"y",
@@ -96,6 +96,9 @@ opt_value_def["drblpush"] = {
     "z":"0",
     "l":"0"
 }
+
+drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
+drblpush_cmd = "/opt/drbl/sbin/drblpush"
 
 class DRBL_GUI_Template():
 	vterm = vte.Terminal()
@@ -276,7 +279,8 @@ class DRBL_GUI_Template():
 	    label.show()
 
 	    box = gtk.VBox()
-	    for [sopt, lopt, desc_opt, value_opt, type] in options["drblsrv"]:
+	    for sopt in options["drblsrv"].keys():
+		lopt, desc_opt, value_opt, type = options["drblsrv"][sopt]
 		#print  sopt, lopt, desc_opt, value_opt, type
 
 		if type == "check":
@@ -384,9 +388,9 @@ class DRBL_GUI_Template():
 	    label.show()
 
 	    box = gtk.VBox()
-	    for [sopt, lopt, desc_opt, value_opt, type] in options["drblpush"]:
+	    for sopt in options["drblpush"].keys():
+		lopt, desc_opt, value_opt, type = options["drblpush"][sopt]
 		#print  sopt, lopt, desc_opt, value_opt, type
-
 		if type == "check":
 		    sopt_button = gtk.CheckButton(desc_opt)
 		    if opt_value["drblpush"][sopt] == "y":
@@ -403,7 +407,9 @@ class DRBL_GUI_Template():
 		    sopt_label.set_max_width_chars(50)
 		    sopt_button = gtk.combo_box_new_text()
 		    sopt_button.connect("changed", self.set_option, sopt, action)
-		    for ko in value_opt.keys():
+		    combo_args = value_opt.keys()
+		    combo_args.sort()
+		    for ko in combo_args:
 			sopt_button.append_text(value_opt[ko])
 			try:
 			    def_opt = string.atoi(opt_value["drblpush"][sopt], 10)
@@ -422,6 +428,10 @@ class DRBL_GUI_Template():
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
+	    lazy_button = gtk.Button("Lazy Apply")
+	    lazy_button.set_size_request(80, 35)
+	    id = lazy_button.connect("clicked", self.do_apply, "lazypush")
+
 	    cancel_button = gtk.Button("Cancel")
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
@@ -431,10 +441,12 @@ class DRBL_GUI_Template():
 	    id = reset_button.connect("clicked", self.drblpush)
 
 	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(lazy_button, False, False, 0)
 	    action_box.pack_end(cancel_button, False, False, 0)
 	    action_box.pack_end(reset_button, False, False, 0)
 	    cancel_button.show()
 	    apply_button.show()
+	    lazy_button.show()
 	    reset_button.show()
 	    box.pack_end(action_box, True, False, 0)
 	    action_box.show()
@@ -503,7 +515,8 @@ class DRBL_GUI_Template():
 	def set_option(self, widget, short_option, action):
 	    #print short_option
 	    if action == "drblsrv_i":
-		for [sopt, lopt, desc_opt, value_opt, type] in options["drblsrv"]:
+		for sopt in options["drblsrv"].keys():
+		    lopt, desc_opt, value_opt, type = options["drblsrv"][sopt]
 		    if sopt == short_option:
 			if type == "check":
 			    if widget.get_active() == True:
@@ -513,7 +526,8 @@ class DRBL_GUI_Template():
 			elif type == "combo":
 				opt_value["drblsrv"][short_option] = widget.get_active()
 	    elif action == "drblpush":
-		for [sopt, lopt, desc_opt, value_opt, type] in options["drblpush"]:
+		for sopt in options["drblpush"].keys():
+		    lopt, desc_opt, value_opt, type = options["drblpush"][sopt]
 		    if sopt == short_option:
 			if type == "check":
 			    if widget.get_active() == True:
@@ -534,17 +548,33 @@ class DRBL_GUI_Template():
 	    if action == "drblsrv_i":
 		for opt_s in opt_value["drblsrv"].keys():
 		    if opt_value["drblsrv"][opt_s] != "":
-			tmp_opt = "-%s %s " % (opt_s, opt_value["drblsrv"][opt_s])
+			if options["drblsrv"][opt_s][2] == "":
+			    tmp_opt = "-%s " % opt_s
+			else:
+			    tmp_opt = "-%s %s " % (opt_s, opt_value["drblsrv"][opt_s])
 			option_str = option_str + tmp_opt
-		run_cmd = "/opt/drbl/sbin/drblsrv -i %s" % option_str
+		run_cmd = "%s -i %s" % (drblsrv_cmd, option_str)
 	    elif action == "drblsrv_u":
-		run_cmd = "/opt/drbl/sbin/drblsrv -u %s" % option_str
+		run_cmd = "%s -u %s" % (drblsrv_cmd, option_str)
 	    elif action == "drblpush":
 		for opt_s in opt_value["drblpush"].keys():
 		    if opt_value["drblpush"][opt_s] != "":
-			tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
+			if options["drblpush"][opt_s][2] == "":
+			    tmp_opt = "-%s " % opt_s
+			else:
+			   tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
 			option_str = option_str + tmp_opt
-		run_cmd = "/opt/drbl/sbin/drblpush %s" % option_str
+		run_cmd = "%s %s" % (drblpush_cmd, option_str)
+	    elif action == "lazypush":
+		for opt_s in opt_value["drblpush"].keys():
+		    if opt_value["drblpush"][opt_s] != "":
+			if options["drblpush"][opt_s][2] == "":
+			    tmp_opt = "-%s " % opt_s
+			else:
+			   tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
+			option_str = option_str + tmp_opt
+		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
+
 
 	    close_cmd = "exit\n"
 	    print run_cmd
