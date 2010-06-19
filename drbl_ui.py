@@ -1,5 +1,8 @@
 #!/usr/bin/python
 import os
+import string
+import re
+
 try:
 	import gtk
 except:
@@ -13,6 +16,8 @@ except:
 	sys.exit(1)
 
 class DRBL_GUI_Template():
+	srv_options = "-t n -a n -n n -m n -c n -g n -k 0 -o 1 "
+
 	def __init__(self):
 		DRBL_menu = gtk.MenuBar()
 
@@ -127,15 +132,23 @@ class DRBL_GUI_Template():
 		DRBL_BG_image = gtk.Image()
 		DRBL_BG_image.set_from_file("drblwp.png")
 
+		menu_box = gtk.VBox(False, 0)
+		menu_box.pack_start(DRBL_menu, False, False, 0)
+
+		bg_box = gtk.VBox(False, 0)
+		bg_box.pack_start(DRBL_BG_image, False, False, 0)
+
 		main_box = gtk.VBox(False, 0)
-		main_box.pack_start(DRBL_BG_image,True,True,0)
-		#main_box.pack_start(DRBL_term,True,True,0)
+		self.main_box = main_box
+		main_box.pack_start(bg_box, False, False, 0)
 
 		box = gtk.VBox(False,0)
-		box.pack_start(DRBL_menu,False,False,0)
-		box.pack_start(main_box,True,True,0)
+		self.box = box
+		box.pack_start(menu_box, False, False, 0)
+		box.pack_end(main_box, False, False, 0)
 
 		window = gtk.Window()
+		self.window = window
 		window.set_title("DRBL")
 		window.set_size_request(640,500)
 		window.set_position(gtk.WIN_POS_CENTER)
@@ -145,7 +158,7 @@ class DRBL_GUI_Template():
 		    print e.message
 		    sys.exit(1)
 
-		window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(6400, 6400, 6440))
+		window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
 		window.add(box)
 		window.connect('delete-event', lambda window, event: gtk.main_quit())
 		window.show_all()
@@ -167,23 +180,90 @@ class DRBL_GUI_Template():
 	    _about.destroy()
 
 	def drblsrv(self, widget):
-	    srv_cmd = "/opt/drbl/sbin/drblsrv -i"
-	    close_cmd = "sleep 5; exit\n"
-	    #print srv_cmd
-	    # Terminal
-	    srv_term = vte.Terminal()
-	    srv_term.fork_command()
-	    srv_term.feed_child(srv_cmd+'\n')
-	    srv_term.feed_child(close_cmd+'\n')
-
-	    srv_window = gtk.Window()
-	    srv_window.set_title(srv_cmd)
-	    srv_window.add(srv_term)
-
-	    srv_window.connect('delete-event', lambda srv_window, event: srv_window.destroy())
-	    srv_term.connect ("child-exited", lambda srv_term: srv_window.destroy())
-	    srv_window.show_all()
 	    
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    label = gtk.Label("srblsrv options")
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    box = gtk.VBox()
+	    testing_button = gtk.CheckButton("testing")
+	    testing_button.set_active(False)
+	    testing_button.unset_flags(gtk.CAN_FOCUS)
+	    testing_button.connect("clicked", self.set_option, "testing")
+	    
+
+	    unstable_button = gtk.CheckButton("unstable")
+	    unstable_button.set_active(False)
+	    unstable_button.unset_flags(gtk.CAN_FOCUS)
+	    unstable_button.connect("clicked", self.set_option, "unstable")
+
+	    netinstall_button = gtk.CheckButton("netinstall")
+	    netinstall_button.set_active(False)
+	    netinstall_button.unset_flags(gtk.CAN_FOCUS)
+	    netinstall_button.connect("clicked", self.set_option, "netinstall")
+
+	    smp_client_button = gtk.CheckButton("smp client")
+	    smp_client_button.set_active(False)
+	    smp_client_button.unset_flags(gtk.CAN_FOCUS)
+	    smp_client_button.connect("clicked", self.set_option, "smp")
+
+	    console_output_button = gtk.CheckButton("console output")
+	    console_output_button.set_active(False)
+	    console_output_button.unset_flags(gtk.CAN_FOCUS)
+	    console_output_button.connect("clicked", self.set_option, "console")
+
+	    upgrade_system_button = gtk.CheckButton("upgrade_system")
+	    upgrade_system_button.set_active(False)
+	    upgrade_system_button.unset_flags(gtk.CAN_FOCUS)
+	    upgrade_system_button.connect("clicked", self.set_option, "upgrade")
+
+	    archi_button = gtk.combo_box_new_text()
+	    archi_button.connect("changed", self.set_option, "arch")
+	    archi_button.append_text('i386')
+	    archi_button.append_text('i586')
+	    archi_button.append_text('DRBL')
+	    archi_button.set_active(0)
+	    
+	    kernel_button = gtk.combo_box_new_text()
+	    kernel_button.connect("changed", self.set_option, "kernel")
+	    kernel_button.append_text('ayo')
+	    kernel_button.append_text('DRBL')
+	    kernel_button.set_active(1)
+	    
+	    box.pack_start(testing_button, False, False, 0)
+	    box.pack_start(unstable_button, False, False, 0)
+	    box.pack_start(netinstall_button, False, False, 0)
+	    box.pack_start(smp_client_button, False, False, 0)
+	    box.pack_start(console_output_button, False, False, 0)
+	    box.pack_start(upgrade_system_button, False, False, 0)
+	    box.pack_start(archi_button, False, False, 0)
+	    box.pack_start(kernel_button, False, False, 0)
+	    testing_button.show()
+	    unstable_button.show()
+	    netinstall_button.show()
+	    smp_client_button.show()
+	    console_output_button.show()
+	    upgrade_system_button.show()
+	    archi_button.show()
+	    kernel_button.show()
+	    
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply)
+	    box.pack_start(apply_button, False, False, 0)
+	    apply_button.show()
+
+	    self.main_box.pack_start(box, False, False, 0)
+	    box.show()
+	    
+	    self.box.pack_start(self.main_box, False, False, 0)
+	    self.main_box.show()
+	    self.box.show()
+	    
+    
 	def drblpush(self, widget):
 	    os.system("ls /")
 
@@ -234,6 +314,77 @@ class DRBL_GUI_Template():
 	def drbl_user_userdel(self, widget):
 	    cmd = "userdel"
 	    print cmd
+
+	def set_chk_option(self, widget, option_str):
+	    if widget.get_active():
+		self.srv_options += option_str
+	    else:
+		self.srv_options = string.replace(self.srv_options, option_str, "")
+
+	def set_option(self, widget, option_srt):
+	    #fixme
+	    if option_srt == "arch":
+		new_option = "-k %d " % widget.get_active()
+		self.srv_options = re.sub('-k\s\d\s', new_option, self.srv_options)
+	    elif option_srt == "kernel":
+		new_option = "-o %d " % widget.get_active()
+		self.srv_options = re.sub('-o\s\d\s', new_option, self.srv_options)
+	    elif option_srt == "testing":
+		if widget.get_active():
+		    new_option = "-t y "
+		else:
+		    new_option = "-t n "
+		self.srv_options = re.sub('-t\s\w\s', new_option, self.srv_options)
+	    elif option_srt == "unstable":
+		if widget.get_active():
+		    new_option = "-a y "
+		else:
+		    new_option = "-a n "
+		self.srv_options = re.sub('-a\s\w\s', new_option, self.srv_options)
+	    elif option_srt == "netinstall":
+		if widget.get_active():
+		    new_option = "-n y "
+		else:
+		    new_option = "-n n "
+		self.srv_options = re.sub('-n\s\w\s', new_option, self.srv_options)
+	    elif option_srt == "smp":
+		if widget.get_active():
+		    new_option = "-m y "
+		else:
+		    new_option = "-m n "
+		self.srv_options = re.sub('-m\s\w\s', new_option, self.srv_options)
+	    elif option_srt == "console":
+		if widget.get_active():
+		    new_option = "-c y "
+		else:
+		    new_option = "-c n "
+		self.srv_options = re.sub('-c\s\w\s', new_option, self.srv_options)
+	    elif option_srt == "upgrade":
+		if widget.get_active():
+		    new_option = "-g y "
+		else:
+		    new_option = "-g n "
+		self.srv_options = re.sub('-g\s\w\s', new_option, self.srv_options)
+
+	def do_apply(self, widget):
+	    #print self.srv_options
+	    srv_cmd = "/opt/drbl/sbin/drblsrv -i %s" % self.srv_options
+	    close_cmd = "sleep 5; exit\n"
+	    print srv_cmd
+	    ## Terminal
+	    srv_term = vte.Terminal()
+	    srv_term.fork_command()
+	    srv_term.feed_child(srv_cmd+'\n')
+	    srv_term.feed_child(close_cmd+'\n')
+
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.pack_start(srv_term,False,False,0)
+	    srv_term.show()
+	    self.box.pack_start(self.main_box,False,False,0)
+	    self.main_box.show()
+	    self.box.show()
+	
 
 if __name__ == '__main__':
 	DRBL_GUI_Template()
