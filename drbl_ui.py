@@ -15,24 +15,109 @@ except:
 	print >> sys.stderr, "Can't import python vte"
 	sys.exit(1)
 
+
+options = {}
+opt_value = {}
+opt_value_def = {}
+
+options["drblsrv"] = (
+("f", "force-yes", "force yes, only for Debian-like distribution. It  should  not  be used except in very special situations. Using force-yes can potentially destroy your system!", "", "check"),
+#("i", "install", "install DRBL.", "", "check"),
+#("u", "uninstall", "uninstall DRBL.", "", "check"),
+("v", "verbose", "verbose mode.", "", "check"),
+("t", "testing", "use packages in testing branch or not.", "yn", "check"),
+("a", "unstable", "use packages in unstable branch or not.", "yn", "check"),
+("n", "netinstall", "install the network installation program or not.", "yn", "check"),
+("m", "smp-client", "use SMP kernel for DRBL clients or not.", "yn", "check"),
+("x", "set-proxy", "set proxy or not.", "yn", "check"),
+("c", "console-output", "set console output for client or not.", "yn", "check"),
+("g", "upgrade_system", "upgrade system or not.", "yn", "check"),
+("s", "skip-select-repository", "skip the question for selecting repository.", "", "check"),
+("k", "client_archi", "set the client's CPU arch.", {0:"i386",1:"i586",2:"DRBL"}, "combo"),
+("o", "client_kernel_from", "choose client's kernel image from ", {0:"",1:"DRBL server",2:"ayo repository"}, "combo"),
+("l", "language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
+)
+
+options["drblpush"] = (
+("b", "not-add-start-drbl-srvi", "Do NOT add and start DRBL related services after the configuration is done", "", "check"),
+("c", "config", "The DRBL config file, text format", "", "file"),
+("d", "debug", "Turn on debug mode when run shell script", "", "check"),
+("e", "accept-one-nic", "Accept to run DRBL service in only one network card. ///NOTE/// This might mess up your network environment especially if there is an existing DHCP service in your network environment.", "", "check"),
+#("h", "help", "Show this help message", "", ""),
+("i", "interactive", "Interactive mode, setup step by step.", "", "check"),
+("k", "keep_clients", "Keep previously saved files for clients.", "yn", "check"),
+("m", "client_startup_mode", "Assign client mode", {"0":"","1":"graphic mode","2":"text mode"}, "combo"),
+("n", "no_deploy", "Just create files, do NOT deploy the files into system", "", "check"),
+("o", "clonezilla_home",  "Use DIR as the clonezilla image directory", "", "folder"),
+("p", "port_client_no", "The client no. in each NIC port.", "", "text"),
+("q", "quiet", "Be less verbose", "", "check"),
+("r", "drbl_mode", "Assign DRBL mode", {"0":"Full DRBL mode", "1":"DRBL SSI mode", "2":"Do NOT provide diskless Linux service to clients"}, "combo"),
+("s", "swap_create", "Switch to create and use local swap in clients", "yn", "check"),
+("u", "live_client_cpu_mode", "Assign the CPU mode for client when doing Clonezilla job with Clonezilla live", {"0": "i486", "1": "i686", "2": "amd64"}, "combo"),
+("v", "verbose", "Be more verbose", "", "check"),
+("z", "clonezilla_mode", "Assign Clonezilla mode", {"0": "Full DRBL mode", "1": "Clonezilla box mode", "2": "Do NOT provide clonezilla service to clients", "3": "Use Clonezilla live as the OS of clients"}, "combo"),
+("l", "language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
+)
+
+opt_value_def["drblsrv"] = {
+    "f":"",
+#    "i":"",
+#    "u":"",
+    "v":"",
+    "t":"y",
+    "a":"n",
+    "n":"n",
+    "m":"n",
+    "x":"n",
+    "c":"n",
+    "g":"n",
+    "k":"2",
+    "o":"1",
+    "s":"",
+    "l":"0"
+}
+
+opt_value_def["drblpush"] = {
+    "b":"",
+    "c":"",
+    "d":"",
+    "e":"",
+    "i":"",
+    "k":"y",
+    "m":"1",
+    "n":"",
+    "o":"/home/partimag",
+    "p":"",
+    "q":"",
+    "r":"0",
+    "s":"y",
+    "u":"1",
+    "v":"",
+    "z":"0",
+    "l":"0"
+}
+
 class DRBL_GUI_Template():
-	srv_options = "-t n -a n -n n -m n -c n -g n -k 0 -o 1 "
+	vterm = vte.Terminal()
 
 	def __init__(self):
 		DRBL_menu = gtk.MenuBar()
 
 		# File Menu
 		DRBL_menu_file_quit = gtk.MenuItem("Quit")
-		DRBL_menu_file_srv  = gtk.MenuItem("drblsrv")
+		DRBL_menu_file_srv_i  = gtk.MenuItem("drblsrv install")
+		DRBL_menu_file_srv_u  = gtk.MenuItem("drblsrv uninstall")
 		DRBL_menu_file_push = gtk.MenuItem("drblpush")
 
 		DRBL_menu_file_quit.connect("activate", gtk.main_quit)
-		DRBL_menu_file_srv.connect("activate", self.drblsrv)
+		DRBL_menu_file_srv_i.connect("activate", self.drblsrv_i)
+		DRBL_menu_file_srv_u.connect("activate", self.drblsrv_u)
 		DRBL_menu_file_push.connect("activate", self.drblpush)
 
 		DRBL_menu_file = gtk.Menu()
 		DRBL_menu_file.append(gtk.SeparatorMenuItem())
-		DRBL_menu_file.append(DRBL_menu_file_srv)
+		DRBL_menu_file.append(DRBL_menu_file_srv_i)
+		DRBL_menu_file.append(DRBL_menu_file_srv_u)
 		DRBL_menu_file.append(DRBL_menu_file_push)
 		DRBL_menu_file.append(DRBL_menu_file_quit)
 
@@ -179,93 +264,187 @@ class DRBL_GUI_Template():
 	    _about.run()
 	    _about.destroy()
 
-	def drblsrv(self, widget):
-	    
+	def drblsrv_i(self, widget):
+	    action = "drblsrv_i"
+	    opt_value["drblsrv"] = opt_value_def["drblsrv"].copy()
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
 	    label = gtk.Label("srblsrv options")
 	    label.set_alignment(0, 0)
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
 
 	    box = gtk.VBox()
-	    testing_button = gtk.CheckButton("testing")
-	    testing_button.set_active(False)
-	    testing_button.unset_flags(gtk.CAN_FOCUS)
-	    testing_button.connect("clicked", self.set_option, "testing")
-	    
+	    for [sopt, lopt, desc_opt, value_opt, type] in options["drblsrv"]:
+		#print  sopt, lopt, desc_opt, value_opt, type
 
-	    unstable_button = gtk.CheckButton("unstable")
-	    unstable_button.set_active(False)
-	    unstable_button.unset_flags(gtk.CAN_FOCUS)
-	    unstable_button.connect("clicked", self.set_option, "unstable")
+		if type == "check":
+		    sopt_button = gtk.CheckButton(desc_opt)
+		    if opt_value["drblsrv"][sopt] == "y":
+			sopt_button.set_active(True)
+		    else:
+			sopt_button.set_active(False)
+		    sopt_button.unset_flags(gtk.CAN_FOCUS)
+		    sopt_button.connect("clicked", self.set_option, sopt, action)
+		    box.pack_start(sopt_button, False, False, 0)
+		    sopt_button.show()
+		elif type == "combo":
+		    sopt_box = gtk.HBox()
+		    sopt_label = gtk.Label(desc_opt)
+		    sopt_label.set_max_width_chars(50)
+		    sopt_button = gtk.combo_box_new_text()
+		    sopt_button.connect("changed", self.set_option, sopt, action)
+		    for ko in value_opt.keys():
+			sopt_button.append_text(value_opt[ko])
+			try:
+			    def_opt = string.atoi(opt_value["drblsrv"][sopt], 10)
+			except:
+			    def_opt = opt_value["drblsrv"][sopt]
+		    sopt_button.set_active(def_opt)
+		    sopt_box.pack_start(sopt_label, False, False, 0)
+		    sopt_box.pack_end(sopt_button, False, False, 0)
+		    sopt_label.show()
+		    sopt_button.show()
+		    box.pack_start(sopt_box, False, False, 0)
+		    sopt_box.show()
 
-	    netinstall_button = gtk.CheckButton("netinstall")
-	    netinstall_button.set_active(False)
-	    netinstall_button.unset_flags(gtk.CAN_FOCUS)
-	    netinstall_button.connect("clicked", self.set_option, "netinstall")
-
-	    smp_client_button = gtk.CheckButton("smp client")
-	    smp_client_button.set_active(False)
-	    smp_client_button.unset_flags(gtk.CAN_FOCUS)
-	    smp_client_button.connect("clicked", self.set_option, "smp")
-
-	    console_output_button = gtk.CheckButton("console output")
-	    console_output_button.set_active(False)
-	    console_output_button.unset_flags(gtk.CAN_FOCUS)
-	    console_output_button.connect("clicked", self.set_option, "console")
-
-	    upgrade_system_button = gtk.CheckButton("upgrade_system")
-	    upgrade_system_button.set_active(False)
-	    upgrade_system_button.unset_flags(gtk.CAN_FOCUS)
-	    upgrade_system_button.connect("clicked", self.set_option, "upgrade")
-
-	    archi_button = gtk.combo_box_new_text()
-	    archi_button.connect("changed", self.set_option, "arch")
-	    archi_button.append_text('i386')
-	    archi_button.append_text('i586')
-	    archi_button.append_text('DRBL')
-	    archi_button.set_active(0)
-	    
-	    kernel_button = gtk.combo_box_new_text()
-	    kernel_button.connect("changed", self.set_option, "kernel")
-	    kernel_button.append_text('ayo')
-	    kernel_button.append_text('DRBL')
-	    kernel_button.set_active(1)
-	    
-	    box.pack_start(testing_button, False, False, 0)
-	    box.pack_start(unstable_button, False, False, 0)
-	    box.pack_start(netinstall_button, False, False, 0)
-	    box.pack_start(smp_client_button, False, False, 0)
-	    box.pack_start(console_output_button, False, False, 0)
-	    box.pack_start(upgrade_system_button, False, False, 0)
-	    box.pack_start(archi_button, False, False, 0)
-	    box.pack_start(kernel_button, False, False, 0)
-	    testing_button.show()
-	    unstable_button.show()
-	    netinstall_button.show()
-	    smp_client_button.show()
-	    console_output_button.show()
-	    upgrade_system_button.show()
-	    archi_button.show()
-	    kernel_button.show()
-	    
+	    action_box = gtk.HBox()
 	    apply_button = gtk.Button("Apply")
 	    apply_button.set_size_request(80, 35)
-	    id = apply_button.connect("clicked", self.do_apply)
-	    box.pack_start(apply_button, False, False, 0)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.drblsrv_i)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+	    
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+	    
+	def drblsrv_u(self, widget):
+	    action = "drblsrv_u"
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    label = gtk.Label("will run drblsrv -u")
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
+
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    cancel_button.show()
 	    apply_button.show()
 
-	    self.main_box.pack_start(box, False, False, 0)
-	    box.show()
+	    self.main_box.pack_start(action_box, False, False, 0)
+	    action_box.show()
 	    
 	    self.box.pack_start(self.main_box, False, False, 0)
 	    self.main_box.show()
 	    self.box.show()
-	    
+	
     
 	def drblpush(self, widget):
-	    os.system("ls /")
+	    action = "drblpush"
+	    opt_value["drblpush"] = opt_value_def["drblpush"].copy()
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+	    label = gtk.Label("srblpush options")
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    box = gtk.VBox()
+	    for [sopt, lopt, desc_opt, value_opt, type] in options["drblpush"]:
+		#print  sopt, lopt, desc_opt, value_opt, type
+
+		if type == "check":
+		    sopt_button = gtk.CheckButton(desc_opt)
+		    if opt_value["drblpush"][sopt] == "y":
+			sopt_button.set_active(True)
+		    else:
+			sopt_button.set_active(False)
+		    sopt_button.unset_flags(gtk.CAN_FOCUS)
+		    sopt_button.connect("clicked", self.set_option, sopt, action)
+		    box.pack_start(sopt_button, False, False, 0)
+		    sopt_button.show()
+		elif type == "combo":
+		    sopt_box = gtk.HBox()
+		    sopt_label = gtk.Label(desc_opt)
+		    sopt_label.set_max_width_chars(50)
+		    sopt_button = gtk.combo_box_new_text()
+		    sopt_button.connect("changed", self.set_option, sopt, action)
+		    for ko in value_opt.keys():
+			sopt_button.append_text(value_opt[ko])
+			try:
+			    def_opt = string.atoi(opt_value["drblpush"][sopt], 10)
+			except:
+			    def_opt = opt_value["drblpush"][sopt]
+		    sopt_button.set_active(def_opt)
+		    sopt_box.pack_start(sopt_label, False, False, 0)
+		    sopt_box.pack_end(sopt_button, False, False, 0)
+		    sopt_label.show()
+		    sopt_button.show()
+		    box.pack_start(sopt_box, False, False, 0)
+		    sopt_box.show()
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.drblpush)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+	    
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
 
 	def drbl_boot_shutdown(self, widget):
 	    cmd = "shutdown"
@@ -321,71 +500,115 @@ class DRBL_GUI_Template():
 	    else:
 		self.srv_options = string.replace(self.srv_options, option_str, "")
 
-	def set_option(self, widget, option_srt):
-	    #fixme
-	    if option_srt == "arch":
-		new_option = "-k %d " % widget.get_active()
-		self.srv_options = re.sub('-k\s\d\s', new_option, self.srv_options)
-	    elif option_srt == "kernel":
-		new_option = "-o %d " % widget.get_active()
-		self.srv_options = re.sub('-o\s\d\s', new_option, self.srv_options)
-	    elif option_srt == "testing":
-		if widget.get_active():
-		    new_option = "-t y "
-		else:
-		    new_option = "-t n "
-		self.srv_options = re.sub('-t\s\w\s', new_option, self.srv_options)
-	    elif option_srt == "unstable":
-		if widget.get_active():
-		    new_option = "-a y "
-		else:
-		    new_option = "-a n "
-		self.srv_options = re.sub('-a\s\w\s', new_option, self.srv_options)
-	    elif option_srt == "netinstall":
-		if widget.get_active():
-		    new_option = "-n y "
-		else:
-		    new_option = "-n n "
-		self.srv_options = re.sub('-n\s\w\s', new_option, self.srv_options)
-	    elif option_srt == "smp":
-		if widget.get_active():
-		    new_option = "-m y "
-		else:
-		    new_option = "-m n "
-		self.srv_options = re.sub('-m\s\w\s', new_option, self.srv_options)
-	    elif option_srt == "console":
-		if widget.get_active():
-		    new_option = "-c y "
-		else:
-		    new_option = "-c n "
-		self.srv_options = re.sub('-c\s\w\s', new_option, self.srv_options)
-	    elif option_srt == "upgrade":
-		if widget.get_active():
-		    new_option = "-g y "
-		else:
-		    new_option = "-g n "
-		self.srv_options = re.sub('-g\s\w\s', new_option, self.srv_options)
+	def set_option(self, widget, short_option, action):
+	    #print short_option
+	    if action == "drblsrv_i":
+		for [sopt, lopt, desc_opt, value_opt, type] in options["drblsrv"]:
+		    if sopt == short_option:
+			if type == "check":
+			    if widget.get_active() == True:
+				opt_value["drblsrv"][short_option] = "y"
+			    elif widget.get_active() == False:
+				opt_value["drblsrv"][short_option] = "n"
+			elif type == "combo":
+				opt_value["drblsrv"][short_option] = widget.get_active()
+	    elif action == "drblpush":
+		for [sopt, lopt, desc_opt, value_opt, type] in options["drblpush"]:
+		    if sopt == short_option:
+			if type == "check":
+			    if widget.get_active() == True:
+				opt_value["drblpush"][short_option] = "y"
+			    elif widget.get_active() == False:
+				opt_value["drblpush"][short_option] = "n"
+			elif type == "combo":
+				opt_value["drblpush"][short_option] = widget.get_active()
 
-	def do_apply(self, widget):
-	    #print self.srv_options
-	    srv_cmd = "/opt/drbl/sbin/drblsrv -i %s" % self.srv_options
-	    close_cmd = "sleep 5; exit\n"
-	    print srv_cmd
-	    ## Terminal
-	    srv_term = vte.Terminal()
-	    srv_term.fork_command()
-	    srv_term.feed_child(srv_cmd+'\n')
-	    srv_term.feed_child(close_cmd+'\n')
+	    #print opt_value["drblsrv"][short_option]
+	    #for o in opt_value["drblsrv"].keys():
+		#print "option: %s, value:%s" %o, opt_value["drblsrv"][o]
+
+	def do_apply(self, widget, action):
+
+	    option_str = " "
+	    #print "apply:"
+	    if action == "drblsrv_i":
+		for opt_s in opt_value["drblsrv"].keys():
+		    if opt_value["drblsrv"][opt_s] != "":
+			tmp_opt = "-%s %s " % (opt_s, opt_value["drblsrv"][opt_s])
+			option_str = option_str + tmp_opt
+		run_cmd = "/opt/drbl/sbin/drblsrv -i %s" % option_str
+	    elif action == "drblsrv_u":
+		run_cmd = "/opt/drbl/sbin/drblsrv -u %s" % option_str
+	    elif action == "drblpush":
+		for opt_s in opt_value["drblpush"].keys():
+		    if opt_value["drblpush"][opt_s] != "":
+			tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
+			option_str = option_str + tmp_opt
+		run_cmd = "/opt/drbl/sbin/drblpush %s" % option_str
+
+	    close_cmd = "exit\n"
+	    print run_cmd
 
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
-	    self.main_box.pack_start(srv_term,False,False,0)
-	    srv_term.show()
+	    self.main_box.show()
+
+	    apply_box = gtk.VBox()
+	    label = gtk.Label("apply...")
+	    label.set_alignment(0, 0)
+	    apply_box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    ## Terminal
+	    self.vterm = vte.Terminal()
+	    self.vterm.fork_command()
+	    self.vterm.feed_child(run_cmd+'\n')
+	    self.vterm.feed_child(close_cmd+'\n')
+	    self.vterm.connect('child-exited', self.do_complete)
+	    apply_box.pack_start(self.vterm,False,False,0)
+	    self.vterm.show()
+	    
+	    action_box = gtk.HBox()
+	    abort_button = gtk.Button("Abort")
+	    finish_button = gtk.Button("Finish")
+	    id = abort_button.connect("clicked", self.do_cancel)
+	    id = finish_button.connect("clicked", self.do_cancel)
+	    action_box.pack_end(finish_button, False, False, 0)
+	    action_box.pack_end(abort_button, False, False, 0)
+	    abort_button.show()
+	    finish_button.show()
+	    apply_box.pack_end(action_box, False, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(apply_box, False, False, 0)
+	    apply_box.show()
+
 	    self.box.pack_start(self.main_box,False,False,0)
 	    self.main_box.show()
 	    self.box.show()
 	
+	def do_cancel(self, widget):
+	    self.box.hide()
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+	    # Window
+	    DRBL_BG_image = gtk.Image()
+	    DRBL_BG_image.set_from_file("drblwp.png")
 
+	    bg_box = gtk.VBox(False, 0)
+	    bg_box.pack_start(DRBL_BG_image, False, False, 0)
+	    DRBL_BG_image.show()
+	    self.main_box.pack_start(bg_box, False, False, 0)
+	    bg_box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
+	def do_complete(self, widget):
+	    self.vterm.feed("\nFinish!\n")
+	    
 if __name__ == '__main__':
 	DRBL_GUI_Template()
  	gtk.main()
