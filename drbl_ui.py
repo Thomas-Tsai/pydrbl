@@ -308,7 +308,6 @@ class DRBL_GUI_Template():
 	
 	def on_toggled_host(self, render, path, list):
 	    it = list.get_iter_from_string(path)
-	    print path
 	    value, ip = list.get(it, 0, 1)
 	    value = not value
 	    i = 0
@@ -534,9 +533,6 @@ class DRBL_GUI_Template():
 
 	def drbl_boot_shutdown(self, widget):
 	    action = "shutdown"
-	    cmd = "shutdown"
-	    print cmd
-	    
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
@@ -574,12 +570,84 @@ class DRBL_GUI_Template():
 	    self.box.show()
 
 	def drbl_boot_wakeonlan(self, widget):
-	    cmd = "WOL"
-	    print cmd
+	    action = "Wake-on-LAN"
+	    
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.drbl_boot_shutdown)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
 
 	def drbl_boot_reboot(self, widget):
-	    cmd = "reboot"
-	    print cmd
+	    action = "reboot"
+	    
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.drbl_boot_shutdown)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
 
 	def drbl_boot_switch_pxe_menu(self, widget):
 	    cmd = "switch pxe menu"
@@ -687,7 +755,7 @@ class DRBL_GUI_Template():
 			   tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
-	    elif action == "shutdown":
+	    elif action == "shutdown" or action == "reboot" or action == "Wake-on-LAN":
 		options = "-nl"
 		clients = []
 		clients = self.get_host()
@@ -703,7 +771,7 @@ class DRBL_GUI_Template():
 		else:
 		    options = "-h \" %s \"" % action_host
 		
-		run_cmd = "/opt/drbl/sbin/dcs %s shutdown" % options
+		run_cmd = "/opt/drbl/sbin/dcs %s %s" % (options, action)
 	    else:
 		run_cmd = "exit\n"
 		print "not impliement."
