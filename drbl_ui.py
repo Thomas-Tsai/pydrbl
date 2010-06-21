@@ -2,6 +2,7 @@
 import os
 import string
 import re
+import gobject
 
 try:
 	import gtk
@@ -96,6 +97,13 @@ opt_value_def["drblpush"] = {
     "z":"0",
     "l":"0"
 }
+
+drbl_hosts = [
+    [True, 'ALL', ''],
+    [True, '192.168.1.1', 'AA:BB:CC:DD:EE:FF'],
+    [True, '192.168.1.2', 'AA:BB:CC:DD:EE:FF'],
+    [True, '192.168.1.3', 'AA:BB:CC:DD:EE:FF']
+]
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
@@ -233,7 +241,7 @@ class DRBL_GUI_Template():
 		box = gtk.VBox(False,0)
 		self.box = box
 		box.pack_start(menu_box, False, False, 0)
-		box.pack_end(main_box, False, False, 0)
+		box.pack_start(main_box, False, False, 0)
 
 		window = gtk.Window()
 		self.window = window
@@ -251,6 +259,72 @@ class DRBL_GUI_Template():
 		window.connect('delete-event', lambda window, event: gtk.main_quit())
 		window.show_all()
 		
+
+	def get_host(self):
+	    client = []
+	    for c in drbl_hosts:
+		if c[0] == True:
+		    client.append(c[1])
+	    return client
+
+	def list_hosts(self, box):
+
+	    liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+	    treeview = gtk.TreeView(liststore)
+	    treeview.set_rules_hint(True)
+	    treeview.get_selection().set_mode(gtk.SELECTION_NONE)
+
+	    render = gtk.CellRendererToggle()
+	    render.set_property('activatable', True)
+	    render.set_property('width', 20)
+	    render.connect ('toggled', self.on_toggled_host, liststore)
+	    col = gtk.TreeViewColumn()
+	    col.pack_start(render)
+	    col.set_attributes(render, active=0)
+	    treeview.append_column(col)
+
+	    column_ip = gtk.TreeViewColumn('IP')
+	    column_mac = gtk.TreeViewColumn('MAC')
+	    treeview.append_column(column_ip)	
+	    treeview.append_column(column_mac)	
+	    cell_ip = gtk.CellRendererText()
+	    cell_mac = gtk.CellRendererText()
+
+	    column_ip.pack_start(cell_ip, True)
+	    column_mac.pack_start(cell_mac, True)
+
+	    column_ip.set_attributes(cell_ip, text=1)
+	    column_mac.set_attributes(cell_mac, text=2)
+
+	    for host in drbl_hosts:
+		liststore.append(host)
+
+	    treeview.set_search_column(0)
+	    column_ip.set_sort_column_id(0)
+	    treeview.set_reorderable(True)
+
+	    box.pack_start(treeview, False, False, 0)
+	    treeview.show()
+	
+	def on_toggled_host(self, render, path, list):
+	    it = list.get_iter_from_string(path)
+	    print path
+	    value, ip = list.get(it, 0, 1)
+	    value = not value
+	    i = 0
+	    if ip == 'ALL':
+		for all_toggle, all_ip, all_mac in drbl_hosts:
+		    drbl_hosts[i][0] = value
+		    list.set(it, 0, value)
+		    i = i+1
+		    it = list.iter_next(it)
+	    else:
+		list.set(it, 0, value)
+		for all_toggle, all_ip, all_mac in drbl_hosts:
+		    if ip == all_ip:
+			drbl_hosts[i][0] = value
+		    i = i+1
+
 	def drbl_about(self, widget):
 	    _about = gtk.AboutDialog()
 	    _about.set_name('DRBL')
@@ -459,8 +533,45 @@ class DRBL_GUI_Template():
 	    self.box.show()
 
 	def drbl_boot_shutdown(self, widget):
+	    action = "shutdown"
 	    cmd = "shutdown"
 	    print cmd
+	    
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.drbl_boot_shutdown)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
 
 	def drbl_boot_wakeonlan(self, widget):
 	    cmd = "WOL"
@@ -501,6 +612,8 @@ class DRBL_GUI_Template():
 	def drbl_user_useradd(self, widget):
 	    cmd = "useradd"
 	    print cmd
+
+	#def host_list():
 
 	def drbl_user_userdel(self, widget):
 	    cmd = "userdel"
@@ -574,7 +687,26 @@ class DRBL_GUI_Template():
 			   tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
-
+	    elif action == "shutdown":
+		options = "-nl"
+		clients = []
+		clients = self.get_host()
+		action_host = ""
+		for h in clients:
+		    if h == "ALL":
+			break
+		    else:
+			action_host = action_host + " " + h
+		
+		if action_host == "":
+		    options = "-nl"
+		else:
+		    options = "-h \" %s \"" % action_host
+		
+		run_cmd = "/opt/drbl/sbin/dcs %s shutdown" % options
+	    else:
+		run_cmd = "exit\n"
+		print "not impliement."
 
 	    close_cmd = "exit\n"
 	    print run_cmd
