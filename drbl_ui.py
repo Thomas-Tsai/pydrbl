@@ -99,10 +99,7 @@ opt_value_def["drblpush"] = {
 }
 
 drbl_hosts = [
-    [True, 'ALL', ''],
-    [True, '192.168.1.1', 'AA:BB:CC:DD:EE:FF'],
-    [True, '192.168.1.2', 'AA:BB:CC:DD:EE:FF'],
-    [True, '192.168.1.3', 'AA:BB:CC:DD:EE:FF']
+    [True, 'ALL', '']
 ]
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
@@ -262,10 +259,10 @@ class DRBL_GUI_Template():
 
 	def collect_drbl_hosts(self):
 	    drbl_cmd = "/opt/drbl/bin/get-client-ip-list"
-	    ip_cout = 1
 	    for ip in os.popen(drbl_cmd).readlines():
-		drbl_hosts[ip_count][1] = ip
-		ip_count += 1
+		ip = ip[:-1]
+		client=[True, ip, ""]
+		drbl_hosts.append(client)
 
 	def get_host(self):
 	    client = []
