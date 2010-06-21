@@ -83,7 +83,7 @@ opt_value_def["drblpush"] = {
     "c":"",
     "d":"",
     "e":"",
-    "i":"",
+    "i":"y",
     "k":"y",
     "m":"1",
     "n":"",
@@ -725,7 +725,6 @@ class DRBL_GUI_Template():
 	def do_apply(self, widget, action):
 
 	    option_str = " "
-	    #print "apply:"
 	    if action == "drblsrv_i":
 		for opt_s in opt_value["drblsrv"].keys():
 		    if opt_value["drblsrv"][opt_s] != "":
@@ -756,7 +755,7 @@ class DRBL_GUI_Template():
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
 	    elif action == "shutdown" or action == "reboot" or action == "Wake-on-LAN":
-		options = "-nl"
+		act_options = "-nl"
 		clients = []
 		clients = self.get_host()
 		action_host = ""
@@ -767,11 +766,11 @@ class DRBL_GUI_Template():
 			action_host = action_host + " " + h
 		
 		if action_host == "":
-		    options = "-nl"
+		    act_options = "-nl"
 		else:
-		    options = "-h \" %s \"" % action_host
+		    act_options = "-h \" %s \"" % action_host
 		
-		run_cmd = "/opt/drbl/sbin/dcs %s %s" % (options, action)
+		run_cmd = "/opt/drbl/sbin/dcs %s %s" % (act_options, action)
 	    else:
 		run_cmd = "exit\n"
 		print "not impliement."
