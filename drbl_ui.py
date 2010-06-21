@@ -260,6 +260,13 @@ class DRBL_GUI_Template():
 		window.show_all()
 		
 
+	def collect_drbl_hosts(self):
+	    drbl_cmd = "/opt/drbl/bin/get-client-ip-list"
+	    ip_cout = 1
+	    for ip in os.popen(drbl_cmd).readlines():
+		drbl_hosts[ip_count][1] = ip
+		ip_count += 1
+
 	def get_host(self):
 	    client = []
 	    for c in drbl_hosts:
@@ -295,6 +302,8 @@ class DRBL_GUI_Template():
 
 	    column_ip.set_attributes(cell_ip, text=1)
 	    column_mac.set_attributes(cell_mac, text=2)
+
+	    self.collect_drbl_hosts()
 
 	    for host in drbl_hosts:
 		liststore.append(host)
