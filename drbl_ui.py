@@ -98,9 +98,7 @@ opt_value_def["drblpush"] = {
     "l":"0"
 }
 
-drbl_hosts = [
-    [True, 'ALL', '']
-]
+drbl_hosts = []
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
@@ -259,6 +257,8 @@ class DRBL_GUI_Template():
 
 	def collect_drbl_hosts(self):
 	    drbl_cmd = "/opt/drbl/bin/get-client-ip-list"
+	    del drbl_hosts[0:]
+	    drbl_hosts.append([True, "ALL", ""])
 	    for ip in os.popen(drbl_cmd).readlines():
 		ip = ip[:-1]
 		client=[True, ip, ""]
