@@ -99,9 +99,12 @@ opt_value_def["drblpush"] = {
 }
 
 drbl_hosts = []
+dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "boot_switch_pxe_menu", "boot_switch_pxe_bg_mode", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
+
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
+dcs_cmd = "/opt/drbl/sbin/dcs"
 
 class DRBL_GUI_Template():
 	vterm = vte.Terminal()
@@ -152,10 +155,10 @@ class DRBL_GUI_Template():
 		DRBL_menu_remote_terminal = gtk.MenuItem("Terminal")
 
 		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_gra)
-		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_txt)
-		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_memtest)
-		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_local)
-		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_terminal)
+		DRBL_menu_remote_txt.connect("activate", self.drbl_remote_txt)
+		DRBL_menu_remote_local.connect("activate", self.drbl_remote_local)
+		DRBL_menu_remote_memtest.connect("activate", self.drbl_remote_memtest)
+		DRBL_menu_remote_terminal.connect("activate", self.drbl_remote_terminal)
 
 		DRBL_menu_remote = gtk.Menu()
 		DRBL_menu_remote.append(gtk.SeparatorMenuItem())
@@ -575,113 +578,79 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 
+	def action_window(self, widget, action):
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.action_window, action)
+
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    apply_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, True, False, 0)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
+
 	def drbl_boot_wakeonlan(self, widget):
 	    action = "Wake-on-LAN"
-	    
-	    self.main_box.hide()
-	    self.main_box = gtk.VBox(False,0)
-	    self.main_box.show()
-
-	    box = gtk.VBox()
-	    self.list_hosts(box)
-
-	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
-	    apply_button.set_size_request(80, 35)
-	    id = apply_button.connect("clicked", self.do_apply, action)
-
-	    cancel_button = gtk.Button("Cancel")
-	    cancel_button.set_size_request(80, 35)
-	    id = cancel_button.connect("clicked", self.do_cancel)
-	    
-	    reset_button = gtk.Button("Reset")
-	    reset_button.set_size_request(80, 35)
-	    id = reset_button.connect("clicked", self.drbl_boot_shutdown)
-
-	    action_box.pack_end(apply_button, False, False, 0)
-	    action_box.pack_end(cancel_button, False, False, 0)
-	    action_box.pack_end(reset_button, False, False, 0)
-	    cancel_button.show()
-	    apply_button.show()
-	    reset_button.show()
-	    box.pack_end(action_box, True, False, 0)
-	    action_box.show()
-
-	    self.main_box.pack_start(box, True, True, 0)
-	    box.show()
-
-	    self.box.pack_start(self.main_box, True, True, 0)
-	    self.main_box.show()
-	    self.box.show()
-
-
+	    self.action_window(self, action)
+	   
 	def drbl_boot_reboot(self, widget):
 	    action = "reboot"
+	    self.action_window(self, action)
 	    
-	    self.main_box.hide()
-	    self.main_box = gtk.VBox(False,0)
-	    self.main_box.show()
-
-	    box = gtk.VBox()
-	    self.list_hosts(box)
-
-	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
-	    apply_button.set_size_request(80, 35)
-	    id = apply_button.connect("clicked", self.do_apply, action)
-
-	    cancel_button = gtk.Button("Cancel")
-	    cancel_button.set_size_request(80, 35)
-	    id = cancel_button.connect("clicked", self.do_cancel)
-	    
-	    reset_button = gtk.Button("Reset")
-	    reset_button.set_size_request(80, 35)
-	    id = reset_button.connect("clicked", self.drbl_boot_shutdown)
-
-	    action_box.pack_end(apply_button, False, False, 0)
-	    action_box.pack_end(cancel_button, False, False, 0)
-	    action_box.pack_end(reset_button, False, False, 0)
-	    cancel_button.show()
-	    apply_button.show()
-	    reset_button.show()
-	    box.pack_end(action_box, True, False, 0)
-	    action_box.show()
-
-	    self.main_box.pack_start(box, True, True, 0)
-	    box.show()
-
-	    self.box.pack_start(self.main_box, True, True, 0)
-	    self.main_box.show()
-	    self.box.show()
-
-
 	def drbl_boot_switch_pxe_menu(self, widget):
-	    cmd = "switch pxe menu"
-	    print cmd
+	    action = "boot_switch_pxe_menu"
+	    self.action_window(self, action)
 
 	def drbl_boot_switch_pxe_bg_mode(self, widget):
-	    cmd = "switch pxe bg mode"
-	    print cmd
+	    action = "boot_switch_pxe_bg_mode"
+	    self.action_window(self, action)
 
 	def drbl_remote_gra(self, widget):
-	    cmd = "remote_gra"
-	    print cmd
+	    action = "remote-linux-gra"
+	    self.action_window(self, action)
 
 	def drbl_remote_txt(self, widget):
-	    cmd = "remote_txt"
-	    print cmd
+	    action = "remote-linux-txt"
+	    self.action_window(self, action)
 
 	def drbl_remote_memtest(self, widget):
-	    cmd = "remote_memtest"
-	    print cmd
+	    action = "remote-memtest"
+	    self.action_window(self, action)
 
 	def drbl_remote_terminal(self, widget):
-	    cmd = "remote_terminal"
-	    print cmd
+	    action = "terminal"
+	    self.action_window(self, action)
 
 	def drbl_remote_local(self, widget):
-	    cmd = "remote_local"
-	    print cmd
+	    action = "local"
+	    self.action_window(self, action)
 
 	def drbl_user_useradd(self, widget):
 	    cmd = "useradd"
@@ -724,10 +693,6 @@ class DRBL_GUI_Template():
 			elif type == "combo":
 				opt_value["drblpush"][short_option] = widget.get_active()
 
-	    #print opt_value["drblsrv"][short_option]
-	    #for o in opt_value["drblsrv"].keys():
-		#print "option: %s, value:%s" %o, opt_value["drblsrv"][o]
-
 	def do_apply(self, widget, action):
 
 	    option_str = " "
@@ -760,7 +725,7 @@ class DRBL_GUI_Template():
 			   tmp_opt = "-%s %s " % (opt_s, opt_value["drblpush"][opt_s])
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
-	    elif action == "shutdown" or action == "reboot" or action == "Wake-on-LAN":
+	    elif action in dcs_mode_1:
 		act_options = "-nl"
 		clients = []
 		clients = self.get_host()
