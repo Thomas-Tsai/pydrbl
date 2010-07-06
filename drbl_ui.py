@@ -99,7 +99,7 @@ opt_value_def["drblpush"] = {
 }
 
 drbl_hosts = []
-drbl_pxe_menu = []
+pxe_menu = []
 dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "boot_switch_pxe_menu", "boot_switch_pxe_bg_mode", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
 
 
@@ -259,14 +259,50 @@ class DRBL_GUI_Template():
 		window.show_all()
 		
 
+	def collect_pxe_menu(self):
+	    pxe_list_menu = "./get-pxe-menu"
+	    del pxe_menu[0:]
+	    for menu_line in os.popen(pxe_list_menu).readlines():
+		menu = menu_line[:-1].split(" ")
+		if menu[2] == "True":
+		    pmenu = [True, menu[0], menu[1]]
+		else:
+		    pmenu = [False, menu[0], menu[1]]
+
+		pxe_menu.append(pmenu)
+
+	def ipFormatChk(self, ip_str):
+	    # copy from http://bytes.com/topic/python/answers/569207-how-validate-ip-address-python
+	    #pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+
+	    pattern = re.compile(r"""
+	    \b                                           # matches the beginning of the string
+	    (25[0-5]|                                    # matches the integer range 250-255 OR
+	    2[0-4][0-9]|                                 # matches the integer range 200-249 OR
+	    [01]?[0-9][0-9]?)                            # matches any other combination of 1-3 digits below 200
+	    \.                                           # matches '.'
+	    (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)       # repeat
+	    \.                                           # matches '.'
+	    (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)       # repeat
+	    \.                                           # matches '.'
+	    (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)       # repeat
+	    \b                                           # matches the end of the string
+	    """, re.VERBOSE)
+
+	    if re.match(pattern, ip_str):
+		return True
+	    else:
+		return False
+
 	def collect_drbl_hosts(self):
 	    drbl_cmd = "/opt/drbl/bin/get-client-ip-list"
 	    del drbl_hosts[0:]
 	    drbl_hosts.append([True, "ALL", ""])
 	    for ip in os.popen(drbl_cmd).readlines():
 		ip = ip[:-1]
-		client=[True, ip, ""]
-		drbl_hosts.append(client)
+		if self.ipFormatChk(ip) == True:
+		    client=[True, ip, ""]
+		    drbl_hosts.append(client)
 
 	def get_host(self):
 	    client = []
@@ -275,6 +311,54 @@ class DRBL_GUI_Template():
 		    client.append(c[1])
 	    return client
 
+	def list_pxe_menu(self, box):
+
+	    liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+	    treeview = gtk.TreeView(liststore)
+	    treeview.set_rules_hint(True)
+	    treeview.get_selection().set_mode(gtk.SELECTION_NONE)
+
+	    scroll = gtk.ScrolledWindow()
+	    scroll.add(treeview)
+	    scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+	    scroll.set_shadow_type(gtk.SHADOW_IN)
+
+	    render = gtk.CellRendererToggle()
+	    render.set_property('activatable', True)
+	    render.set_property('width', 20)
+	    render.connect ('toggled', self.on_toggled_host, liststore)
+	    col = gtk.TreeViewColumn()
+	    col.pack_start(render)
+	    col.set_attributes(render, active=0)
+	    treeview.append_column(col)
+
+	    column_menu = gtk.TreeViewColumn('MENU')
+	    column_status = gtk.TreeViewColumn('STATUS')
+	    treeview.append_column(column_menu)	
+	    treeview.append_column(column_status)	
+	    cell_menu = gtk.CellRendererText()
+	    cell_status = gtk.CellRendererText()
+
+	    column_menu.pack_start(cell_menu, True)
+	    column_status.pack_start(cell_status, True)
+
+	    column_menu.set_attributes(cell_menu, text=1)
+	    column_status.set_attributes(cell_status, text=2)
+
+	    self.collect_pxe_menu()
+
+	    for menu in pxe_menu:
+		liststore.append(menu)
+
+	    treeview.set_search_column(0)
+	    column_menu.set_sort_column_id(0)
+	    treeview.set_reorderable(True)
+
+	    #box.pack_start(treeview, False, False, 0)
+	    treeview.show()
+	    box.pack_start(scroll, True, True, 0)
+	    scroll.show()
+	
 	def list_hosts(self, box):
 
 	    liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
@@ -541,6 +625,54 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 
+	def action_for_pxe_menu(self, widget, action, next):
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    if next == 0:
+		self.list_hosts(box)
+	    else:
+		self.list_pxe_menu(box)
+
+	    action_box = gtk.HBox()
+	    next_button = gtk.Button("Next")
+	    next_button.set_size_request(80, 35)
+	    id = next_button.connect("clicked", self.action_for_pxe_menu, action, 1)
+
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
+
+	    if next == 0:
+		action_box.pack_end(next_button, False, False, 0)
+		next_button.show()
+	    else:
+		action_box.pack_end(apply_button, False, False, 0)
+		apply_button.show()
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    cancel_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, False, False, 2)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
 	def action_for_host_mode(self, widget, action):
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
@@ -612,7 +744,7 @@ class DRBL_GUI_Template():
 
 	def drbl_boot_switch_pxe_menu(self, widget):
 	    action = "boot_switch_pxe_menu"
-	    self.action_for_pxe_menu(self, action)
+	    self.action_for_pxe_menu(self, action, 0)
 
 	def drbl_boot_switch_pxe_bg_mode(self, widget):
 	    action = "boot_switch_pxe_bg_mode"

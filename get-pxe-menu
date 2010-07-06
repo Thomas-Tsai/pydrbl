@@ -1,0 +1,58 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# Description: switch the PXE menu in the config file
+
+# Load DRBL setting and functions
+if [ ! -f "/opt/drbl/sbin/drbl-conf-functions" ]; then
+  echo "Unable to find /opt/drbl/sbin/drbl-conf-functions! Program terminated!" 
+  exit 1
+fi
+. /opt/drbl/sbin/drbl-conf-functions
+
+PXE_CONF_DEF="$PXELINUX_DIR/default"
+PXE_CONF_TMP="/tmp/pxs_default.tmp"
+#
+USAGE() {
+    echo "Usage:"
+    echo "`basename $0` [OPTION]"
+    echo "Options:"
+    echo "-i, --image IMG   set IMG as the default one"
+    echo "-c, --config CONF use the CONF file instead of default one ($PXE_CONF_DEF)"
+    echo "-v, --verbose     show verbose messages"
+    echo "-h, --help        display this help and exit"
+}
+
+cp $PXE_CONF_DEF $PXE_CONF_TMP
+
+all_label="$(awk '/^[[:space:]]*label[[:space:]]+.*([[:space:]]|$)+/ {print $2}' $PXE_CONF_TMP)"
+[ -n "$VERBOSE" ] && echo "all_label: $all_label"
+if [ -z "$all_label" ]; then
+  echo "no label"
+  exit 0
+fi
+
+for i in $all_label; do
+   # EX for i: rh-8.0-netinstall
+   # get the description for the netinstall image from pxelinux default
+   lines=$(get_pxecfg_image_block $i $PXE_CONF_TMP)
+   begin_line=$(echo $lines | awk -F" " '{print $1}')
+   end_line=$(echo $lines | awk -F" " '{print $2}')
+   search_cmd="if ($begin_line..$end_line) {print}"
+   des="$(perl -n -e "$search_cmd" $PXE_CONF_TMP | grep -i "^[[:space:]]*MENU LABEL" | sed -e "s/^[[:space:]]*MENU LABEL //gi" -e "s/ /_/g")"
+
+
+   #fixme: end_line error from get_pxecfg_image_block, add 'grep -Ei -m1  "$menu_cmd"' to ignore other MENU HIDE
+
+   menu_cmd="MENU HIDE"
+   hide_grep_cmd="^[[:space:]]*MENU HIDE"
+   hide_menu="$(perl -n -e "$search_cmd" $PXE_CONF_TMP |grep -Ei -m1  "$menu_cmd" | grep -Ei -A0 "$hide_grep_cmd")"
+   show_grep_cmd="^[[:space:]]*[#]+[[:space:]]+MENU HIDE"
+   show_menu="$(perl -n -e "$search_cmd" $PXE_CONF_TMP |grep -Ei -m1  "$menu_cmd" | grep -Ei -A0 "$show_grep_cmd")"
+   [ -n "$hide_menu" ] && echo "$i $des False"
+   [ -n "$show_menu" ] && echo "$i $des True"
+done
+
+rm $PXE_CONF_TMP
+
+exit 0
