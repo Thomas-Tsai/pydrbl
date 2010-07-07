@@ -101,7 +101,8 @@ opt_value_def["drblpush"] = {
 drbl_hosts = []
 pxe_menu = []
 update_pxe_menu = []
-dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "boot_switch_pxe_bg_mode", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
+pxe_bg_mode = "graphic"
+dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
 
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
@@ -315,6 +316,22 @@ class DRBL_GUI_Template():
 		    client.append(c[1])
 	    return client
 
+	def get_host_option(self):
+	    host_options = ""
+	    clients = self.get_host()
+	    action_host = ""
+	    for h in clients:
+		if h == "ALL":
+			break
+		else:
+		    action_host = action_host + " " + h
+		
+	    if action_host == "":
+		host_options = "-nl"
+	    else:
+		host_options = "-h \" %s \"" % action_host
+	    return cmd_options
+
 	def list_pxe_menu(self, box):
 
 	    liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
@@ -404,6 +421,9 @@ class DRBL_GUI_Template():
 	    box.pack_start(treeview, False, False, 0)
 	    treeview.show()
 	
+	def on_toggled_bg_mode(self, mode):
+	    pxe_bg_mode = mode
+
 	def on_toggled_pxe_menu(self, render, path, list):
 	    it = list.get_iter_from_string(path)
 	    value, menu = list.get(it, 0, 1)
@@ -641,6 +661,53 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 
+	def action_for_pxe_bg_mode(self, widget, action):
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
+
+	    text_button = gtk.RadioButton(bg_mode, "text")
+   	    text_button.connect("toggled", self.on_toggled_bg_mode, "text")
+	    gra_button = gtk.RadioButton(bg_mode, "graphic")
+   	    gra_button.connect("toggled", self.on_toggled_bg_mode, "graphic")
+            gra_button.set_active(True)
+
+	    action_box = gtk.HBox()
+	    apply_button = gtk.Button("Apply")
+	    apply_button.set_size_request(80, 35)
+	    id = apply_button.connect("clicked", self.do_apply, action)
+
+	    cancel_button = gtk.Button("Cancel")
+	    cancel_button.set_size_request(80, 35)
+	    id = cancel_button.connect("clicked", self.do_cancel)
+	    
+	    reset_button = gtk.Button("Reset")
+	    reset_button.set_size_request(80, 35)
+	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
+
+	    action_box.pack_start(text_button, False, False, 0)
+	    action_box.pack_start(gra_button, False, False, 0)
+	    action_box.pack_end(apply_button, False, False, 0)
+	    action_box.pack_end(cancel_button, False, False, 0)
+	    action_box.pack_end(reset_button, False, False, 0)
+	    text_button.show()
+	    gra_button.show()
+	    apply_button.show()
+	    cancel_button.show()
+	    reset_button.show()
+	    box.pack_end(action_box, False, False, 2)
+	    action_box.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
 	def action_for_pxe_menu(self, widget, action, next):
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
@@ -832,21 +899,9 @@ class DRBL_GUI_Template():
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
 	    elif action in dcs_mode_1:
-		cmd_options = "-nl"
-		clients = []
-		clients = self.get_host()
-		action_host = ""
-		for h in clients:
-		    if h == "ALL":
-			break
-		    else:
-			action_host = action_host + " " + h
-		
-		if action_host == "":
-		    cmd_options = "-nl"
-		else:
-		    cmd_options = "-h \" %s \"" % action_host
-		
+		cmd_options = ""
+		cmd_options = "%s %s" % (cmd_options, self.get_host_option)
+	
 		run_cmd = "%s %s %s" % (dcs_cmd, cmd_options, action)
 	    elif action == "boot_switch_pxe_menu":
 
@@ -887,6 +942,9 @@ class DRBL_GUI_Template():
 		run_cmd_reveal = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, reveal_options)
 		run_cmd_hide = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, hide_options)
 		run_cmd = "%s; %s" % (run_cmd_reveal, run_cmd_hide)
+
+	    elif action == "boot_switch_pxe_bg_mode":
+		
 
 	    else:
 		run_cmd = "exit\n"
