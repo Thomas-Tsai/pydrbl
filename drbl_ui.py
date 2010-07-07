@@ -109,6 +109,7 @@ drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
 dcs_cmd = "/opt/drbl/sbin/dcs"
 pxe_cmd = "switch-pxe-menu"
+pxe_bg_cmd = "switch-pxe-bg-mode"
 
 
 class DRBL_GUI_Template():
@@ -330,7 +331,7 @@ class DRBL_GUI_Template():
 		host_options = "-nl"
 	    else:
 		host_options = "-h \" %s \"" % action_host
-	    return cmd_options
+	    return host_options
 
 	def list_pxe_menu(self, box):
 
@@ -421,7 +422,7 @@ class DRBL_GUI_Template():
 	    box.pack_start(treeview, False, False, 0)
 	    treeview.show()
 	
-	def on_toggled_bg_mode(self, mode):
+	def on_toggled_bg_mode(self, render, mode):
 	    pxe_bg_mode = mode
 
 	def on_toggled_pxe_menu(self, render, path, list):
@@ -669,9 +670,9 @@ class DRBL_GUI_Template():
 	    box = gtk.VBox()
 	    self.list_hosts(box)
 
-	    text_button = gtk.RadioButton(bg_mode, "text")
+	    text_button = gtk.RadioButton(None, "text")
    	    text_button.connect("toggled", self.on_toggled_bg_mode, "text")
-	    gra_button = gtk.RadioButton(bg_mode, "graphic")
+	    gra_button = gtk.RadioButton(text_button, "graphic")
    	    gra_button.connect("toggled", self.on_toggled_bg_mode, "graphic")
             gra_button.set_active(True)
 
@@ -899,10 +900,10 @@ class DRBL_GUI_Template():
 			option_str = option_str + tmp_opt
 		run_cmd = "yes \'\' | %s %s" % (drblpush_cmd, option_str)
 	    elif action in dcs_mode_1:
-		cmd_options = ""
-		cmd_options = "%s %s" % (cmd_options, self.get_host_option)
+		dcs_options = ""
+		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
 	
-		run_cmd = "%s %s %s" % (dcs_cmd, cmd_options, action)
+		run_cmd = "%s %s %s" % (dcs_cmd, dcs_options, action)
 	    elif action == "boot_switch_pxe_menu":
 
 		reveal_img = []
@@ -910,41 +911,29 @@ class DRBL_GUI_Template():
 		clients = []
 		hide_options = ""
 		reveal_options = ""
-		clients = self.get_host()
-		action_host = ""
-		for h in clients:
-		    if h == "ALL":
-			break
-		    else:
-			action_host = action_host + " " + h
+		run_cmd_reveal = ""
+		run_cmd_hide = ""
+		dcs_options = ""
+		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
 		
-		if action_host == "":
-		    dcs_options = "-nl"
-		else:
-		    dcs_options = "-h \" %s \"" % action_host
-
-		for st, img, desc in update_pxe_menu:
-		    if st == True:
-			reveal_img.append(img)
-		    else:
-			hide_img.append(img)
-		
-		reveal_options = " -i ".join(reveal_img)
-		reveal_options = "%s reveal" % reveal_options
-		reveal_options = "' -i " + reveal_options + "'"
-		hide_options = " -i ".join(hide_img)
-		hide_options = "%s hide" % hide_options
-		hide_options = "'-i " + hide_options + "'"
+		if len(reveal_img) > 0:
+		    reveal_options = " -i ".join(reveal_img)
+		    reveal_options = "%s reveal" % reveal_options
+		    reveal_options = "' -i " + reveal_options + "'"
+		    run_cmd_reveal = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, reveal_options)
+		if len(hide_img) > 0:
+		    hide_options = " -i ".join(hide_img)
+		    hide_options = "%s hide" % hide_options
+		    hide_options = "'-i " + hide_options + "'"
+		    run_cmd_hide = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, hide_options)
 
 		#dcs -nl more switch-pxe-menu '-i drbl reveal'
-		print reveal_options
-		print hide_options
-		run_cmd_reveal = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, reveal_options)
-		run_cmd_hide = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, hide_options)
 		run_cmd = "%s; %s" % (run_cmd_reveal, run_cmd_hide)
 
 	    elif action == "boot_switch_pxe_bg_mode":
-		
+		dcs_options = ""
+		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
+		run_cmd = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_bg_cmd, pxe_bg_mode)
 
 	    else:
 		run_cmd = "exit\n"
