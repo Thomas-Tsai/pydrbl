@@ -1,4 +1,4 @@
-#!/usr/bin/python
+
 import os
 import string
 import re
@@ -100,12 +100,15 @@ opt_value_def["drblpush"] = {
 
 drbl_hosts = []
 pxe_menu = []
-dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "boot_switch_pxe_menu", "boot_switch_pxe_bg_mode", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
+update_pxe_menu = []
+dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "boot_switch_pxe_bg_mode", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
 
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
 dcs_cmd = "/opt/drbl/sbin/dcs"
+pxe_cmd = "switch-pxe-menu"
+
 
 class DRBL_GUI_Template():
 	vterm = vte.Terminal()
@@ -270,6 +273,7 @@ class DRBL_GUI_Template():
 		    pmenu = [False, menu[0], menu[1]]
 
 		pxe_menu.append(pmenu)
+		update_pxe_menu.append(pmenu)
 
 	def ipFormatChk(self, ip_str):
 	    # copy from http://bytes.com/topic/python/answers/569207-how-validate-ip-address-python
@@ -326,7 +330,7 @@ class DRBL_GUI_Template():
 	    render = gtk.CellRendererToggle()
 	    render.set_property('activatable', True)
 	    render.set_property('width', 20)
-	    render.connect ('toggled', self.on_toggled_host, liststore)
+	    render.connect ('toggled', self.on_toggled_pxe_menu, liststore)
 	    col = gtk.TreeViewColumn()
 	    col.pack_start(render)
 	    col.set_attributes(render, active=0)
@@ -400,6 +404,18 @@ class DRBL_GUI_Template():
 	    box.pack_start(treeview, False, False, 0)
 	    treeview.show()
 	
+	def on_toggled_pxe_menu(self, render, path, list):
+	    it = list.get_iter_from_string(path)
+	    value, menu = list.get(it, 0, 1)
+	    value = not value
+	    i = 0
+	    list.set(it, 0, value)
+	    for all_toggle, all_menu, all_desc in update_pxe_menu:
+		if menu == all_menu:
+		    update_pxe_menu[i][0] = value
+		    print "update %s" % update_pxe_menu[i][1]
+		i = i+1
+
 	def on_toggled_host(self, render, path, list):
 	    it = list.get_iter_from_string(path)
 	    value, ip = list.get(it, 0, 1)
@@ -832,8 +848,45 @@ class DRBL_GUI_Template():
 		    cmd_options = "-h \" %s \"" % action_host
 		
 		run_cmd = "%s %s %s" % (dcs_cmd, cmd_options, action)
-	    #elif action = "boot_switch_pxe_menu":
-	#	run_cmd = "%s %s %s" % (switch_pxe_cmd, cmd_options, label)
+	    elif action == "boot_switch_pxe_menu":
+
+		reveal_img = []
+		hide_img = []
+		clients = []
+		hide_options = ""
+		reveal_options = ""
+		clients = self.get_host()
+		action_host = ""
+		for h in clients:
+		    if h == "ALL":
+			break
+		    else:
+			action_host = action_host + " " + h
+		
+		if action_host == "":
+		    dcs_options = "-nl"
+		else:
+		    dcs_options = "-h \" %s \"" % action_host
+
+		for st, img, desc in update_pxe_menu:
+		    if st == True:
+			reveal_img.append(img)
+		    else:
+			hide_img.append(img)
+		
+		reveal_options = " -i ".join(reveal_img)
+		reveal_options = "%s reveal" % reveal_options
+		reveal_options = "' -i " + reveal_options + "'"
+		hide_options = " -i ".join(hide_img)
+		hide_options = "%s hide" % hide_options
+		hide_options = "'-i " + hide_options + "'"
+
+		#dcs -nl more switch-pxe-menu '-i drbl reveal'
+		print reveal_options
+		print hide_options
+		run_cmd_reveal = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, reveal_options)
+		run_cmd_hide = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_cmd, hide_options)
+		run_cmd = "%s; %s" % (run_cmd_reveal, run_cmd_hide)
 
 	    else:
 		run_cmd = "exit\n"
