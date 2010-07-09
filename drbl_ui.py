@@ -1133,6 +1133,13 @@ class DRBL_GUI_Template():
 		run_cmd = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_bg_cmd, pxe_bg_mode)
 
 	    elif action == "useradd":
+		name = self.uentry.get_text()
+		group = self.gentry.get_text()
+		print (name, group)
+
+	    elif action == "userdel":
+		name = self.uentry.get_text()
+		print name
 
 	    else:
 		run_cmd = "exit\n"
