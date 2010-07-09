@@ -281,12 +281,22 @@ class DRBL_GUI_Template():
 		window.connect('delete-event', lambda window, event: gtk.main_quit())
 		window.show_all()
 		
+	def enter_name(self, widget, entry, target):
+	    username = entry.get_text()
+	    print username
+	    
 	def collect_user_list(self):
+	    nis_group = {}
+	    del user_list[0:]
+	    for group_line in os.popen("ypcat group.byname").readlines():
+		group_line = group_line[:-1]
+		(g_name, x, gid, something) = group_line.split(":")
+		nis_group[gid] = g_name
 	    for user_line in os.popen("ypcat passwd.byname").readlines():
 		user_line = user_line[:-1]
-		print user_line
-		(user, uid, gid, group, full_name, home_path, shell) = split(":")
-		user_list = [False, user, uid, gid, group, full_name, home_path, shell]
+		(user, x, uid, gid, full_name, home_path, shell) = user_line.split(":")
+		user_data = [False, user, uid, gid, nis_group[gid], full_name, home_path, shell]
+		user_list.append(user_data)
 
 
 	def collect_pxe_menu(self):
@@ -358,6 +368,55 @@ class DRBL_GUI_Template():
 		host_options = "-h \" %s \"" % action_host
 	    return host_options
 
+	def list_user(self, box):
+	    self.collect_user_list()
+	    #liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+	    liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
+	    treeview = gtk.TreeView(liststore)
+	    treeview.set_rules_hint(True)
+	    treeview.get_selection().set_mode(gtk.SELECTION_NONE)
+
+	    scroll = gtk.ScrolledWindow()
+	    scroll.add(treeview)
+	    scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+	    scroll.set_shadow_type(gtk.SHADOW_IN)
+
+	    #render = gtk.CellRendererToggle()
+	    #render.set_property('activatable', True)
+	    #render.set_property('width', 20)
+	    #render.connect ('toggled', self.on_toggled_pxe_menu, liststore)
+	    #col = gtk.TreeViewColumn()
+	    #col.pack_start(render)
+	    #col.set_attributes(render, active=0)
+	    #treeview.append_column(col)
+
+	    column_name = gtk.TreeViewColumn('Name')
+	    column_group = gtk.TreeViewColumn('Group')
+	    treeview.append_column(column_name)	
+	    treeview.append_column(column_group)	
+	    cell_name = gtk.CellRendererText()
+	    cell_group = gtk.CellRendererText()
+
+	    column_name.pack_start(cell_name, True)
+	    column_group.pack_start(cell_group, True)
+
+	    column_name.set_attributes(cell_name, text=0)
+	    column_group.set_attributes(cell_group, text=1)
+
+	    for userx in user_list:
+		view_user_data = [userx[1], userx[4]]
+		liststore.append(view_user_data)
+
+	    treeview.set_search_column(0)
+	    column_name.set_sort_column_id(0)
+	    column_group.set_sort_column_id(1)
+	    #treeview.set_reorderable(True)
+
+	    #box.pack_start(treeview, False, False, 0)
+	    treeview.show()
+	    box.pack_start(scroll, True, True, 0)
+	    scroll.show()
+    
 	def list_pxe_menu(self, box):
 
 	    liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
@@ -705,53 +764,73 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 
-	def action_for_list_user(self, widget, action):
-	    collect_user_list
-	    if action == "user_list":
-		liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
-		treeview = gtk.TreeView(liststore)
-		treeview.set_rules_hint(True)
-		treeview.get_selection().set_mode(gtk.SELECTION_NONE)
+	def action_for_user(self, widget, action):
+	    if action == "userlist":
+		## list nis user
+		todo_desc = "\n            DRBL User List:\n"
+	    elif action == "useradd":
+		## add user
+		todo_desc = "\n            DRBL User add:\n"
+	    elif action == "userdel":
+		## del user
+		todo_desc = "\n            DRBL User List:\n"
 
-		scroll = gtk.ScrolledWindow()
-		scroll.add(treeview)
-		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-		scroll.set_shadow_type(gtk.SHADOW_IN)
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+	    label = gtk.Label(todo_desc)
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
 
-		render = gtk.CellRendererToggle()
-		render.set_property('activatable', True)
-		render.set_property('width', 20)
-		render.connect ('toggled', self.on_toggled_pxe_menu, liststore)
-		col = gtk.TreeViewColumn()
-		col.pack_start(render)
-		col.set_attributes(render, active=0)
-		treeview.append_column(col)
+	    box = gtk.VBox()
+	    if action == "userlist":
+		self.list_user(box)
+	    elif action == "useradd":
+		## add single user
+		self.uentry = uname_entry = gtk.Entry()
+		self.gentry = gname_entry = gtk.Entry()
+		box.pack_start(uname_entry, False, False, 0)
+		box.pack_start(gname_entry, False, False, 0)
+		uname_entry.show()
+		gname_entry.show()
 
-		column_name = gtk.TreeViewColumn('Name')
-		column_group = gtk.TreeViewColumn('Group')
-		treeview.append_column(column_name)	
-		treeview.append_column(column_group)	
-		cell_name = gtk.CellRendererText()
-		cell_group = gtk.CellRendererText()
+	    elif action == "userdel":
+		## del single user
+		self.uentry =uname_entry = gtk.Entry()
+		box.pack_start(uname_entry, False, False, 0)
+		uname_entry.show()
 
-		column_name.pack_start(cell_name, True)
-		column_group.pack_start(cell_group, True)
+	    if action != "userlist":
+		action_box = gtk.HBox()
+		apply_button = gtk.Button("Apply")
+		apply_button.set_size_request(80, 35)
+		id = apply_button.connect("clicked", self.do_apply, action)
 
-		column_name.set_attributes(cell_name, text=1)
-		column_group.set_attributes(cell_group, text=2)
+		cancel_button = gtk.Button("Cancel")
+		cancel_button.set_size_request(80, 35)
+		id = cancel_button.connect("clicked", self.do_cancel)
+		
+		reset_button = gtk.Button("Reset")
+		reset_button.set_size_request(80, 35)
+		id = reset_button.connect("clicked", self.action_for_host_mode, action)
 
-		for userx in user_list:
-		    liststore.append(userx)
+		action_box.pack_end(apply_button, False, False, 0)
+		action_box.pack_end(cancel_button, False, False, 0)
+		action_box.pack_end(reset_button, False, False, 0)
+		apply_button.show()
+		cancel_button.show()
+		reset_button.show()
+		box.pack_end(action_box, False, False, 2)
+		action_box.show()
 
-		treeview.set_search_column(0)
-		column_user.set_sort_column_id(0)
-		treeview.set_reorderable(True)
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
 
-		#box.pack_start(treeview, False, False, 0)
-		treeview.show()
-		box.pack_start(scroll, True, True, 0)
-		scroll.show()
-	
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
+
 	def action_for_pxe_bg_mode(self, widget, action):
 	    ## change pxe menu to text or graphic mode
 	    todo_desc = """
@@ -949,16 +1028,16 @@ class DRBL_GUI_Template():
 	    self.action_for_pxe_bg_mode(self, action)
 
 	def drbl_user_useradd(self, widget):
-	    cmd = "useradd"
-	    print cmd
+	    action = "useradd"
+	    self.action_for_user(self, action)
 
 	def drbl_user_userdel(self, widget):
-	    cmd = "userdel"
-	    print cmd
+	    action = "userdel"
+	    self.action_for_user(self, action)
 
 	def drbl_user_userlist(self, widget):
 	    action = "userlist"
-	    self.action_for_list_user(self, action)
+	    self.action_for_user(self, action)
 
 	def set_option(self, widget, short_option, action):
 	    #print short_option
@@ -1052,6 +1131,8 @@ class DRBL_GUI_Template():
 		dcs_options = ""
 		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
 		run_cmd = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_bg_cmd, pxe_bg_mode)
+
+	    elif action == "useradd":
 
 	    else:
 		run_cmd = "exit\n"
