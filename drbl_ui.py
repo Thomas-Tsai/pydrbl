@@ -128,7 +128,8 @@ drblpush_cmd = "/opt/drbl/sbin/drblpush"
 dcs_cmd = "/opt/drbl/sbin/dcs"
 pxe_cmd = "switch-pxe-menu"
 pxe_bg_cmd = "switch-pxe-bg-mode"
-
+user_add_cmd = "/opt/drbl/sbin/drbl-useradd"
+user_del_cmd = "/opt/drbl/sbin/drbl-userdel"
 
 class DRBL_GUI_Template():
 	vterm = vte.Terminal()
@@ -786,20 +787,26 @@ class DRBL_GUI_Template():
 	    box = gtk.VBox()
 	    if action == "userlist":
 		self.list_user(box)
-	    elif action == "useradd":
+	    else:
 		## add single user
+		su_box = gtk.HBox()
+		ulabel = gtk.Label("Name")
+		ulabel.set_alignment(0, 0)
+		glabel = gtk.Label("Group")
+		glabel.set_alignment(0, 0)
 		self.uentry = uname_entry = gtk.Entry()
 		self.gentry = gname_entry = gtk.Entry()
-		box.pack_start(uname_entry, False, False, 0)
-		box.pack_start(gname_entry, False, False, 0)
+		su_box.pack_start(ulabel, False, False, 0)
+		su_box.pack_start(uname_entry, False, False, 0)
+		su_box.pack_start(glabel, False, False, 0)
+		su_box.pack_start(gname_entry, False, False, 0)
+		ulabel.show()
 		uname_entry.show()
+		glabel.show()
 		gname_entry.show()
+		box.pack_start(su_box, False, False, 2)
+		su_box.show()
 
-	    elif action == "userdel":
-		## del single user
-		self.uentry =uname_entry = gtk.Entry()
-		box.pack_start(uname_entry, False, False, 0)
-		uname_entry.show()
 
 	    if action != "userlist":
 		action_box = gtk.HBox()
@@ -813,7 +820,7 @@ class DRBL_GUI_Template():
 		
 		reset_button = gtk.Button("Reset")
 		reset_button.set_size_request(80, 35)
-		id = reset_button.connect("clicked", self.action_for_host_mode, action)
+		id = reset_button.connect("clicked", self.action_for_user, action)
 
 		action_box.pack_end(apply_button, False, False, 0)
 		action_box.pack_end(cancel_button, False, False, 0)
@@ -1065,6 +1072,7 @@ class DRBL_GUI_Template():
 				opt_value["drblpush"][short_option] = widget.get_active()
 
 	def do_apply(self, widget, action):
+	    print action
 
 	    option_str = " "
 	    if action == "drblsrv_i":
@@ -1136,10 +1144,13 @@ class DRBL_GUI_Template():
 		name = self.uentry.get_text()
 		group = self.gentry.get_text()
 		print (name, group)
+		run_cmd = "%s -s %s %s" % (user_add_cmd, name, group)
 
 	    elif action == "userdel":
 		name = self.uentry.get_text()
-		print name
+		group = self.gentry.get_text()
+		print (name, group)
+		run_cmd = "%s -s %s %s" % (user_del_cmd, name, group)
 
 	    else:
 		run_cmd = "exit\n"
