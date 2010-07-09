@@ -59,6 +59,14 @@ options["drblpush"] = {
 "z":("clonezilla_mode", "Assign Clonezilla mode", {"0":"Full DRBL mode", "1":"Clonezilla box mode", "2":"Do NOT provide clonezilla service to clients", "3":"Use Clonezilla live as the OS of clients"}, "combo"),
 "l":("language", "Set the language to be shown.", {0:"English",1:"Traditional Chinese (Big5) - Taiwan",2:"Traditional Chinese (UTF-8, Unicode) - Taiwan"}, "combo")
 }
+desc_shutdown = "Shutdown DRBL clients now"
+desc_Wake_on_LAN = "Turn on DRBL clients by Wake-on-LAN now"
+desc_reboot = "Reboot DRBL clients now"
+desc_remote_linux_gra = "Client machine will boot from DRBL server, and enter graphic mode, for powerful client."
+desc_remote_linux_txt = "Client machine will boot from DRBL server, and enter text mode, for powerful client."
+desc_remote_memtest = "Remote boot to run memtest86"
+desc_terminal = "Remote display Linux, terminal mode"
+desc_local = "Client machine will boot from local (now PXE only)"
 
 opt_value_def["drblsrv"] = {
     "f":"",
@@ -103,7 +111,16 @@ pxe_menu = []
 update_pxe_menu = []
 pxe_bg_mode = "graphic"
 dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
-
+desc_of_dcs_mode1 = {  
+    "shutdown": desc_shutdown, 
+    "Wake-on-LAN": desc_Wake_on_LAN,
+    "reboot" : desc_reboot, 
+    "remote-linux-gra" : desc_remote_linux_gra, 
+    "remote-linux-txt" : desc_remote_linux_txt, 
+    "remote-memtest": desc_remote_memtest, 
+    "terminal": desc_terminal, 
+    "local": desc_local
+    }
 
 drblsrv_cmd = "/opt/drbl/sbin/drblsrv"
 drblpush_cmd = "/opt/drbl/sbin/drblpush"
@@ -130,7 +147,6 @@ class DRBL_GUI_Template():
 		DRBL_menu_file_push.connect("activate", self.drblpush)
 
 		DRBL_menu_file = gtk.Menu()
-		DRBL_menu_file.append(gtk.SeparatorMenuItem())
 		DRBL_menu_file.append(DRBL_menu_file_srv_i)
 		DRBL_menu_file.append(DRBL_menu_file_srv_u)
 		DRBL_menu_file.append(DRBL_menu_file_push)
@@ -146,7 +162,6 @@ class DRBL_GUI_Template():
 		DRBL_menu_view_verbose.set_active(True)
 
 		DRBL_menu_view = gtk.Menu()
-		DRBL_menu_view.append(gtk.SeparatorMenuItem())
 		DRBL_menu_view.append(DRBL_menu_view_verbose)
 		
 		DRBL_menu_root_view = gtk.MenuItem("View")
@@ -167,7 +182,6 @@ class DRBL_GUI_Template():
 		DRBL_menu_remote_terminal.connect("activate", self.drbl_remote_terminal)
 
 		DRBL_menu_remote = gtk.Menu()
-		DRBL_menu_remote.append(gtk.SeparatorMenuItem())
 		DRBL_menu_remote.append(DRBL_menu_remote_gra)
 		DRBL_menu_remote.append(DRBL_menu_remote_txt)
 		DRBL_menu_remote.append(DRBL_menu_remote_memtest)
@@ -468,19 +482,27 @@ class DRBL_GUI_Template():
 	    _about.set_copyright('Copyright (C) 2010 by DRBL/Clonezilla project')
 	    _about.set_license('GNU General Public License V2')
 	    _about.set_comments('Diskless Remote Boot in Linux')
+	    _about.set_website("http://drbl.name")
 	    _about.run()
 	    _about.destroy()
 
 	def drblsrv_i(self, widget):
+	    ## Install DRBL and related packages by drblsrv -i bla bla
+	    todo_desc = """
+	    Start to install DRBL and related packages by drblsrv
+	    Please check all option here:
+	    """
 	    action = "drblsrv_i"
 	    opt_value["drblsrv"] = opt_value_def["drblsrv"].copy()
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
-	    label = gtk.Label("srblsrv options")
+	    label = gtk.Label(todo_desc)
 	    label.set_alignment(0, 0)
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
+
+
 
 	    box = gtk.VBox()
 	    for sopt in options["drblsrv"].keys():
@@ -547,12 +569,17 @@ class DRBL_GUI_Template():
 	    self.box.show()
 	    
 	def drblsrv_u(self, widget):
+	    ## Uninstall DRBL
+	    todo_desc = """
+	    Uninstall DRBL and data by drblsrv -u
+	    Please check all option here:
+	    """
 	    action = "drblsrv_u"
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
 
-	    label = gtk.Label("will run drblsrv -u")
+	    label = gtk.Label(todo_desc)
 	    label.set_alignment(0, 0)
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
@@ -581,12 +608,17 @@ class DRBL_GUI_Template():
 	
     
 	def drblpush(self, widget):
+	    ## Setup and Confige DRBL environment with drblpush bla bla...
+	    todo_desc = """
+	    Start to config drbl environment with drblpush
+	    Please check all option here:
+	    """
 	    action = "drblpush"
 	    opt_value["drblpush"] = opt_value_def["drblpush"].copy()
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
-	    label = gtk.Label("srblpush options")
+	    label = gtk.Label(todo_desc)
 	    label.set_alignment(0, 0)
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
@@ -663,9 +695,18 @@ class DRBL_GUI_Template():
 	    self.box.show()
 
 	def action_for_pxe_bg_mode(self, widget, action):
+	    ## change pxe menu to text or graphic mode
+	    todo_desc = """
+	    To set the default PXE client menu:
+	    Please check all option here:
+	    """
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
+	    label = gtk.Label(todo_desc)
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
 
 	    box = gtk.VBox()
 	    self.list_hosts(box)
@@ -710,9 +751,18 @@ class DRBL_GUI_Template():
 	    self.box.show()
 
 	def action_for_pxe_menu(self, widget, action, next):
+	    ## To hide, reveal or set default PXE client menu:
+	    todo_desc = """
+	    To hide, reveal or set default PXE client menu:
+	    Please check all option here:
+	    """
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
+	    label = gtk.Label(todo_desc)
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
 
 	    box = gtk.VBox()
 	    if next == 0:
@@ -758,9 +808,15 @@ class DRBL_GUI_Template():
 	    self.box.show()
 
 	def action_for_host_mode(self, widget, action):
+	    ## Install DRBL and related packages by drblsrv -i bla bla
+	    todo_desc = "\n            %s\n" % desc_of_dcs_mode1[action]
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
 	    self.main_box.show()
+	    label = gtk.Label(todo_desc)
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
 
 	    box = gtk.VBox()
 	    self.list_hosts(box)
