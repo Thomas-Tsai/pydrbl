@@ -108,6 +108,7 @@ opt_value_def["drblpush"] = {
 
 drbl_hosts = []
 pxe_menu = []
+user_list = []
 update_pxe_menu = []
 pxe_bg_mode = "graphic"
 dcs_mode_1 = ("shutdown", "Wake-on-LAN", "reboot", "remote-linux-gra", "remote-linux-txt", "remote-memtest", "terminal", "local")
@@ -280,6 +281,13 @@ class DRBL_GUI_Template():
 		window.connect('delete-event', lambda window, event: gtk.main_quit())
 		window.show_all()
 		
+	def collect_user_list(self):
+	    for user_line in os.popen("ypcat passwd.byname").readlines():
+		user_line = user_line[:-1]
+		print user_line
+		(user, uid, gid, group, full_name, home_path, shell) = split(":")
+		user_list = [False, user, uid, gid, group, full_name, home_path, shell]
+
 
 	def collect_pxe_menu(self):
 	    pxe_list_menu = "./get-pxe-menu"
@@ -697,6 +705,53 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 
+	def action_for_list_user(self, widget, action):
+	    collect_user_list
+	    if action == "user_list":
+		liststore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING, gobject.TYPE_STRING)
+		treeview = gtk.TreeView(liststore)
+		treeview.set_rules_hint(True)
+		treeview.get_selection().set_mode(gtk.SELECTION_NONE)
+
+		scroll = gtk.ScrolledWindow()
+		scroll.add(treeview)
+		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		scroll.set_shadow_type(gtk.SHADOW_IN)
+
+		render = gtk.CellRendererToggle()
+		render.set_property('activatable', True)
+		render.set_property('width', 20)
+		render.connect ('toggled', self.on_toggled_pxe_menu, liststore)
+		col = gtk.TreeViewColumn()
+		col.pack_start(render)
+		col.set_attributes(render, active=0)
+		treeview.append_column(col)
+
+		column_name = gtk.TreeViewColumn('Name')
+		column_group = gtk.TreeViewColumn('Group')
+		treeview.append_column(column_name)	
+		treeview.append_column(column_group)	
+		cell_name = gtk.CellRendererText()
+		cell_group = gtk.CellRendererText()
+
+		column_name.pack_start(cell_name, True)
+		column_group.pack_start(cell_group, True)
+
+		column_name.set_attributes(cell_name, text=1)
+		column_group.set_attributes(cell_group, text=2)
+
+		for userx in user_list:
+		    liststore.append(userx)
+
+		treeview.set_search_column(0)
+		column_user.set_sort_column_id(0)
+		treeview.set_reorderable(True)
+
+		#box.pack_start(treeview, False, False, 0)
+		treeview.show()
+		box.pack_start(scroll, True, True, 0)
+		scroll.show()
+	
 	def action_for_pxe_bg_mode(self, widget, action):
 	    ## change pxe menu to text or graphic mode
 	    todo_desc = """
@@ -902,8 +957,8 @@ class DRBL_GUI_Template():
 	    print cmd
 
 	def drbl_user_userlist(self, widget):
-	    cmd = "userlist"
-	    print cmd
+	    action = "userlist"
+	    self.action_for_list_user(self, action)
 
 	def set_option(self, widget, short_option, action):
 	    #print short_option
