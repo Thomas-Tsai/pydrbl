@@ -204,13 +204,16 @@ class DRBL_GUI_Template():
 
 		# User Menu
 		
+		DRBL_menu_user_userlist = gtk.MenuItem("List User")
 		DRBL_menu_user_useradd = gtk.MenuItem("Add User")
 		DRBL_menu_user_userdel = gtk.MenuItem("Del User")
 
+		DRBL_menu_user_userlist.connect("activate", self.drbl_user_userlist)
 		DRBL_menu_user_useradd.connect("activate", self.drbl_user_useradd)
 		DRBL_menu_user_userdel.connect("activate", self.drbl_user_userdel)
 
 		DRBL_menu_user = gtk.Menu()
+		DRBL_menu_user.append(DRBL_menu_user_userlist)
 		DRBL_menu_user.append(DRBL_menu_user_useradd)
 		DRBL_menu_user.append(DRBL_menu_user_userdel)
 
@@ -840,6 +843,10 @@ class DRBL_GUI_Template():
 
 	def drbl_user_userdel(self, widget):
 	    cmd = "userdel"
+	    print cmd
+
+	def drbl_user_userlist(self, widget):
+	    cmd = "userlist"
 	    print cmd
 
 	def set_option(self, widget, short_option, action):
