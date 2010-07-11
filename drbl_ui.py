@@ -788,11 +788,20 @@ class DRBL_GUI_Template():
 	    if action == "userlist":
 		self.list_user(box)
 	    else:
+		mode_box = gtk.VBox()
 		## add single user
 		su_box = gtk.HBox()
-		ulabel = gtk.Label("Name")
+		desc_of_single = """
+generate a single user <username> with group <groupname>
+		"""
+		single_label = gtk.Label(desc_of_single)
+		single_label.set_alignment(0, 0)
+		mode_box.pack_start(single_label, False, False, 0)
+		single_label.show()
+		
+		ulabel = gtk.Label("Name: ")
 		ulabel.set_alignment(0, 0)
-		glabel = gtk.Label("Group")
+		glabel = gtk.Label("Group: ")
 		glabel.set_alignment(0, 0)
 		self.uentry = uname_entry = gtk.Entry()
 		self.gentry = gname_entry = gtk.Entry()
@@ -804,8 +813,83 @@ class DRBL_GUI_Template():
 		uname_entry.show()
 		glabel.show()
 		gname_entry.show()
-		box.pack_start(su_box, False, False, 2)
+		mode_box.pack_start(su_box, False, False, 2)
 		su_box.show()
+
+		## add range user
+		su_box = gtk.VBox()
+		desc_of_range = """
+generate a range of users from <prefix><start> to <prefix><end> with group <groupname>,
+passwd_opt:
+If one digit, it's the length of randomly created password.
+If blank, it will be randomly generated with some (say:8) characters.
+Other setting is the password itself.
+"""
+		range_label = gtk.Label(desc_of_range)
+		range_label.set_alignment(0, 0)
+		mode_box.pack_start(range_label, False, False, 0)
+		range_label.show()
+
+		entry_box = gtk.HBox()
+		prefix_label = gtk.Label("prefix: ")
+		prefix_label.set_alignment(0, 0)
+		self.prefix = gtk.Entry()
+		entry_box.pack_start(prefix_label, False, False, 0)
+		entry_box.pack_start(self.prefix, False, False, 0)
+		prefix_label.show()
+		self.prefix.show()
+		su_box.pack_start(entry_box, False, False, 0)
+		entry_box.show()
+
+		entry_box = gtk.HBox()
+		start_label = gtk.Label("start: ")
+		start_label.set_alignment(0, 0)
+		self.start = gtk.Entry()
+		entry_box.pack_start(start_label, False, False, 0)
+		entry_box.pack_start(self.start, False, False, 0)
+		start_label.show()
+		self.start.show()
+		su_box.pack_start(entry_box, False, False, 0)
+		entry_box.show()
+
+		entry_box = gtk.HBox()
+		end_label = gtk.Label("end: ")
+		end_label.set_alignment(0, 0)
+		self.end = gtk.Entry()
+		entry_box.pack_start(end_label, False, False, 0)
+		entry_box.pack_start(self.end, False, False, 0)
+		end_label.show()
+		self.end.show()
+		su_box.pack_start(entry_box, False, False, 0)
+		entry_box.show()
+
+		entry_box = gtk.HBox()
+		group_label = gtk.Label("group: ")
+		group_label.set_alignment(0, 0)
+		self.group = gtk.Entry()
+		entry_box.pack_start(group_label, False, False, 0)
+		entry_box.pack_start(self.group, False, False, 0)
+		group_label.show()
+		self.group.show()
+		su_box.pack_start(entry_box, False, False, 0)
+		entry_box.show()
+
+		entry_box = gtk.HBox()
+		password_label = gtk.Label("password: ")
+		password_label.set_alignment(0, 0)
+		self.password = gtk.Entry()
+		entry_box.pack_start(password_label, False, False, 0)
+		entry_box.pack_start(self.password, False, False, 0)
+		password_label.show()
+		self.password.show()
+		su_box.pack_start(entry_box, False, False, 0)
+		entry_box.show()
+
+		mode_box.pack_start(su_box, False, False, 2)
+		su_box.show()
+		
+		box.pack_start(mode_box, False, False, 2)
+		mode_box.show()
 
 
 	    if action != "userlist":
@@ -1140,17 +1224,31 @@ class DRBL_GUI_Template():
 		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
 		run_cmd = "%s %s more %s %s " % (dcs_cmd, dcs_options, pxe_bg_cmd, pxe_bg_mode)
 
-	    elif action == "useradd":
+	    elif action == "useradd" or action == "userdel":
 		name = self.uentry.get_text()
 		group = self.gentry.get_text()
-		print (name, group)
-		run_cmd = "%s -s %s %s" % (user_add_cmd, name, group)
+		prefix = self.prefix.get_text()
+		start = self.start.get_text()
+		end = self.end.get_text()
+		rgroup = self.group.get_text()
+		password = self.password.get_text()
+		if name != "":
+		    print (name, group)
+		    if group == "":
+			group = name
+		    if action == "useradd":
+			run_cmd = "%s -s %s %s" % (user_add_cmd, name, group)
+		    elif action == "userdel":
+			run_cmd = "%s -s %s %s" % (user_del_cmd, name, group)
 
-	    elif action == "userdel":
-		name = self.uentry.get_text()
-		group = self.gentry.get_text()
-		print (name, group)
-		run_cmd = "%s -s %s %s" % (user_del_cmd, name, group)
+		elif prefix != "" and start !="" and end != "" and rgroup != "":
+		    if password == "":
+			password = 8
+		    print (prefix, start, end, rgroup, password)
+		    if action == "useradd":
+			run_cmd = "%s -r %s %s %s %s %s" % (user_add_cmd, prefix, start, end, rgroup, password)
+		    elif action == "userdel":
+			run_cmd = "%s -r %s %s %s %s %s" % (user_del_cmd, prefix, start, end, rgroup, password)
 
 	    else:
 		run_cmd = "exit\n"
