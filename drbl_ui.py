@@ -1,8 +1,10 @@
-
 import os
+import sys
 import string
 import re
 import gobject
+import gettext
+import locale
 
 try:
 	import gtk
@@ -15,8 +17,7 @@ try:
 except:
 	print >> sys.stderr, "Can't import python vte"
 	sys.exit(1)
-
-
+APP_NAME="drbl_ui"
 options = {}
 opt_value = {}
 opt_value_def = {}
@@ -135,157 +136,194 @@ class DRBL_GUI_Template():
 	vterm = vte.Terminal()
 
 	def __init__(self):
-		DRBL_menu = gtk.MenuBar()
 
-		# File Menu
-		DRBL_menu_file_quit = gtk.MenuItem("Quit")
-		DRBL_menu_file_srv_i  = gtk.MenuItem("drblsrv install")
-		DRBL_menu_file_srv_u  = gtk.MenuItem("drblsrv uninstall")
-		DRBL_menu_file_push = gtk.MenuItem("drblpush")
+	    ## Copy from "blog learning python" http://www.learningpython.com/2006/12/03/translating-your-pythonpygtk-application/
+	    #Translation stuff
 
-		DRBL_menu_file_quit.connect("activate", gtk.main_quit)
-		DRBL_menu_file_srv_i.connect("activate", self.drblsrv_i)
-		DRBL_menu_file_srv_u.connect("activate", self.drblsrv_u)
-		DRBL_menu_file_push.connect("activate", self.drblpush)
+	    #Get the local directory since we are not installing anything
+	    self.local_path = os.path.realpath(os.path.dirname(sys.argv[0]))
+	    self.local_path = os.path.join (self.local_path, 'locale')
 
-		DRBL_menu_file = gtk.Menu()
-		DRBL_menu_file.append(DRBL_menu_file_srv_i)
-		DRBL_menu_file.append(DRBL_menu_file_srv_u)
-		DRBL_menu_file.append(DRBL_menu_file_push)
-		DRBL_menu_file.append(DRBL_menu_file_quit)
+	    # Init the list of languages to support
+	    langs = []
+	    #Check the default locale
+	    lc, encoding = locale.getdefaultlocale()
+	    if (lc):
+		    #If we have a default, it's the first in the list
+		    langs = [lc]
+	    # Now lets get all of the supported languages on the system
+	    language = os.environ.get('LANGUAGE', None)
+	    if (language):
+		    """langage comes back something like en_CA:en_US:en_GB:en
+		    on linuxy systems, on Win32 it's nothing, so we need to
+		    split it up into a list"""
+		    langs += language.split(":")
+	    """Now add on to the back of the list the translations that we
+	    know that we have, our defaults"""
+	    langs += ["en_CA", "en_US"]
 
-		DRBL_menu_root_file = gtk.MenuItem("DRBL")
-		DRBL_menu_root_file.set_submenu(DRBL_menu_file)
-		DRBL_menu.append(DRBL_menu_root_file)
+	    """Now langs is a list of all of the languages that we are going
+	    to try to use.  First we check the default, then what the system
+	    told us, and finally the 'known' list"""
+
+	    gettext.bindtextdomain(APP_NAME, self.local_path)
+	    gettext.textdomain(APP_NAME)
+	    # Get the language to use
+	    self.lang = gettext.translation(APP_NAME, self.local_path
+		    , languages=langs, fallback = True)
+	    """Install the language, map _() (which we marked our
+	    strings to translate with) to self.lang.gettext() which will
+	    translate them."""
+	    _ = self.lang.gettext
 
 
-		# View Menu
-		DRBL_menu_view_verbose = gtk.CheckMenuItem("Verbose")
-		DRBL_menu_view_verbose.set_active(True)
+	    DRBL_menu = gtk.MenuBar()
 
-		DRBL_menu_view = gtk.Menu()
-		DRBL_menu_view.append(DRBL_menu_view_verbose)
-		
-		DRBL_menu_root_view = gtk.MenuItem("View")
-		DRBL_menu_root_view.set_submenu(DRBL_menu_view)
-		DRBL_menu.append(DRBL_menu_root_view)
+	    # File Menu
+	    DRBL_menu_file_quit = gtk.MenuItem("Quit")
+	    DRBL_menu_file_srv_i  = gtk.MenuItem("drblsrv install")
+	    DRBL_menu_file_srv_u  = gtk.MenuItem("drblsrv uninstall")
+	    DRBL_menu_file_push = gtk.MenuItem("drblpush")
 
-		# Remote Menu
-		DRBL_menu_remote_gra      = gtk.MenuItem("Linux-gra")
-		DRBL_menu_remote_txt      = gtk.MenuItem("Linux-txt")
-		DRBL_menu_remote_local    = gtk.MenuItem("local")
-		DRBL_menu_remote_memtest  = gtk.MenuItem("memtest")
-		DRBL_menu_remote_terminal = gtk.MenuItem("Terminal")
+	    DRBL_menu_file_quit.connect("activate", gtk.main_quit)
+	    DRBL_menu_file_srv_i.connect("activate", self.drblsrv_i)
+	    DRBL_menu_file_srv_u.connect("activate", self.drblsrv_u)
+	    DRBL_menu_file_push.connect("activate", self.drblpush)
 
-		DRBL_menu_remote_gra.connect("activate", self.drbl_remote_gra)
-		DRBL_menu_remote_txt.connect("activate", self.drbl_remote_txt)
-		DRBL_menu_remote_local.connect("activate", self.drbl_remote_local)
-		DRBL_menu_remote_memtest.connect("activate", self.drbl_remote_memtest)
-		DRBL_menu_remote_terminal.connect("activate", self.drbl_remote_terminal)
+	    DRBL_menu_file = gtk.Menu()
+	    DRBL_menu_file.append(DRBL_menu_file_srv_i)
+	    DRBL_menu_file.append(DRBL_menu_file_srv_u)
+	    DRBL_menu_file.append(DRBL_menu_file_push)
+	    DRBL_menu_file.append(DRBL_menu_file_quit)
 
-		DRBL_menu_remote = gtk.Menu()
-		DRBL_menu_remote.append(DRBL_menu_remote_gra)
-		DRBL_menu_remote.append(DRBL_menu_remote_txt)
-		DRBL_menu_remote.append(DRBL_menu_remote_memtest)
-		DRBL_menu_remote.append(DRBL_menu_remote_local)
-		DRBL_menu_remote.append(DRBL_menu_remote_terminal)
+	    DRBL_menu_root_file = gtk.MenuItem("DRBL")
+	    DRBL_menu_root_file.set_submenu(DRBL_menu_file)
+	    DRBL_menu.append(DRBL_menu_root_file)
 
-		DRBL_menu_root_remote = gtk.MenuItem("Remote")
-	        DRBL_menu_root_remote.set_submenu(DRBL_menu_remote)
-		DRBL_menu.append(DRBL_menu_root_remote)
 
-		# Boot Menu
-		DRBL_menu_boot_shutdown           = gtk.MenuItem("Shutdown")
-		DRBL_menu_boot_wakeonlan          = gtk.MenuItem("Wake On Lan")
-		DRBL_menu_boot_reboot             = gtk.MenuItem("Reboot")
-		DRBL_menu_boot_switch_pxe_menu    = gtk.MenuItem("PXE MENU")
-		DRBL_menu_boot_switch_pxe_bg_mode = gtk.MenuItem("PXE BG MODE")
+	    # View Menu
+	    DRBL_menu_view_verbose = gtk.CheckMenuItem("Verbose")
+	    DRBL_menu_view_verbose.set_active(True)
 
-		DRBL_menu_boot_shutdown.connect("activate", self.drbl_boot_shutdown)
-		DRBL_menu_boot_reboot.connect("activate", self.drbl_boot_reboot)
-		DRBL_menu_boot_wakeonlan.connect("activate", self.drbl_boot_wakeonlan)
-		DRBL_menu_boot_switch_pxe_menu.connect("activate", self.drbl_boot_switch_pxe_menu)
-		DRBL_menu_boot_switch_pxe_bg_mode.connect("activate", self.drbl_boot_switch_pxe_bg_mode)
-
-		DRBL_menu_boot = gtk.Menu()
-		DRBL_menu_boot.append(DRBL_menu_boot_shutdown)
-		DRBL_menu_boot.append(DRBL_menu_boot_reboot)
-		DRBL_menu_boot.append(DRBL_menu_boot_wakeonlan)
-		DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_menu)
-		DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_bg_mode)
-
-		DRBL_menu_root_boot = gtk.MenuItem("Boot")
-		DRBL_menu_root_boot.set_submenu(DRBL_menu_boot)
-		DRBL_menu.append(DRBL_menu_root_boot)
-
-		# User Menu
-		
-		DRBL_menu_user_userlist = gtk.MenuItem("List User")
-		DRBL_menu_user_useradd = gtk.MenuItem("Add User")
-		DRBL_menu_user_userdel = gtk.MenuItem("Del User")
-
-		DRBL_menu_user_userlist.connect("activate", self.drbl_user_userlist)
-		DRBL_menu_user_useradd.connect("activate", self.drbl_user_useradd)
-		DRBL_menu_user_userdel.connect("activate", self.drbl_user_userdel)
-
-		DRBL_menu_user = gtk.Menu()
-		DRBL_menu_user.append(DRBL_menu_user_userlist)
-		DRBL_menu_user.append(DRBL_menu_user_useradd)
-		DRBL_menu_user.append(DRBL_menu_user_userdel)
-
-		DRBL_menu_root_user = gtk.MenuItem("User")
-		DRBL_menu_root_user.set_submenu(DRBL_menu_user)
-		DRBL_menu.append(DRBL_menu_root_user)
-
-		# Help Menu
-
-		DRBL_menu_help_about = gtk.MenuItem("About")
-		DRBL_menu_help_about.connect("activate", self.drbl_about)
-		DRBL_menu_help = gtk.Menu()
-		DRBL_menu_help.append(DRBL_menu_help_about);
-		DRBL_menu_root_help = gtk.MenuItem("Help")
-		DRBL_menu_root_help.set_submenu(DRBL_menu_help)
-		DRBL_menu.append(DRBL_menu_root_help)
-
-		# Window
-		DRBL_BG_image = gtk.Image()
-		DRBL_BG_image.set_from_file("drblwp.png")
-
-		menu_box = gtk.VBox(False, 0)
-		menu_box.pack_start(DRBL_menu, False, False, 0)
-
-		bg_box = gtk.VBox(False, 0)
-		bg_box.pack_start(DRBL_BG_image, False, False, 0)
-
-		main_box = gtk.VBox(False, 0)
-		self.main_box = main_box
-		main_box.pack_start(bg_box, False, False, 0)
-
-		box = gtk.VBox(False,0)
-		self.box = box
-		box.pack_start(menu_box, False, False, 0)
-		box.pack_start(main_box, False, False, 0)
-
-		window = gtk.Window()
-		self.window = window
-		window.set_title("DRBL")
-		window.set_size_request(640,500)
-		window.set_position(gtk.WIN_POS_CENTER)
-		try:
-		    self.icon = window.set_icon_from_file("drbl.png")
-		except Exception, e:
-		    print e.message
-		    sys.exit(1)
-
-		window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
-		window.add(box)
-		window.connect('delete-event', lambda window, event: gtk.main_quit())
-		window.show_all()
-		
-	def enter_name(self, widget, entry, target):
-	    username = entry.get_text()
-	    print username
+	    DRBL_menu_view = gtk.Menu()
+	    DRBL_menu_view.append(DRBL_menu_view_verbose)
 	    
+	    DRBL_menu_root_view = gtk.MenuItem("View")
+	    DRBL_menu_root_view.set_submenu(DRBL_menu_view)
+	    DRBL_menu.append(DRBL_menu_root_view)
+
+	    # Remote Menu
+	    DRBL_menu_remote_gra      = gtk.MenuItem("Linux-gra")
+	    DRBL_menu_remote_txt      = gtk.MenuItem("Linux-txt")
+	    DRBL_menu_remote_local    = gtk.MenuItem("local")
+	    DRBL_menu_remote_memtest  = gtk.MenuItem("memtest")
+	    DRBL_menu_remote_terminal = gtk.MenuItem("Terminal")
+
+	    DRBL_menu_remote_gra.connect("activate", self.drbl_remote_gra)
+	    DRBL_menu_remote_txt.connect("activate", self.drbl_remote_txt)
+	    DRBL_menu_remote_local.connect("activate", self.drbl_remote_local)
+	    DRBL_menu_remote_memtest.connect("activate", self.drbl_remote_memtest)
+	    DRBL_menu_remote_terminal.connect("activate", self.drbl_remote_terminal)
+
+	    DRBL_menu_remote = gtk.Menu()
+	    DRBL_menu_remote.append(DRBL_menu_remote_gra)
+	    DRBL_menu_remote.append(DRBL_menu_remote_txt)
+	    DRBL_menu_remote.append(DRBL_menu_remote_memtest)
+	    DRBL_menu_remote.append(DRBL_menu_remote_local)
+	    DRBL_menu_remote.append(DRBL_menu_remote_terminal)
+
+	    DRBL_menu_root_remote = gtk.MenuItem("Remote")
+	    DRBL_menu_root_remote.set_submenu(DRBL_menu_remote)
+	    DRBL_menu.append(DRBL_menu_root_remote)
+
+	    # Boot Menu
+	    DRBL_menu_boot_shutdown           = gtk.MenuItem("Shutdown")
+	    DRBL_menu_boot_wakeonlan          = gtk.MenuItem("Wake On Lan")
+	    DRBL_menu_boot_reboot             = gtk.MenuItem("Reboot")
+	    DRBL_menu_boot_switch_pxe_menu    = gtk.MenuItem("PXE MENU")
+	    DRBL_menu_boot_switch_pxe_bg_mode = gtk.MenuItem("PXE BG MODE")
+
+	    DRBL_menu_boot_shutdown.connect("activate", self.drbl_boot_shutdown)
+	    DRBL_menu_boot_reboot.connect("activate", self.drbl_boot_reboot)
+	    DRBL_menu_boot_wakeonlan.connect("activate", self.drbl_boot_wakeonlan)
+	    DRBL_menu_boot_switch_pxe_menu.connect("activate", self.drbl_boot_switch_pxe_menu)
+	    DRBL_menu_boot_switch_pxe_bg_mode.connect("activate", self.drbl_boot_switch_pxe_bg_mode)
+
+	    DRBL_menu_boot = gtk.Menu()
+	    DRBL_menu_boot.append(DRBL_menu_boot_shutdown)
+	    DRBL_menu_boot.append(DRBL_menu_boot_reboot)
+	    DRBL_menu_boot.append(DRBL_menu_boot_wakeonlan)
+	    DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_menu)
+	    DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_bg_mode)
+
+	    DRBL_menu_root_boot = gtk.MenuItem("Boot")
+	    DRBL_menu_root_boot.set_submenu(DRBL_menu_boot)
+	    DRBL_menu.append(DRBL_menu_root_boot)
+
+	    # User Menu
+	    
+	    DRBL_menu_user_userlist = gtk.MenuItem("List User")
+	    DRBL_menu_user_useradd = gtk.MenuItem("Add User")
+	    DRBL_menu_user_userdel = gtk.MenuItem("Del User")
+
+	    DRBL_menu_user_userlist.connect("activate", self.drbl_user_userlist)
+	    DRBL_menu_user_useradd.connect("activate", self.drbl_user_useradd)
+	    DRBL_menu_user_userdel.connect("activate", self.drbl_user_userdel)
+
+	    DRBL_menu_user = gtk.Menu()
+	    DRBL_menu_user.append(DRBL_menu_user_userlist)
+	    DRBL_menu_user.append(DRBL_menu_user_useradd)
+	    DRBL_menu_user.append(DRBL_menu_user_userdel)
+
+	    DRBL_menu_root_user = gtk.MenuItem("User")
+	    DRBL_menu_root_user.set_submenu(DRBL_menu_user)
+	    DRBL_menu.append(DRBL_menu_root_user)
+
+	    # Help Menu
+
+	    DRBL_menu_help_about = gtk.MenuItem("About")
+	    DRBL_menu_help_about.connect("activate", self.drbl_about)
+	    DRBL_menu_help = gtk.Menu()
+	    DRBL_menu_help.append(DRBL_menu_help_about);
+	    DRBL_menu_root_help = gtk.MenuItem("Help")
+	    DRBL_menu_root_help.set_submenu(DRBL_menu_help)
+	    DRBL_menu.append(DRBL_menu_root_help)
+
+	    # Window
+	    DRBL_BG_image = gtk.Image()
+	    DRBL_BG_image.set_from_file("drblwp.png")
+
+	    menu_box = gtk.VBox(False, 0)
+	    menu_box.pack_start(DRBL_menu, False, False, 0)
+
+	    bg_box = gtk.VBox(False, 0)
+	    bg_box.pack_start(DRBL_BG_image, False, False, 0)
+
+	    main_box = gtk.VBox(False, 0)
+	    self.main_box = main_box
+	    main_box.pack_start(bg_box, False, False, 0)
+
+	    box = gtk.VBox(False,0)
+	    self.box = box
+	    box.pack_start(menu_box, False, False, 0)
+	    box.pack_start(main_box, False, False, 0)
+
+	    window = gtk.Window()
+	    self.window = window
+	    window.set_title("DRBL")
+	    window.set_size_request(640,500)
+	    window.set_position(gtk.WIN_POS_CENTER)
+	    try:
+		self.icon = window.set_icon_from_file("drbl.png")
+	    except Exception, e:
+		print e.message
+		sys.exit(1)
+
+	    window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+	    window.add(box)
+	    window.connect('delete-event', lambda window, event: gtk.main_quit())
+	    window.show_all()
+		
 	def collect_user_list(self):
 	    nis_group = {}
 	    del user_list[0:]
@@ -541,6 +579,7 @@ class DRBL_GUI_Template():
 		    i = i+1
 
 	def drbl_about(self, widget):
+	    _ = self.lang.gettext
 	    _about = gtk.AboutDialog()
 	    _about.set_name('DRBL')
 	    _about.set_logo(gtk.gdk.pixbuf_new_from_file("drbl.png"))		
@@ -552,7 +591,7 @@ class DRBL_GUI_Template():
 		])
 	    _about.set_copyright('Copyright (C) 2010 by DRBL/Clonezilla project')
 	    _about.set_license('GNU General Public License V2')
-	    _about.set_comments('Diskless Remote Boot in Linux')
+	    _about.set_comments(_("Diskless Remote Boot in Linux"))
 	    _about.set_website("http://drbl.name")
 	    _about.run()
 	    _about.destroy()

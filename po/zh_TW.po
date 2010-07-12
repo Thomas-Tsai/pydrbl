@@ -1,0 +1,20 @@
+# Chinese translations for drbl_ui package.
+# Copyright (C) 2010 THE drbl_ui'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the drbl_ui package.
+# thomas <thomas@nchc.org.tw>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: drbl_ui 0.1\n"
+"Report-Msgid-Bugs-To: thomas <thomas@nchc.org.tw>\n"
+"POT-Creation-Date: 2010-07-11 21:59+0800\n"
+"PO-Revision-Date: 2010-07-11 22:00+0800\n"
+"Last-Translator: thomas <thomas@nchc.org.tw>\n"
+"Language-Team: Chinese (traditional)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: drbl_ui.py:552
+msgid "Diskless Remote Boot in Linux"
+msgstr "無碟系統"
