@@ -682,7 +682,70 @@ class DRBL_GUI_Template():
 	    self.box.show()
 	    
 	def drblassistant(self, widget):
-	    print "assistant"
+	    ## The assistant for drbl user
+	    self.main_box.hide()
+	    self.main_box = gtk.VBox(False,0)
+	    self.main_box.show()
+
+	    todo_desc = """
+	    Welcome to DRBL, Please follow the step for Diskless Remote Boot in Linux Environment:
+	    """
+	    label = gtk.Label(todo_desc)
+	    label.set_alignment(0, 0)
+	    self.main_box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    box = gtk.VBox()
+	    ## Step1 Setup the Linux Server
+	    check_linux_dist = "lsb_release -is"
+	    linux_dist = os.popen(check_linux_dist).readlines()[0][:-1]
+	    step1_info = "Step1 - Setup the Linux Server"
+	    version_info = "Linux dist: %s\n\n" % (linux_dist)
+	    label = gtk.Label(step1_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+	    label = gtk.Label(version_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+	    
+	    # Step2 a
+	    check_drbl_cmd = "dpkg -l | grep drbl | awk \'{print $3}\'"
+	    check_drbl_version = os.popen(check_drbl_cmd).readlines()[0][:-1]
+	    print check_drbl_version
+	    version_info = "Step2a\nDRBL: %s\n\n" % (check_drbl_version)
+	    label = gtk.Label(version_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    # Step2 b
+	    version_info = "Step2b\n\n\n"
+	    label = gtk.Label(version_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    # Step3
+	    version_info = "Step3\n\n\n"
+	    label = gtk.Label(version_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    # Step4
+	    version_info = "Step4\n\n\n"
+	    label = gtk.Label(version_info)
+	    label.set_alignment(0, 0)
+	    box.pack_start(label, False, False, 0)
+	    label.show()
+
+	    self.main_box.pack_start(box, True, True, 0)
+	    box.show()
+	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.main_box.show()
+	    self.box.show()
 
 	def drblsrv_u(self, widget):
 	    ## Uninstall DRBL
