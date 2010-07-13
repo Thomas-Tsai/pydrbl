@@ -184,13 +184,16 @@ class DRBL_GUI_Template():
 	    DRBL_menu_file_srv_i  = gtk.MenuItem("drblsrv install")
 	    DRBL_menu_file_srv_u  = gtk.MenuItem("drblsrv uninstall")
 	    DRBL_menu_file_push = gtk.MenuItem("drblpush")
+	    DRBL_menu_file_ass = gtk.MenuItem("drbl-assistant")
 
 	    DRBL_menu_file_quit.connect("activate", gtk.main_quit)
 	    DRBL_menu_file_srv_i.connect("activate", self.drblsrv_i)
 	    DRBL_menu_file_srv_u.connect("activate", self.drblsrv_u)
 	    DRBL_menu_file_push.connect("activate", self.drblpush)
+	    DRBL_menu_file_ass.connect("activate", self.drblassistant)
 
 	    DRBL_menu_file = gtk.Menu()
+	    DRBL_menu_file.append(DRBL_menu_file_ass)
 	    DRBL_menu_file.append(DRBL_menu_file_srv_i)
 	    DRBL_menu_file.append(DRBL_menu_file_srv_u)
 	    DRBL_menu_file.append(DRBL_menu_file_push)
@@ -678,6 +681,9 @@ class DRBL_GUI_Template():
 	    self.main_box.show()
 	    self.box.show()
 	    
+	def drblassistant(self, widget):
+	    print "assistant"
+
 	def drblsrv_u(self, widget):
 	    ## Uninstall DRBL
 	    todo_desc = """
