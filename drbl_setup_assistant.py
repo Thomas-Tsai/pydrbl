@@ -292,14 +292,18 @@ class assistant():
 
 	add_key_st = os.popen("wget -q http://drbl.nchc.org.tw/GPG-KEY-DRBL -O- | apt-key add -").readlines()[0][:-1]
 	print add_key_st
-	cache = apt.Cache()
-	pkg = cache['drbl'] # Access the Package object for python-apt
-	print 'drbl is trusted:', pkg.candidate.origins[0].trusted
-	pkg.mark_install()
-	print 'drbl is marked for install:', pkg.marked_install
-	print 'drbl is (summary):', pkg.candidate.summary
-	# Now, really install it
-	cache.commit()
+	    cache = apt.Cache()
+	    pkg = cache['drbl'] # Access the Package object for python-apt
+	    print 'drbl is trusted:', pkg.candidate.origins[0].trusted
+	try:
+	    pkg.mark_install()
+	    print 'drbl is marked for install:', pkg.marked_install
+	    print 'drbl is (summary):', pkg.candidate.summary
+	    # Now, really install it
+	    cache.commit()
+	except:
+	    print "apt-get install drbl"
+	    os.system("apt-get install drbl")
 	print "install finish"
 
     def go_config_arch(self, widget):
