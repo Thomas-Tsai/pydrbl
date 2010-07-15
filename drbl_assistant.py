@@ -8,11 +8,16 @@ import apt
 import aptsources
 from aptsources.sourceslist import SourcesList
 import aptsources.distro
+from threading import Thread
+import subprocess
 
 
 ## Class for DRBL Setup Assistant
+
 class collectmac():
     def __init__(self):
+	self.dev = "eth1"
+	self.go = 1
 	# window
 	window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 	self.window = window
@@ -34,7 +39,7 @@ class collectmac():
 	col.set_attributes(render, text=0)
 	tree.append_column(col)
 	self.mac_list = mac_list = gtk.ListStore(gobject.TYPE_STRING)
-	self.collect()
+	thread.start_new_thread(collect,())
 
 	tree.set_model(mac_list)
 	vbox.pack_start(scroll, True, True, 2)
@@ -66,8 +71,15 @@ class collectmac():
 	vbox.show_all()
 	window.show_all()
 
-    def collect(self, widget):
-	print "collect"
+    def collect(self):
+        cmd = "/usr/sbin/tcpdump -tel -c 1 -i %s broadcast and port bootpc" % self.dev
+        while self.go:
+            print "go"
+            self.p = subprocess.Popen(cmd, executable="/bin/bash", shell=True, stdout=PIPE)
+            data = self.p.communicate()[0]
+            (mac, other) = data.split(" ", 1)
+            print (self.dev, mac)
+	    self.mac_list.append([mac])
 
 
     def go_save(self, widget):
@@ -81,6 +93,7 @@ class collectmac():
 
     def go_finish(self, widget):
 	print "finish"
+	self.p.kill()
 
     def exit_collectmac(iself, window, event):
 	window.destroy()
