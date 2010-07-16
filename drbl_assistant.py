@@ -8,7 +8,7 @@ import apt
 import aptsources
 from aptsources.sourceslist import SourcesList
 import aptsources.distro
-from threading import Thread
+import thread
 import subprocess
 
 
@@ -39,9 +39,10 @@ class collectmac():
 	col.set_attributes(render, text=0)
 	tree.append_column(col)
 	self.mac_list = mac_list = gtk.ListStore(gobject.TYPE_STRING)
-	thread.start_new_thread(collect,())
+	#t = thread.start_new_thread(self.collect, (self.dev,))
+	self.collect(self.dev)
 
-	tree.set_model(mac_list)
+	tree.set_model(self.mac_list)
 	vbox.pack_start(scroll, True, True, 2)
 
 	# buttons
@@ -71,7 +72,8 @@ class collectmac():
 	vbox.show_all()
 	window.show_all()
 
-    def collect(self):
+    def collect(self, dev):
+        print "go"+dev
         cmd = "/usr/sbin/tcpdump -tel -c 1 -i %s broadcast and port bootpc" % self.dev
         while self.go:
             print "go"
@@ -407,14 +409,15 @@ class assistant():
 
     def go_config_branch(self, widget):
 	branch = widget.get_active_text()
-	if branch == "testing":
-	    branch = "stable testing"
+	if branch == "stable":
+	    self.comps = ["stable"]
+	elif branch == "testing":
+	    self.comps = ["stable testing"]
 	elif branch == "unstable":
-	    branch = "stable testing unstable"
-	self.branch = branch
+	    self.comps = ["stable testing unstable"]
 
     def go_install_drbl(self, widget):
-	print "install" ,self.branch
+	print "install" ,self.comps
 	sourceslist = SourcesList ()
 	distro = aptsources.distro.get_distro ()
 	try:
@@ -431,8 +434,9 @@ class assistant():
 		    has_drbl_repo = 1
 	if has_drbl_repo == 0:
 	    drbl_uri = "http://free.nchc.org.tw/drbl-core"
-	    drbl_comps = "drbl %s" % self.branch
-	    distro.add_source (type="deb", uri=drbl_uri, comps=drbl_comps, comment="DRBL Repository (Add by drbl_assistant)")
+	    drbl_dist = "drbl"
+	    drbl_comps = self.comps
+	    distro.add_source (type="deb", uri=drbl_uri, dist=drbl_dist, comps=drbl_comps, comment="DRBL Repository (Add by drbl_assistant)")
 	    sourceslist.backup ()
 	    sourceslist.save ()
 
@@ -449,6 +453,7 @@ class assistant():
 	    cache.commit()
 	except:
 	    print "apt-get install drbl"
+	    os.system("apt-get update")
 	    os.system("apt-get install drbl")
 	print "install finish"
 
