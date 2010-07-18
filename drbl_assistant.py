@@ -6,18 +6,92 @@ import gtk
 import os
 import apt
 import aptsources
+import time
+import re
 from aptsources.sourceslist import SourcesList
 import aptsources.distro
-import thread
+from threading import Thread
 import subprocess
+gtk.gdk.threads_init()
+collected_mac = []
+template_push_conf = {
+    "domain" : "drbl.name",
+    "nisdomain" : "penguinzilla",
+    "localswapfile" : "yes",
+    "client_init" : "graphic",
+    "login_gdm_opt" : "login",
+    "timed_login_time" : "",
+    "maxswapsize" : "128",
+    "ocs_img_repo_dir" : "/home/partimag",
+    "create_account" : "",
+    "account_passwd_length" : "8",
+    "hostname" : "ubuntu",
+    "purge_client" : "no",
+    "client_autologin_passwd" : "",
+    "client_root_passwd" : "",
+    "client_pxelinux_passwd" : "",
+    "set_client_system_select" : "yes",
+    "use_graphic_pxelinux_menu" : "yes",
+    "set_DBN_client_audio_plugdev" : "yes",
+    "open_thin_client_option" : "no",
+    "client_system_boot_timeout" : "70",
+    "language" : "en_US.UTF-8",
+    "set_client_public_ip_opt" : "no",
+    "config_file" : "drblpush.conf",
+    "live_client_cpu_mode" : "i686",
+    "drbl_server_as_NAT_server" : "yes",
+    "add_start_drbl_services_after_cfg" : "yes",
+    "continue_with_one_port" : "",
+    #"clonezilla_mode" : "full_clonezilla_mode", "clonezilla_box_mode", "clonezilla_live_mode" or "none
+    #"drbl_mode" : "full_drbl_mode",  "drbl_ssi_mode" or "none"
 
+    #"collect_mac" : "no",
+    #"total_client_no" : "12"
+}
 
 ## Class for DRBL Setup Assistant
 
+class collect(Thread):
+
+    def __init__(self, dev, mac_list):
+	Thread.__init__(self)
+	self.dev = dev
+	self.stop = 0
+	self.mac_list = mac_list
+	print "thread"+dev
+
+    def run(self):
+	print "thread"
+	cmd = "/usr/sbin/tcpdump -tel -c 1 -i %s broadcast and port bootpc" % self.dev
+	while True:
+	    if self.stop == 1:
+		break;
+	    self.p = subprocess.Popen(cmd, executable="/bin/bash", shell=True, stdout=subprocess.PIPE)
+	    data = self.p.communicate()[0]
+	    if data != "":
+		(mac, other) = data.split(" ", 1)
+		print (self.dev, mac)
+		gobject.idle_add(self.update_mac, mac)
+
+    def update_mac(self, mac_addr):
+
+	if mac_addr in collected_mac:
+	    print "duplicate"
+	else:
+	    collected_mac.append(mac_addr)
+	    self.mac_list.append([mac_addr])
+
+
+    def kill(self):
+	self.stop = 1
+	self.p.kill()
+	time.sleep(1)
+
 class collectmac():
-    def __init__(self):
-	self.dev = "eth1"
+    def __init__(self, dev):
+	self.dev = dev
 	self.go = 1
+	self.p = 0
 	# window
 	window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 	self.window = window
@@ -39,14 +113,31 @@ class collectmac():
 	col.set_attributes(render, text=0)
 	tree.append_column(col)
 	self.mac_list = mac_list = gtk.ListStore(gobject.TYPE_STRING)
-	#t = thread.start_new_thread(self.collect, (self.dev,))
-	self.collect(self.dev)
+        # make treeview searchable
+	tree.set_search_column(0)
+
+	# Allow drag and drop reordering of rows
+	tree.set_reorderable(True)
+
+	# thread for collect mac address
+	self.thr=collect(self.dev, self.mac_list)
+	self.thr.start()
 
 	tree.set_model(self.mac_list)
 	vbox.pack_start(scroll, True, True, 2)
 
 	# buttons
 	bbox = gtk.HBox()
+	_button = gtk.Button("start")
+	_button.set_size_request(80, 35)
+	id = _button.connect("clicked", self.go_start)
+	bbox.pack_start(_button, False, False, 0)
+
+	_button = gtk.Button("stop")
+	_button.set_size_request(80, 35)
+	id = _button.connect("clicked", self.go_stop)
+	bbox.pack_start(_button, False, False, 0)
+
 	_button = gtk.Button("reset")
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_reset)
@@ -72,32 +163,95 @@ class collectmac():
 	vbox.show_all()
 	window.show_all()
 
-    def collect(self, dev):
-        print "go"+dev
-        cmd = "/usr/sbin/tcpdump -tel -c 1 -i %s broadcast and port bootpc" % self.dev
-        while self.go:
-            print "go"
-            self.p = subprocess.Popen(cmd, executable="/bin/bash", shell=True, stdout=PIPE)
-            data = self.p.communicate()[0]
-            (mac, other) = data.split(" ", 1)
-            print (self.dev, mac)
-	    self.mac_list.append([mac])
+    def go_start(self, widget):
+	print "start"
+	# thread for collect mac address
+	self.thr=collect(self.dev, self.mac_list)
+	self.thr.start()
 
+    def go_stop(self, widget):
+	print "stop"
+	self.thr.kill()
+	self.thr.join()
 
     def go_save(self, widget):
 	print "save"
+	current_time = time.strftime("%Y_%m_%d_%H%M", time.gmtime())
+	mac_fname = "mac-"+self.dev+"-"+current_time+".txt"
+	# get fname
+	dialog = gtk.FileChooserDialog("Open..",
+	       			None,
+	       			gtk.FILE_CHOOSER_ACTION_SAVE,
+	       			(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+	       			 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	dialog.set_default_response(gtk.RESPONSE_OK)
+	dialog.set_current_name(mac_fname)
+
+	response = dialog.run()
+	if response == gtk.RESPONSE_OK:
+	    print dialog.get_filename(), 'selected'
+	    mac_fname = dialog.get_filename()
+
+	    FILE = open(mac_fname,"w")
+	    for mac_addr in collected_mac:
+		FILE.write(mac_addr+'\n')
+	    FILE.close()
+
+
+	elif response == gtk.RESPONSE_CANCEL:
+	    print 'Closed, no files selected'
+	dialog.destroy()
 
     def go_reset(self, widget):
 	print "reset"
+	gtk.ListStore.clear(self.mac_list)
+	del collected_mac[0:]
 
     def go_load(self, widget):
 	print "load"
+	# Remove old
+	gtk.ListStore.clear(self.mac_list)
+	del collected_mac[0:]
+	# get fname
+	dialog = gtk.FileChooserDialog("Open..",
+	       			None,
+	       			gtk.FILE_CHOOSER_ACTION_OPEN,
+	       			(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+	       			 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	dialog.set_default_response(gtk.RESPONSE_OK)
+
+	response = dialog.run()
+	if response == gtk.RESPONSE_OK:
+	    print dialog.get_filename(), 'selected'
+	    mac_fname = dialog.get_filename()
+	    FILE = open(mac_fname, "r")
+	    is_addr = '([a-fA-F0-9]{2}[:|\-]?){6}'
+	    for mac_addr in FILE.readlines():
+		mac_addr = mac_addr[:-1]
+		print mac_addr
+		pattern = re.compile(is_addr)
+		if re.match(pattern, mac_addr):
+		    collected_mac.append(mac_addr)
+		    self.mac_list.append([mac_addr])
+		else:
+		    print "not match"
+	    FILE.close()
+
+	elif response == gtk.RESPONSE_CANCEL:
+	    print 'Closed, no files selected'
+	dialog.destroy()
 
     def go_finish(self, widget):
 	print "finish"
-	self.p.kill()
+	print self.thr.isAlive()
+	if self.thr.isAlive() == True:
+	    self.go_stop(widget)
+	self.exit_collectmac(self.window, 'delete-event')
 
-    def exit_collectmac(iself, window, event):
+    def exit_collectmac(self, window, event):
+	widget=0
+	if self.thr.isAlive() == True:
+	    self.go_stop(widget)
 	window.destroy()
 
 class assistant():
@@ -105,6 +259,13 @@ class assistant():
     def __init__(self):
 	self.nettypebox = {}
 	self.netdevbox = {}
+	self.netdev = []
+	self.collect_mac = "no"
+	self.total_client_no = "12"
+	self.r_start = {}
+	self.r_end = {}
+	## network[netdev] = [ip, [mac|range|uplink], start, end, file]
+	self.network = {}
 	# window
 	window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 	self.window = window
@@ -227,13 +388,6 @@ class assistant():
 	rbox.show_all()
 
 
-    def show_linux_dist(self):
-	check_linux_dist = "lsb_release -is"
-	linux_dist = os.popen(check_linux_dist).readlines()[0][:-1]
-	_desc = "Linux Distribution: %s" % linux_dist
-	label= gtk.Label(_desc)
-	self.rbox.pack_start(label, False, False, 0)
-
     def go_step2(self, widget):
 	print "Step2"
 	self.rbox = rbox = gtk.VBox()
@@ -256,6 +410,7 @@ class assistant():
 	branch.append_text('testing')
 	branch.append_text('unstable')
 
+	branch.set_active(0)
 	_button = gtk.Button("Install")
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_install_drbl)
@@ -276,6 +431,7 @@ class assistant():
 	arch.append_text('i586')
 	arch.append_text('DRBL')
 
+	arch.set_active(2)
 	sopt_button = gtk.CheckButton("Netinstall")
 	sopt_button.connect("clicked", self.go_config_netinst)
 	rbox.pack_start(sopt_button, False, False, 0)
@@ -298,6 +454,7 @@ class assistant():
 
 
     def go_step3(self, widget):
+	get_uplink = "/opt/drbl/bin/get-all-nic-ip -u-all-nic-ip -u"
 	print "Step3"
 	self.rbox = rbox = gtk.VBox()
 	_desc = """
@@ -315,6 +472,8 @@ class assistant():
 	dmode.append_text('FULL')
 	dmode.append_text('SSI')
 	dmode.append_text('Disable')
+	dmode.set_active(0)
+	self.drbl_mode = "full_drbl_mode"
 
 	label = gtk.Label("Select mode for Clonezilla ")
 	rbox.pack_start(label, False, False, 0)
@@ -324,11 +483,30 @@ class assistant():
 
 	cmode.append_text('FULL')
 	cmode.append_text('SSI')
+	cmode.append_text('Live')
 	cmode.append_text('Disable')
+	cmode.set_active(0)
+	self.clonezilla_mode = "full_clonezilla_mode"
 
 	nbox = gtk.VBox()
 	#collect dev and uplink
-	self.netdev = netdev = ["eth0", "eth1"]
+	netdev = self.netdev
+	if len(netdev) == 0:
+	    get_network = './get-nic-devs'
+	    for dev in os.popen(get_network).readlines():
+		dev = dev[:-1]
+		netdev.append(dev)
+		## self.network[netdev] = [ip, [mac|range], start, end, file]
+		get_ip = "ifconfig %s | grep -A1 %s | grep -v %s | grep \"inet addr\" | sed -e \'s/^.*inet addr:\([0-9\.]\+\).*$/\\1/\'" % (dev, dev, dev)
+		ip = os.popen(get_ip).readlines()
+		if len(ip) == 1:
+		    ip = ip[0][:-1]
+		else:
+		    ip = "NONE"
+		self.network[dev] = [ip, "", "", "", ""]
+	    
+	get_uplink = "LC_ALL=C route -n | awk '/^0.0.0.0/ {print $8}' | sort | head -n 1"
+	uplink_dev = os.popen(get_uplink).readlines()[0][:-1]
 	for dev in netdev:
 	    self.netdevbox[dev] = devbox = gtk.HBox()
 	    typebox = gtk.HBox()
@@ -342,6 +520,9 @@ class assistant():
 	    devtype.append_text('mac')
 	    devtype.append_text('range')
 	    devtype.append_text('uplink')
+	    if dev == uplink_dev:
+		devtype.set_active(2)
+		self.network[dev][1] = "uplink"
 	    devbox.pack_start(typebox, False, False, 0)
 	    nbox.pack_start(devbox, False, False, 0)
 
@@ -383,13 +564,19 @@ class assistant():
 	    scroll.add_with_viewport(rbox)
 	rbox.show_all()
 
+    def show_linux_dist(self):
+	check_linux_dist = "lsb_release -is"
+	linux_dist = os.popen(check_linux_dist).readlines()[0][:-1]
+	_desc = "Linux Distribution: %s" % linux_dist
+	label= gtk.Label(_desc)
+	self.rbox.pack_start(label, False, False, 0)
+
     def show_network(self):
-	network = []
 	get_network = './get-nic-devs'
-	#uplink = "LC_ALL=C route -n | awk '/^0.0.0.0/ {print $8}' | sort | head -n 1"
 
 	for netdev in os.popen(get_network).readlines():
 	    netdev = netdev[:-1]
+	    self.netdev.append(netdev)
 	    get_ip = "ifconfig %s | grep -A1 %s | grep -v %s | grep \"inet addr\" | sed -e \'s/^.*inet addr:\([0-9\.]\+\).*$/\\1/\'" % (netdev, netdev, netdev)
 	    print get_ip
 	    ip = os.popen(get_ip).readlines()
@@ -397,14 +584,21 @@ class assistant():
 		ip = ip[0][:-1]
 	    else:
 		ip = "NONE"
-	    network.append([netdev, ip])
 	    _desc = "net %s: %s " % (netdev, ip)
 	    label= gtk.Label(_desc)
 	    self.rbox.pack_start(label, False, False, 0)
+	    
+	    ## self.network[netdev] = [ip, [mac|range], start, end, file]
+	    self.network[netdev] = [ip, "", "", "", ""]
 
 
     def go_config_net(self, widget):
-	os.system('/usr/bin/nm-connection-editor')
+	nm = os.popen("ps ax | grep nm-applet | wc -l").readlines()[0][:-1]
+	nm = string.atoi(nm)
+	if nm >= 2:
+	    os.system('apt-get install -y gnome-network-admin')
+	    os.system('apt-get --purge -y remove network-manager')
+	os.system('network-admin')
 	self.go_step1(widget)
 
     def go_config_branch(self, widget):
@@ -475,14 +669,34 @@ class assistant():
 	os.system(cmd)
 
     def go_drblpush(self, widget):
-	cmd = "yes \'\' | /opt/drbl/sbin/drblpush -c drbluipush.conf"
+	fname = "/etc/drbl/drblpush_ui.conf"
+	self.generate_pushconf(fname)
+
+	cmd = "yes \'\' | /opt/drbl/sbin/drblpush -c %s" % fname
 	os.system(cmd)
 
     def go_config_mode(self, widget, target):
+	mode = widget.get_active_text()
 	if target == "DRBL":
-	    self.drblmode = widget.get_active_text()
+	    if mode == "FULL":
+		self.drbl_mode = "full_drbl_mode"
+	    elif mode == "SSI":
+		self.drbl_mode = "drbl_ssi_mode"
+	    elif mode == "Disable":
+		self.drbl_mode = "nonoe"
+	    else:
+		self.drbl_mode = "full_drbl_mode"
 	elif target == "Clonezilla":
-	    self.clonezillamode = widget.get_active_text()
+	    if mode == "FULL":
+		self.clonezilla_mode = "full_clonezilla_mode"
+	    elif mode == "SSI":
+		self.clonezilla_mode = "clonezilla_box_mode"
+	    elif mode == "LIVE":
+		self.clonezilla_mode = "clonezilla_live_mode"
+	    elif mode == "Disable":
+		self.clonezilla_mode = "none"
+	    else:
+		self.clonezilla_mode = "full_clonezilla_mode"
 
     def go_config_devtype(self, widget, dev):
 	devbox = self.netdevbox[dev]
@@ -490,31 +704,41 @@ class assistant():
 	self.nettypebox[dev] = gtk.HBox()
 	#self.nettypebox[dev].show()
 	if widget.get_active_text() == "range":
-	    print "range"
+	    self.collect_mac = "no"
+	    self.network[dev][1] = "range"
 	    label = gtk.Label("start")
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
-	    self.r_start = start = gtk.Entry()
-	    start.set_width_chars(3)
+	    self.r_start[dev] = start = gtk.Entry()
+	    start.set_width_chars(15)
 	    self.nettypebox[dev].pack_start(start, False, False ,0)
 	    start.show()
 	    label = gtk.Label("end")
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
-	    self.r_end = end = gtk.Entry()
-	    end.set_width_chars(3)
+	    self.r_end[dev] = end = gtk.Entry()
+	    end.set_width_chars(15)
 	    self.nettypebox[dev].pack_start(end, False, False ,0)
 	    end.show()
 	elif widget.get_active_text() == "mac":
-	    print "mac"
+	    self.collect_mac = "yes"
+	    self.network[dev][1] = "mac"
 	    _button = gtk.Button("Collect MAC Address")
 	    _button.set_size_request(80, 35)
 	    id = _button.connect("clicked", self.go_CollectMacAddress, dev)
 	    self.nettypebox[dev].pack_start(_button, False, False ,0)
 	    _button.show()
+	    label = gtk.Label("start")
+	    self.nettypebox[dev].pack_start(label, False, False ,0)
+	    label.show()
+	    self.r_start[dev] = start = gtk.Entry()
+	    start.set_width_chars(15)
+	    self.nettypebox[dev].pack_start(start, False, False ,0)
+	    start.show()
 
 	elif widget.get_active_text() == "uplink":
-	    print "uplink"
+	    self.collect_mac = "no"
+	    self.network[dev][1] = "uplink"
 	    label = gtk.Label("uplink")
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
@@ -524,8 +748,72 @@ class assistant():
 
     def go_CollectMacAddress(self, widget, dev):
 	print dev
-	collectmac()
+	collectmac(dev)
+	#all selected mac saved on collected_mac, and autosave as file mac-ethx.txt
+	path = "/etc/drbl/"
+	fname = path+"mac-"+dev+".txt"
+
+	if os.path.isdir(path):
+	    if os.path.isfile(fname) and os.path.isabs(fname):
+		backupfilename = "mac-"+dev+"-saved-"+current_time+".txt"
+		os.system("copy %s %s" % (fname, backupfilename))
+	    else:
+
+		FILE = open(fname,"w")
+		for mac_addr in collected_mac:
+		    FILE.write(mac_addr+'\n')
+		FILE.close()
 	
+    def calculate_client_no(self):
+	network = self.network
+	total = 0
+	for dev in network.keys():
+	    dev_client_count = 0
+	    if network[dev][1] == "mac":
+		dev_client_count = len(self.collected_mac)
+		network[dev][2] = self.r_start[dev].get_text()
+	    elif network[dev][1] == "range":
+		network[dev][2] = self.r_start[dev].get_text()
+		network[dev][3] = self.r_end[dev].get_text()
+		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
+		eaddr1, eaddr2, eaddr3, eaddr4 = network[dev][3].split(".")
+		network[dev][2] = saddr4
+		network[dev][3] = eaddr4
+		dev_client_count = string.atoi(eaddr4) - string.atoi(saddr4) + 1
+	    else:
+		dev_client_count = 0
+	    
+	    print dev,dev_client_count
+	    total = total + dev_client_count
+	    self.total_client_no = total
+
+    def	generate_pushconf(self, fname):
+	FILE = open(fname, "w")
+	FILE.write("#setup by ui"+'\n')
+	FILE.write("[general]"+'\n')
+	for data in template_push_conf.keys():
+	    conf = data+'='+template_push_conf[data]
+	    FILE.write(conf+'\n')
+	FILE.write('clonezilla_mode='+self.clonezilla_mode+'\n')
+	FILE.write('drbl_mode='+self.drbl_mode+'\n')
+	FILE.write('collect_mac='+self.collect_mac+'\n')
+	self.calculate_client_no()
+	total_client_str = "total_client_no=%i" % self.total_client_no
+	FILE.write(total_client_str+'\n')
+
+	for dev in self.network.keys():
+	    if self.network[dev][1] == "mac":
+		FILE.write('\n'+'#setup for '+dev+'\n')
+		FILE.write('['+dev+']'+'\n')
+		FILE.write('interface='+dev+'\n')
+		FILE.write('mac='+self.network[dev][4]+'\n')
+		FILE.write('ip_start='+self.network[dev][2]+'\n')
+	    elif self.network[dev][1] == "range":
+		FILE.write('\n'+'#setup for '+dev+'\n')
+		FILE.write('['+dev+']'+'\n')
+		FILE.write('interface='+dev+'\n')
+		FILE.write('range='+self.network[dev][2]+'-'+self.network[dev][3]+'\n')
+
 
     def exit_assistant(iself, window, event):
 	window.destroy()
