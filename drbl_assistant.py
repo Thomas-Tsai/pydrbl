@@ -246,6 +246,22 @@ class collectmac():
 	print self.thr.isAlive()
 	if self.thr.isAlive() == True:
 	    self.go_stop(widget)
+	#all selected mac saved on collected_mac, and autosave as file mac-ethx.txt
+	path = "/etc/drbl/"
+	fname = path+"mac-"+self.dev+".txt"
+	current_time = time.strftime("%Y_%m_%d_%H%M", time.gmtime())
+
+	if os.path.isdir(path):
+	    if os.path.isfile(fname):
+		backupfilename = path+"mac-"+self.dev+"-saved-"+current_time+".txt"
+		os.system("/bin/cp %s %s" % (fname, backupfilename))
+	    FILE = open(fname,"w")
+	    for mac_addr in collected_mac:
+		FILE.write(mac_addr+'\n')
+	    FILE.close()
+	else:
+	    print "can't find path %s" % path
+	
 	self.exit_collectmac(self.window, 'delete-event')
 
     def exit_collectmac(self, window, event):
@@ -548,14 +564,35 @@ class assistant():
 	print "Step4"
 	self.rbox = rbox = gtk.VBox()
 	_desc = """
-	Step 4: 
-	"""
+	Step 4: Setting up clients to use the DRBL"""
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
+
+	step4_desc = """
+	The client has a PXE network interface card
+
+	  * Set the client's BIOS to boot from "LAN" or "network".
+
+	  * Take one of the Asus motherboards for example,
+
+	      1. You will see OnBoard LAN, there is a subfuncton 
+		 "OnBoard LAN BOOT ROM", normally it's disabled, 
+		 you have to enable it.
+	      2. Usually you have to reboot it now, make the 
+		 function re-read by BIOS.
+	      3. After rebooting, enter BIOS setting again, this time, 
+		 you have to make LAN boot as the 1st boot device.
+
+	The client do not support PXE network interface card
+	Please check http://drbl.sourceforge.net
+
+	That's it. Let client boot and enjoy DRBL!!!"""
 	
+	label= gtk.Label(step4_desc)
+	rbox.pack_start(label, False, False, 0)
 	_button = gtk.Button("Finish")
 	_button.set_size_request(80, 35)
-	id = _button.connect("clicked", self.go_step4)
+	id = _button.connect("clicked", self.exit_assistant, 0)
 	rbox.pack_start(_button, False, False, 0)
 	scroll = self.rscroll
 	old=scroll.get_child()
@@ -722,6 +759,9 @@ class assistant():
 	    end.show()
 	elif widget.get_active_text() == "mac":
 	    self.collect_mac = "yes"
+	    path = "/etc/drbl/"
+	    fname = path+"mac-"+dev+".txt"
+	    self.network[dev][4] = fname
 	    self.network[dev][1] = "mac"
 	    _button = gtk.Button("Collect MAC Address")
 	    _button.set_size_request(80, 35)
@@ -749,29 +789,17 @@ class assistant():
     def go_CollectMacAddress(self, widget, dev):
 	print dev
 	collectmac(dev)
-	#all selected mac saved on collected_mac, and autosave as file mac-ethx.txt
-	path = "/etc/drbl/"
-	fname = path+"mac-"+dev+".txt"
 
-	if os.path.isdir(path):
-	    if os.path.isfile(fname) and os.path.isabs(fname):
-		backupfilename = "mac-"+dev+"-saved-"+current_time+".txt"
-		os.system("copy %s %s" % (fname, backupfilename))
-	    else:
-
-		FILE = open(fname,"w")
-		for mac_addr in collected_mac:
-		    FILE.write(mac_addr+'\n')
-		FILE.close()
-	
     def calculate_client_no(self):
 	network = self.network
 	total = 0
 	for dev in network.keys():
 	    dev_client_count = 0
 	    if network[dev][1] == "mac":
-		dev_client_count = len(self.collected_mac)
+		dev_client_count = len(collected_mac)
 		network[dev][2] = self.r_start[dev].get_text()
+		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
+		network[dev][2] = saddr4
 	    elif network[dev][1] == "range":
 		network[dev][2] = self.r_start[dev].get_text()
 		network[dev][3] = self.r_end[dev].get_text()
