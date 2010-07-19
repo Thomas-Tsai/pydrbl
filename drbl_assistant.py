@@ -611,7 +611,7 @@ class assistant():
 	rbox.pack_start(label, False, False, 0)
 	_button = gtk.Button("Finish")
 	_button.set_size_request(80, 35)
-	id = _button.connect("clicked", self.exit_assistant, 0)
+	id = _button.connect("clicked", self.exit_assistant, self.window)
 	rbox.pack_start(_button, False, False, 0)
 	scroll = self.rscroll
 	old=scroll.get_child()
@@ -637,10 +637,14 @@ class assistant():
 
     def show_network(self):
 	get_network = './get-nic-devs'
-
 	for netdev in os.popen(get_network).readlines():
 	    netdev = netdev[:-1]
-	    self.netdev.append(netdev)
+	    has_dev = "no"
+	    for already_dev in self.netdev:
+		if already_dev == netdev:
+		    has_dev = "yes"
+	    if has_dev == "no":
+		self.netdev.append(netdev)
 	    get_ip = "ifconfig %s | grep -A1 %s | grep -v %s | grep \"inet addr\" | sed -e \'s/^.*inet addr:\([0-9\.]\+\).*$/\\1/\'" % (netdev, netdev, netdev)
 	    print get_ip
 	    ip = os.popen(get_ip).readlines()
@@ -848,7 +852,8 @@ class assistant():
 		network[dev][2] = self.r_start[dev].get_text()
 		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
 		network[dev][2] = saddr4
-		network[dev][3] = saddr4 + dev_client_count -1
+		eaddr4 = string.atoi(saddr4) + dev_client_count -1
+		network[dev][3] = "%s" % eaddr4
 	    elif network[dev][1] == "range":
 		network[dev][2] = self.r_start[dev].get_text()
 		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
@@ -891,8 +896,8 @@ class assistant():
 		FILE.write('range='+self.network[dev][2]+'-'+self.network[dev][3]+'\n')
 
 
-    def exit_assistant(iself, window, event):
-	window.destroy()
+    def exit_assistant(self, window, event):
+	self.window.destroy()
 	if __name__ == '__main__':
 	    gtk.main_quit()
 if __name__ == '__main__':
