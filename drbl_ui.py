@@ -181,11 +181,11 @@ class DRBL_GUI_Template():
 	    DRBL_menu = gtk.MenuBar()
 
 	    # File Menu
-	    DRBL_menu_file_quit = gtk.MenuItem("Quit")
-	    DRBL_menu_file_srv_i  = gtk.MenuItem("drblsrv install")
-	    DRBL_menu_file_srv_u  = gtk.MenuItem("drblsrv uninstall")
-	    DRBL_menu_file_push = gtk.MenuItem("drblpush")
-	    DRBL_menu_file_ass = gtk.MenuItem("drbl-assistant")
+	    DRBL_menu_file_quit = gtk.MenuItem(_("Quit"))
+	    DRBL_menu_file_srv_i  = gtk.MenuItem(_("drblsrv install"))
+	    DRBL_menu_file_srv_u  = gtk.MenuItem(_("drblsrv uninstall"))
+	    DRBL_menu_file_push = gtk.MenuItem(_("drblpush"))
+	    DRBL_menu_file_ass = gtk.MenuItem(_("drbl-assistant"))
 
 	    DRBL_menu_file_quit.connect("activate", gtk.main_quit)
 	    DRBL_menu_file_srv_i.connect("activate", self.drblsrv_i)
@@ -200,28 +200,28 @@ class DRBL_GUI_Template():
 	    DRBL_menu_file.append(DRBL_menu_file_push)
 	    DRBL_menu_file.append(DRBL_menu_file_quit)
 
-	    DRBL_menu_root_file = gtk.MenuItem("DRBL")
+	    DRBL_menu_root_file = gtk.MenuItem(_("DRBL"))
 	    DRBL_menu_root_file.set_submenu(DRBL_menu_file)
 	    DRBL_menu.append(DRBL_menu_root_file)
 
 
 	    # View Menu
-	    DRBL_menu_view_verbose = gtk.CheckMenuItem("Verbose")
-	    DRBL_menu_view_verbose.set_active(True)
+	    #DRBL_menu_view_verbose = gtk.CheckMenuItem("Verbose")
+	    #DRBL_menu_view_verbose.set_active(True)
 
-	    DRBL_menu_view = gtk.Menu()
-	    DRBL_menu_view.append(DRBL_menu_view_verbose)
+	    #DRBL_menu_view = gtk.Menu()
+	    #DRBL_menu_view.append(DRBL_menu_view_verbose)
 	    
-	    DRBL_menu_root_view = gtk.MenuItem("View")
-	    DRBL_menu_root_view.set_submenu(DRBL_menu_view)
-	    DRBL_menu.append(DRBL_menu_root_view)
+	    #DRBL_menu_root_view = gtk.MenuItem("View")
+	    #DRBL_menu_root_view.set_submenu(DRBL_menu_view)
+	    #DRBL_menu.append(DRBL_menu_root_view)
 
 	    # Remote Menu
-	    DRBL_menu_remote_gra      = gtk.MenuItem("Linux-gra")
-	    DRBL_menu_remote_txt      = gtk.MenuItem("Linux-txt")
-	    DRBL_menu_remote_local    = gtk.MenuItem("local")
-	    DRBL_menu_remote_memtest  = gtk.MenuItem("memtest")
-	    DRBL_menu_remote_terminal = gtk.MenuItem("Terminal")
+	    DRBL_menu_remote_gra      = gtk.MenuItem(_("Linux-gra"))
+	    DRBL_menu_remote_txt      = gtk.MenuItem(_("Linux-txt"))
+	    DRBL_menu_remote_local    = gtk.MenuItem(_("local"))
+	    DRBL_menu_remote_memtest  = gtk.MenuItem(_("memtest"))
+	    DRBL_menu_remote_terminal = gtk.MenuItem(_("Terminal"))
 
 	    DRBL_menu_remote_gra.connect("activate", self.drbl_remote_gra)
 	    DRBL_menu_remote_txt.connect("activate", self.drbl_remote_txt)
@@ -236,16 +236,16 @@ class DRBL_GUI_Template():
 	    DRBL_menu_remote.append(DRBL_menu_remote_local)
 	    DRBL_menu_remote.append(DRBL_menu_remote_terminal)
 
-	    DRBL_menu_root_remote = gtk.MenuItem("Remote")
+	    DRBL_menu_root_remote = gtk.MenuItem(_("Remote"))
 	    DRBL_menu_root_remote.set_submenu(DRBL_menu_remote)
 	    DRBL_menu.append(DRBL_menu_root_remote)
 
 	    # Boot Menu
-	    DRBL_menu_boot_shutdown           = gtk.MenuItem("Shutdown")
-	    DRBL_menu_boot_wakeonlan          = gtk.MenuItem("Wake On Lan")
-	    DRBL_menu_boot_reboot             = gtk.MenuItem("Reboot")
-	    DRBL_menu_boot_switch_pxe_menu    = gtk.MenuItem("PXE MENU")
-	    DRBL_menu_boot_switch_pxe_bg_mode = gtk.MenuItem("PXE BG MODE")
+	    DRBL_menu_boot_shutdown           = gtk.MenuItem(_("Shutdown"))
+	    DRBL_menu_boot_wakeonlan          = gtk.MenuItem(_("Wake On Lan"))
+	    DRBL_menu_boot_reboot             = gtk.MenuItem(_("Reboot"))
+	    DRBL_menu_boot_switch_pxe_menu    = gtk.MenuItem(_("PXE MENU"))
+	    DRBL_menu_boot_switch_pxe_bg_mode = gtk.MenuItem(_("PXE BG MODE"))
 
 	    DRBL_menu_boot_shutdown.connect("activate", self.drbl_boot_shutdown)
 	    DRBL_menu_boot_reboot.connect("activate", self.drbl_boot_reboot)
@@ -260,15 +260,15 @@ class DRBL_GUI_Template():
 	    DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_menu)
 	    DRBL_menu_boot.append(DRBL_menu_boot_switch_pxe_bg_mode)
 
-	    DRBL_menu_root_boot = gtk.MenuItem("Boot")
+	    DRBL_menu_root_boot = gtk.MenuItem(_("Boot"))
 	    DRBL_menu_root_boot.set_submenu(DRBL_menu_boot)
 	    DRBL_menu.append(DRBL_menu_root_boot)
 
 	    # User Menu
 	    
-	    DRBL_menu_user_userlist = gtk.MenuItem("List User")
-	    DRBL_menu_user_useradd = gtk.MenuItem("Add User")
-	    DRBL_menu_user_userdel = gtk.MenuItem("Del User")
+	    DRBL_menu_user_userlist = gtk.MenuItem(_("List User"))
+	    DRBL_menu_user_useradd = gtk.MenuItem(_("Add User"))
+	    DRBL_menu_user_userdel = gtk.MenuItem(_("Del User"))
 
 	    DRBL_menu_user_userlist.connect("activate", self.drbl_user_userlist)
 	    DRBL_menu_user_useradd.connect("activate", self.drbl_user_useradd)
@@ -279,17 +279,17 @@ class DRBL_GUI_Template():
 	    DRBL_menu_user.append(DRBL_menu_user_useradd)
 	    DRBL_menu_user.append(DRBL_menu_user_userdel)
 
-	    DRBL_menu_root_user = gtk.MenuItem("User")
+	    DRBL_menu_root_user = gtk.MenuItem(_("User"))
 	    DRBL_menu_root_user.set_submenu(DRBL_menu_user)
 	    DRBL_menu.append(DRBL_menu_root_user)
 
 	    # Help Menu
 
-	    DRBL_menu_help_about = gtk.MenuItem("About")
+	    DRBL_menu_help_about = gtk.MenuItem(_("About"))
 	    DRBL_menu_help_about.connect("activate", self.drbl_about)
 	    DRBL_menu_help = gtk.Menu()
 	    DRBL_menu_help.append(DRBL_menu_help_about);
-	    DRBL_menu_root_help = gtk.MenuItem("Help")
+	    DRBL_menu_root_help = gtk.MenuItem(_("Help"))
 	    DRBL_menu_root_help.set_submenu(DRBL_menu_help)
 	    DRBL_menu.append(DRBL_menu_root_help)
 

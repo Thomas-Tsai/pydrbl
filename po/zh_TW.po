@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: drbl_ui 0.1\n"
-"Report-Msgid-Bugs-To: thomas <thomas@nchc.org.tw>\n"
-"POT-Creation-Date: 2010-07-11 21:59+0800\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-07-19 10:37+0800\n"
 "PO-Revision-Date: 2010-07-11 22:00+0800\n"
 "Last-Translator: thomas <thomas@nchc.org.tw>\n"
 "Language-Team: Chinese (traditional)\n"
@@ -15,6 +15,102 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: drbl_ui.py:552
+#: drbl_ui.py:184
+msgid "Quit"
+msgstr "離開"
+
+#: drbl_ui.py:185
+msgid "drblsrv install"
+msgstr "安裝"
+
+#: drbl_ui.py:186
+msgid "drblsrv uninstall"
+msgstr "移除"
+
+#: drbl_ui.py:187
+msgid "drblpush"
+msgstr "設定"
+
+#: drbl_ui.py:188
+msgid "drbl-assistant"
+msgstr "DRBL安裝助手"
+
+#: drbl_ui.py:203
+msgid "DRBL"
+msgstr ""
+
+#: drbl_ui.py:220
+msgid "Linux-gra"
+msgstr "無碟Linux圖形介面"
+
+#: drbl_ui.py:221
+msgid "Linux-txt"
+msgstr "無碟Linux文字介面"
+
+#: drbl_ui.py:222
+msgid "local"
+msgstr "用戶端硬碟開機"
+
+#: drbl_ui.py:223
+msgid "memtest"
+msgstr "用戶端記憶體測試"
+
+#: drbl_ui.py:224
+msgid "Terminal"
+msgstr "用戶端Terminal介面"
+
+#: drbl_ui.py:239
+msgid "Remote"
+msgstr ""
+
+#: drbl_ui.py:244
+msgid "Shutdown"
+msgstr "遠端關機"
+
+#: drbl_ui.py:245
+msgid "Wake On Lan"
+msgstr "網路開機"
+
+#: drbl_ui.py:246
+msgid "Reboot"
+msgstr "重新開機"
+
+#: drbl_ui.py:247
+msgid "PXE MENU"
+msgstr "開機選單"
+
+#: drbl_ui.py:248
+msgid "PXE BG MODE"
+msgstr "開機選單介面"
+
+#: drbl_ui.py:263
+msgid "Boot"
+msgstr ""
+
+#: drbl_ui.py:269
+msgid "List User"
+msgstr "使用者列表"
+
+#: drbl_ui.py:270
+msgid "Add User"
+msgstr "增加使用者"
+
+#: drbl_ui.py:271
+msgid "Del User"
+msgstr "刪除使用者"
+
+#: drbl_ui.py:282
+msgid "User"
+msgstr ""
+
+#: drbl_ui.py:288
+msgid "About"
+msgstr "關於"
+
+#: drbl_ui.py:292
+msgid "Help"
+msgstr ""
+
+#: drbl_ui.py:598
 msgid "Diskless Remote Boot in Linux"
 msgstr "無碟系統"

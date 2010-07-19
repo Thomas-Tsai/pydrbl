@@ -1,0 +1,6 @@
+xgettext --language=Python --keyword=_ --output=drbl_ui.pot drbl_ui.py
+// First time use msginit --input=drbl_ui.pot --locale=zh_TW
+msgmerge --update zh_TW.po drbl_ui.pot
+
+msgfmt --output-file=locale/zh_TW/LC_MESSAGES/drbl_ui.mo zh_TW.po
+
