@@ -819,9 +819,27 @@ class DRBL_GUI_Template():
 	    elif action == "useradd":
 		## add user
 		todo_desc = "\n            DRBL User add:\n"
+		desc_of_single = """
+generate a single user <username> with group <groupname>
+		"""
+		desc_of_range = """
+generate a range of users from <prefix><start> to <prefix><end> with group <groupname>,
+passwd_opt:
+If one digit, it's the length of randomly created password.
+If blank, it will be randomly generated with some (say:8) characters.
+Other setting is the password itself.
+"""
+
 	    elif action == "userdel":
 		## del user
-		todo_desc = "\n            DRBL User List:\n"
+		todo_desc = "\n            DRBL User Delete:\n"
+		desc_of_single = """
+delete a single user <username> with group <groupname>
+		"""
+		desc_of_range = """
+delete a range of users from <prefix><start> to <prefix><end> with group <groupname>,
+"""
+
 
 	    self.main_box.hide()
 	    self.main_box = gtk.VBox(False,0)
@@ -838,9 +856,6 @@ class DRBL_GUI_Template():
 		mode_box = gtk.VBox()
 		## add single user
 		su_box = gtk.HBox()
-		desc_of_single = """
-generate a single user <username> with group <groupname>
-		"""
 		single_label = gtk.Label(desc_of_single)
 		single_label.set_alignment(0, 0)
 		mode_box.pack_start(single_label, False, False, 0)
@@ -865,13 +880,6 @@ generate a single user <username> with group <groupname>
 
 		## add range user
 		su_box = gtk.VBox()
-		desc_of_range = """
-generate a range of users from <prefix><start> to <prefix><end> with group <groupname>,
-passwd_opt:
-If one digit, it's the length of randomly created password.
-If blank, it will be randomly generated with some (say:8) characters.
-Other setting is the password itself.
-"""
 		range_label = gtk.Label(desc_of_range)
 		range_label.set_alignment(0, 0)
 		mode_box.pack_start(range_label, False, False, 0)
@@ -1295,7 +1303,9 @@ Other setting is the password itself.
 		    if action == "useradd":
 			run_cmd = "%s -r %s %s %s %s %s" % (user_add_cmd, prefix, start, end, rgroup, password)
 		    elif action == "userdel":
-			run_cmd = "%s -r %s %s %s %s %s" % (user_del_cmd, prefix, start, end, rgroup, password)
+			run_cmd = "%s -r %s %s %s %s" % (user_del_cmd, prefix, start, end, rgroup)
+		elif prefix == "" and start == "" and  end == "" and rgroup != "" and action == "userdel":
+			run_cmd = "%s -g %s " % (user_del_cmd, rgroup)
 
 	    else:
 		run_cmd = "exit\n"
