@@ -4,16 +4,21 @@ import gobject
 import string
 import gtk
 import os
-import apt
-import aptsources
 import time
 import re
-from aptsources.sourceslist import SourcesList
-import aptsources.distro
+import sys
 from threading import Thread
 import subprocess
+try:
+    import apt
+    import aptsources
+    from aptsources.sourceslist import SourcesList
+    import aptsources.distro
+except:
+    print >> sys.stderr, "Can't import python apt"
 gtk.gdk.threads_init()
 collected_mac = []
+
 template_push_conf = {
     "domain" : "drbl.name",
     "nisdomain" : "penguinzilla",
@@ -260,7 +265,13 @@ class collectmac():
 		FILE.write(mac_addr+'\n')
 	    FILE.close()
 	else:
-	    print "can't find path %s" % path
+	    print "can't find path %s, try to mkdir %s to save mac file" % (path, path)
+	    os.system("mkdir %s" % path)
+	    FILE = open(fname,"w")
+	    for mac_addr in collected_mac:
+		FILE.write(mac_addr+'\n')
+	    FILE.close()
+
 	
 	self.exit_collectmac(self.window, 'delete-event')
 
@@ -279,9 +290,11 @@ class assistant():
 	self.collect_mac = "no"
 	self.total_client_no = "12"
 	self.r_start = {}
-	self.r_end = {}
+	self.r_total = {}
 	## network[netdev] = [ip, [mac|range|uplink], start, end, file]
 	self.network = {}
+	self.linux_dist = ""
+	self.netinst = "n"
 	# window
 	window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 	self.window = window
@@ -380,6 +393,12 @@ class assistant():
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	self.show_linux_dist()
+	if self.linux_dist == "Fedora":
+	    if self.check_selinux() == False:
+		label= gtk.Label("manual disable selinux first")
+	    else:
+		label= gtk.Label("selinux disabled")
+	    rbox.pack_start(label, False, False, 0)
 
 	_desc = """
 	Step 1b: Setup Network
@@ -602,9 +621,17 @@ class assistant():
 	rbox.show_all()
 
     def show_linux_dist(self):
-	check_linux_dist = "lsb_release -is"
-	linux_dist = os.popen(check_linux_dist).readlines()[0][:-1]
-	_desc = "Linux Distribution: %s" % linux_dist
+	lsb = os.popen("lsb_release -is").readlines()
+	issue = os.popen("cat /etc/issue").readlines()
+	if len(lsb) > 0:
+	    self.linux_dist = lsb[0][:-1]
+	elif len(issue) > 0:
+	    linux_dist_str = issue[0][:-1]
+	    self.linux_dist, other = linux_dist_str.split(" ", 1)
+	else:
+	    self.linux_dist = "not support"
+
+	_desc = "Linux Distribution: %s" % self.linux_dist
 	label= gtk.Label(_desc)
 	self.rbox.pack_start(label, False, False, 0)
 
@@ -633,9 +660,14 @@ class assistant():
 	nm = os.popen("ps ax | grep nm-applet | wc -l").readlines()[0][:-1]
 	nm = string.atoi(nm)
 	if nm >= 2:
-	    os.system('apt-get install -y gnome-network-admin')
-	    os.system('apt-get --purge -y remove network-manager')
-	os.system('network-admin')
+	    if self.linux_dist == "Fedora":
+		os.system('chkconfig --del NetworkManager')
+		os.system('chkconfig --del NetworkManagerDispatcher')
+		os.system('chkconfig network on')
+	    else:
+		os.system('apt-get install -y gnome-network-admin')
+		os.system('apt-get --purge -y remove network-manager')
+		os.system('network-admin')
 	self.go_step1(widget)
 
     def go_config_branch(self, widget):
@@ -648,46 +680,62 @@ class assistant():
 	    self.comps = ["stable testing unstable"]
 
     def go_install_drbl(self, widget):
-	print "install" ,self.comps
-	sourceslist = SourcesList ()
-	distro = aptsources.distro.get_distro ()
-	try:
-            distro.get_sources (sourceslist)
-	except:
-	    print "your distribution is remix release!"
-	    return -1
-	has_drbl_repo = 0
-	for source in sourceslist:
-	    print source.uri
-	    if source.disabled == False:
-		if source.uri == "http://free.nchc.org.tw/drbl-core":
-		    print "drbl source added"
-		    has_drbl_repo = 1
-	if has_drbl_repo == 0:
-	    drbl_uri = "http://free.nchc.org.tw/drbl-core"
-	    drbl_dist = "drbl"
-	    drbl_comps = self.comps
-	    distro.add_source (type="deb", uri=drbl_uri, dist=drbl_dist, comps=drbl_comps, comment="DRBL Repository (Add by drbl_assistant)")
-	    sourceslist.backup ()
-	    sourceslist.save ()
+	if self.linux_dist == "Fedora":
+	    os.system('yum -y install perl-Digest-SHA1')
+	    os.system('yum -y install wget')
+	    os.system('rm -f GPG-KEY-DRBL')
+	    os.system('wget http://drbl.nchc.org.tw/GPG-KEY-DRBL')
+	    os.system('rpm --import GPG-KEY-DRBL')
+	    os.system('wget http://drbl.nchc.org.tw/one4all/desktop/download/stable/RPMS/drbl-current.i386.rpm')
+	    os.system('yum -y install drbl-current.i386.rpm')
 
-	add_key_st = os.popen("wget -q http://drbl.nchc.org.tw/GPG-KEY-DRBL -O- | apt-key add -").readlines()[0][:-1]
-	print add_key_st
-	try:
-	    cache = apt.Cache()
-	    pkg = cache['drbl'] # Access the Package object for python-apt
-	    print 'drbl is trusted:', pkg.candidate.origins[0].trusted
-	    pkg.mark_install()
-	    print 'drbl is marked for install:', pkg.marked_install
-	    print 'drbl is (summary):', pkg.candidate.summary
-	    # Now, really install it
-	    cache.commit()
-	except:
-	    print "apt-get install drbl"
-	    os.system("apt-get update")
-	    os.system("apt-get install drbl")
+	elif self.linux_dist == "Ubuntu":
+	    sourceslist = SourcesList ()
+	    distro = aptsources.distro.get_distro ()
+	    try:
+		distro.get_sources (sourceslist)
+	    except:
+		print "your distribution is remix release!"
+		return -1
+	    has_drbl_repo = 0
+	    for source in sourceslist:
+		print source.uri
+		if source.disabled == False:
+		    if source.uri == "http://free.nchc.org.tw/drbl-core":
+			print "drbl source added"
+			has_drbl_repo = 1
+	    if has_drbl_repo == 0:
+		drbl_uri = "http://free.nchc.org.tw/drbl-core"
+		drbl_dist = "drbl"
+		drbl_comps = self.comps
+		distro.add_source (type="deb", uri=drbl_uri, dist=drbl_dist, comps=drbl_comps, comment="DRBL Repository (Add by drbl_assistant)")
+		sourceslist.backup ()
+		sourceslist.save ()
+
+	    add_key_st = os.popen("wget -q http://drbl.nchc.org.tw/GPG-KEY-DRBL -O- | apt-key add -").readlines()[0][:-1]
+	    print add_key_st
+	    try:
+		cache = apt.Cache()
+		pkg = cache['drbl'] # Access the Package object for python-apt
+		print 'drbl is trusted:', pkg.candidate.origins[0].trusted
+		pkg.mark_install()
+		print 'drbl is marked for install:', pkg.marked_install
+		print 'drbl is (summary):', pkg.candidate.summary
+		# Now, really install it
+		cache.commit()
+	    except:
+		print "apt-get install drbl"
+		os.system("apt-get update")
+		os.system("apt-get install drbl")
 	print "install finish"
 
+    def check_selinux(self):
+	is_selinux = os.popen("grep -v ^# /etc/sysconfig/selinux| grep disable").readlines()
+	if len (is_selinux) < 1:
+	    return False
+	else:
+	    return True
+    
     def go_config_arch(self, widget):
 	arch = widget.get_active()
 	self.arch = arch
@@ -700,9 +748,9 @@ class assistant():
 
     def go_drblsrv_i(self, widget):
 
-	srvopt_i = "-i -c n -a n -g n -l 0 -o 1 -k %s -n %s " % (self.arch, self.netinst)
+	srvopt_i = "-i -x n -c n -a n -m n -t n -s -f -g n -l 0 -o 1 -k %s -n %s " % (self.arch, self.netinst)
 	print srvopt_i
-	cmd = "/opt/drbl/sbin/drblsrv %s" % srvopt_i
+	cmd = "yes \"\" |/opt/drbl/sbin/drblsrv %s" % srvopt_i
 	os.system(cmd)
 
     def go_drblpush(self, widget):
@@ -753,10 +801,10 @@ class assistant():
 	    label = gtk.Label("end")
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
-	    self.r_end[dev] = end = gtk.Entry()
-	    end.set_width_chars(15)
-	    self.nettypebox[dev].pack_start(end, False, False ,0)
-	    end.show()
+	    self.r_total[dev] = total = gtk.Entry()
+	    total.set_width_chars(3)
+	    self.nettypebox[dev].pack_start(total, False, False ,0)
+	    total.show()
 	elif widget.get_active_text() == "mac":
 	    self.collect_mac = "yes"
 	    path = "/etc/drbl/"
@@ -800,14 +848,14 @@ class assistant():
 		network[dev][2] = self.r_start[dev].get_text()
 		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
 		network[dev][2] = saddr4
+		network[dev][3] = saddr4 + dev_client_count -1
 	    elif network[dev][1] == "range":
 		network[dev][2] = self.r_start[dev].get_text()
-		network[dev][3] = self.r_end[dev].get_text()
 		saddr1, saddr2, saddr3, saddr4 = network[dev][2].split(".")
-		eaddr1, eaddr2, eaddr3, eaddr4 = network[dev][3].split(".")
+		dev_client_count = string.atoi(self.r_total[dev].get_text())
 		network[dev][2] = saddr4
-		network[dev][3] = eaddr4
-		dev_client_count = string.atoi(eaddr4) - string.atoi(saddr4) + 1
+		eaddr4 = string.atoi(saddr4) + dev_client_count -1
+		network[dev][3] = "%s" % eaddr4
 	    else:
 		dev_client_count = 0
 	    
