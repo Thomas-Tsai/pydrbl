@@ -107,7 +107,8 @@ opt_value_def["drblpush"] = {
     "z":"0",
     "l":"0"
 }
-
+drblsrv_u_options = {"Dist":"n", "DRBL":"n"}
+drblsrv_u_option_desc = {"Dist":"Do you want to remove the small GNU/Linux Distributions", "DRBL":"Do you want to remove the drbl package"}
 drbl_hosts = []
 pxe_menu = []
 user_list = []
@@ -702,6 +703,17 @@ class DRBL_GUI_Template():
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
 
+	    option_box = gtk.VBox()
+	    for option in drblsrv_u_options:
+		_button = gtk.CheckButton(drblsrv_u_option_desc[option])
+		if drblsrv_u_options[option] == "y":
+		    _button.set_active(True)
+		else:
+		    _button.set_active(False)
+		_button.connect("clicked", self.set_option, option, action)
+		option_box.pack_start(_button, False, False, 0)
+	    self.main_box.pack_start(option_box, False, False, 0)
+	    option_box.show_all()
 
 	    action_box = gtk.HBox()
 	    apply_button = gtk.Button("Apply")
@@ -991,14 +1003,21 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    self.main_box.pack_start(label, False, False, 0)
 	    label.show()
 
-	    box = gtk.VBox()
-	    self.list_hosts(box)
-
+	    mode_box = gtk.HBox()
+	    label = gtk.Label("Select menu mode: ")
 	    text_button = gtk.RadioButton(None, "text")
    	    text_button.connect("toggled", self.on_toggled_bg_mode, "text")
 	    gra_button = gtk.RadioButton(text_button, "graphic")
    	    gra_button.connect("toggled", self.on_toggled_bg_mode, "graphic")
             gra_button.set_active(True)
+	    mode_box.pack_start(label, False, False, 0)
+	    mode_box.pack_start(text_button, False, False, 0)
+	    mode_box.pack_start(gra_button, False, False, 0)
+	    self.main_box.pack_start(mode_box, False, False, 4)
+	    mode_box.show_all()
+
+	    box = gtk.VBox()
+	    self.list_hosts(box)
 
 	    action_box = gtk.HBox()
 	    apply_button = gtk.Button("Apply")
@@ -1013,13 +1032,9 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
 
-	    action_box.pack_start(text_button, False, False, 0)
-	    action_box.pack_start(gra_button, False, False, 0)
 	    action_box.pack_end(apply_button, False, False, 0)
 	    action_box.pack_end(cancel_button, False, False, 0)
 	    action_box.pack_end(reset_button, False, False, 0)
-	    text_button.show()
-	    gra_button.show()
 	    apply_button.show()
 	    cancel_button.show()
 	    reset_button.show()
@@ -1210,6 +1225,12 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 			elif type == "combo":
 				opt_value["drblpush"][short_option] = widget.get_active()
 
+	    elif action == "drblsrv_u":
+		if widget.get_active() == True:
+		    drblsrv_u_options[short_option] = "y\ny"
+		elif widget.get_active() == False:
+		    drblsrv_u_options[short_option] = "n"
+
 	def do_apply(self, widget, action):
 	    print action
 
@@ -1224,7 +1245,7 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 			option_str = option_str + tmp_opt
 		run_cmd = "%s -i %s" % (drblsrv_cmd, option_str)
 	    elif action == "drblsrv_u":
-		run_cmd = "%s -u %s" % (drblsrv_cmd, option_str)
+		run_cmd = "%s -u %s << 'EOF'\n%s\n%s\nEOF" % (drblsrv_cmd, option_str, drblsrv_u_options["Dist"], drblsrv_u_options["DRBL"])
 	    elif action == "drblpush":
 		for opt_s in opt_value["drblpush"].keys():
 		    if opt_value["drblpush"][opt_s] != "":
@@ -1324,19 +1345,24 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    self.main_box.show()
 
 	    apply_box = gtk.VBox()
-	    label = gtk.Label("apply...")
+	    display_cmd,other = run_cmd.split("\n", 1)
+	    desc = "\nStart appling your action:\n%s \nPlease Wait...\n" % display_cmd
+	    label = gtk.Label(desc)
 	    label.set_alignment(0, 0)
 	    apply_box.pack_start(label, False, False, 0)
 	    label.show()
 
-	    ## Terminal
-	    self.vterm = vte.Terminal()
-	    self.vterm.fork_command()
-	    self.vterm.feed_child(run_cmd+'\n')
-	    self.vterm.feed_child(close_cmd+'\n')
-	    self.vterm.connect('child-exited', self.do_complete)
-	    apply_box.pack_start(self.vterm,False,False,0)
-	    self.vterm.show()
+	    run_in_terminal = True
+	    if run_in_terminal == True:
+		## Terminal
+		self.vterm = vte.Terminal()
+		self.vterm.set_size(10,20)
+		self.vterm.fork_command()
+		self.vterm.feed_child(run_cmd+'\n')
+		self.vterm.feed_child(close_cmd+'\n')
+		self.vterm.connect('child-exited', self.do_complete)
+		apply_box.pack_start(self.vterm,False,False,0)
+		self.vterm.show()
 	    
 	    action_box = gtk.HBox()
 	    abort_button = gtk.Button("Abort")

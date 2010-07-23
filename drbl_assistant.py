@@ -19,6 +19,7 @@ except:
 gtk.gdk.threads_init()
 collected_mac = []
 
+drbl_etc_path = "/etc/drbl/"
 template_push_conf = {
     "domain" : "drbl.name",
     "nisdomain" : "penguinzilla",
@@ -252,7 +253,7 @@ class collectmac():
 	if self.thr.isAlive() == True:
 	    self.go_stop(widget)
 	#all selected mac saved on collected_mac, and autosave as file mac-ethx.txt
-	path = "/etc/drbl/"
+	path = drbl_etc_path
 	fname = path+"mac-"+self.dev+".txt"
 	current_time = time.strftime("%Y_%m_%d_%H%M", time.gmtime())
 
@@ -798,21 +799,27 @@ class assistant():
 	    label = gtk.Label("start")
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
+	    def_r_start_cmd = "/opt/drbl/bin/drbl-ipcalc %s | grep HostMin | awk {'print $2'}" % dev
+	    def_r_start = os.popen(def_r_start_cmd).readlines()
+	    if len(def_r_start) >= 0:
+		def_r_start_ip = def_r_start[0][:-1]
 	    self.r_start[dev] = start = gtk.Entry()
 	    start.set_width_chars(15)
+	    start.set_text(def_r_start_ip)
 	    self.nettypebox[dev].pack_start(start, False, False ,0)
 	    start.show()
-	    label = gtk.Label("end")
+	    label = gtk.Label("%s clients:" % dev)
 	    self.nettypebox[dev].pack_start(label, False, False ,0)
 	    label.show()
 	    self.r_total[dev] = total = gtk.Entry()
 	    total.set_width_chars(3)
+	    total.set_text("12")
+
 	    self.nettypebox[dev].pack_start(total, False, False ,0)
 	    total.show()
 	elif widget.get_active_text() == "mac":
 	    self.collect_mac = "yes"
-	    path = "/etc/drbl/"
-	    fname = path+"mac-"+dev+".txt"
+	    fname = drbl_etc_path+"mac-"+dev+".txt"
 	    self.network[dev][4] = fname
 	    self.network[dev][1] = "mac"
 	    _button = gtk.Button("Collect MAC Address")
@@ -869,6 +876,8 @@ class assistant():
 	    self.total_client_no = total
 
     def	generate_pushconf(self, fname):
+	if os.path.isdir(drbl_etc_path) == False:
+	    os.system("mkdir %s" % drbl_etc_path)
 	FILE = open(fname, "w")
 	FILE.write("#setup by ui"+'\n')
 	FILE.write("[general]"+'\n')
