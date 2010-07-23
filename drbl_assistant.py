@@ -54,6 +54,49 @@ template_push_conf = {
     #"collect_mac" : "no",
     #"total_client_no" : "12"
 }
+APP_NAME="drbl_ui"
+
+## i18n
+## Copy from "blog learning python" http://www.learningpython.com/2006/12/03/translating-your-pythonpygtk-application/
+#Translation stuff
+
+#Get the local directory since we are not installing anything
+local_path = os.path.realpath(os.path.dirname(sys.argv[0]))
+local_path = os.path.join (local_path, 'locale')
+
+# Init the list of languages to support
+langs = []
+#Check the default locale
+lc, encoding = locale.getdefaultlocale()
+if (lc):
+	#If we have a default, it's the first in the list
+	langs = [lc]
+# Now lets get all of the supported languages on the system
+language = os.environ.get('LANGUAGE', None)
+if (language):
+	"""langage comes back something like en_CA:en_US:en_GB:en
+	on linuxy systems, on Win32 it's nothing, so we need to
+	split it up into a list"""
+	langs += language.split(":")
+"""Now add on to the back of the list the translations that we
+know that we have, our defaults"""
+langs += ["en_CA", "en_US"]
+
+"""Now langs is a list of all of the languages that we are going
+to try to use.  First we check the default, then what the system
+told us, and finally the 'known' list"""
+
+gettext.bindtextdomain(APP_NAME, local_path)
+gettext.textdomain(APP_NAME)
+# Get the language to use
+lang = gettext.translation(APP_NAME, local_path
+	, languages=langs, fallback = True)
+"""Install the language, map _() (which we marked our
+strings to translate with) to lang.gettext() which will
+translate them."""
+_ = lang.gettext
+
+
 
 ## Class for DRBL Setup Assistant
 
@@ -64,10 +107,8 @@ class collect(Thread):
 	self.dev = dev
 	self.stop = 0
 	self.mac_list = mac_list
-	print "thread"+dev
 
     def run(self):
-	print "thread"
 	cmd = "/usr/sbin/tcpdump -tel -c 1 -i %s broadcast and port bootpc" % self.dev
 	while True:
 	    if self.stop == 1:
@@ -76,13 +117,12 @@ class collect(Thread):
 	    data = self.p.communicate()[0]
 	    if data != "":
 		(mac, other) = data.split(" ", 1)
-		print (self.dev, mac)
 		gobject.idle_add(self.update_mac, mac)
 
     def update_mac(self, mac_addr):
 
 	if mac_addr in collected_mac:
-	    print "duplicate"
+	    return
 	else:
 	    collected_mac.append(mac_addr)
 	    self.mac_list.append([mac_addr])
@@ -134,32 +174,32 @@ class collectmac():
 
 	# buttons
 	bbox = gtk.HBox()
-	_button = gtk.Button("start")
+	_button = gtk.Button(_("Start"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_start)
 	bbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("stop")
+	_button = gtk.Button(_("Stop"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_stop)
 	bbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("reset")
+	_button = gtk.Button(_("Reset"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_reset)
 	bbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("load")
+	_button = gtk.Button(_("Load"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_load)
 	bbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("save")
+	_button = gtk.Button(_("Save"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_save)
 	bbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("finish")
+	_button = gtk.Button(_("Finish"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_finish)
 	bbox.pack_start(_button, False, False, 0)
@@ -170,18 +210,15 @@ class collectmac():
 	window.show_all()
 
     def go_start(self, widget):
-	print "start"
 	# thread for collect mac address
 	self.thr=collect(self.dev, self.mac_list)
 	self.thr.start()
 
     def go_stop(self, widget):
-	print "stop"
 	self.thr.kill()
 	self.thr.join()
 
     def go_save(self, widget):
-	print "save"
 	current_time = time.strftime("%Y_%m_%d_%H%M", time.gmtime())
 	mac_fname = "mac-"+self.dev+"-"+current_time+".txt"
 	# get fname
@@ -195,7 +232,6 @@ class collectmac():
 
 	response = dialog.run()
 	if response == gtk.RESPONSE_OK:
-	    print dialog.get_filename(), 'selected'
 	    mac_fname = dialog.get_filename()
 
 	    FILE = open(mac_fname,"w")
@@ -203,18 +239,13 @@ class collectmac():
 		FILE.write(mac_addr+'\n')
 	    FILE.close()
 
-
-	elif response == gtk.RESPONSE_CANCEL:
-	    print 'Closed, no files selected'
 	dialog.destroy()
 
     def go_reset(self, widget):
-	print "reset"
 	gtk.ListStore.clear(self.mac_list)
 	del collected_mac[0:]
 
     def go_load(self, widget):
-	print "load"
 	# Remove old
 	gtk.ListStore.clear(self.mac_list)
 	del collected_mac[0:]
@@ -228,28 +259,20 @@ class collectmac():
 
 	response = dialog.run()
 	if response == gtk.RESPONSE_OK:
-	    print dialog.get_filename(), 'selected'
 	    mac_fname = dialog.get_filename()
 	    FILE = open(mac_fname, "r")
 	    is_addr = '([a-fA-F0-9]{2}[:|\-]?){6}'
 	    for mac_addr in FILE.readlines():
 		mac_addr = mac_addr[:-1]
-		print mac_addr
 		pattern = re.compile(is_addr)
 		if re.match(pattern, mac_addr):
 		    collected_mac.append(mac_addr)
 		    self.mac_list.append([mac_addr])
-		else:
-		    print "not match"
 	    FILE.close()
 
-	elif response == gtk.RESPONSE_CANCEL:
-	    print 'Closed, no files selected'
 	dialog.destroy()
 
     def go_finish(self, widget):
-	print "finish"
-	print self.thr.isAlive()
 	if self.thr.isAlive() == True:
 	    self.go_stop(widget)
 	#all selected mac saved on collected_mac, and autosave as file mac-ethx.txt
@@ -337,7 +360,7 @@ class assistant():
 	rscroll.set_shadow_type(gtk.SHADOW_IN)
 	self.rbox = rbox = gtk.VBox()
 	welcome_box = gtk.VBox()
-	welcome_desc = """
+	welcome_desc = _("""
 
 	Welcome to Diskless Remote Boot in Linux (DRBL)
 	
@@ -350,11 +373,11 @@ class assistant():
 	Step3: Set up the file system for the client in the Server
 	
 	Step4: Setting up clients to use the DRBL environment
-	"""
+	""")
 	wlabel= gtk.Label(welcome_desc)
 	welcome_box.pack_start(wlabel, False, False, 0)
 
-	start_button = gtk.Button("Start")
+	start_button = gtk.Button(_("Start"))
 	start_button.set_size_request(80, 35)
 	id = start_button.connect("clicked", self.go_step1)
 	welcome_box.pack_start(start_button, False, False, 0)
@@ -369,7 +392,6 @@ class assistant():
     def go_stepX(self, widget):
 	list, it = widget.get_selected()
 	stepX = list.get(it, 0)
-	print stepX[0]
 	if stepX[0] == "Step 1":
 	    self.go_step1(widget)
 	elif stepX[0] == "Step 2":
@@ -380,17 +402,16 @@ class assistant():
 	    self.go_step4(widget)
 
     def go_step1(self, widget):
-	print "Step1"
 	self.rbox = rbox = gtk.VBox()
-	_desc = """
+	_desc = _("""
 	Step 1: Setup the Linux Server
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	
-	_desc = """
+	_desc = _("""
 	Step 1a: Setup linux
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	self.show_linux_dist()
@@ -401,18 +422,18 @@ class assistant():
 		label= gtk.Label("selinux disabled")
 	    rbox.pack_start(label, False, False, 0)
 
-	_desc = """
+	_desc = _("""
 	Step 1b: Setup Network
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	self.show_network()
 
-	_button = gtk.Button("Config Network")
+	_button = gtk.Button(_("Config Network"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_config_net)
 	rbox.pack_start(_button, False, False, 0)
-	_button = gtk.Button("Next")
+	_button = gtk.Button(_("Next"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_step2)
 	rbox.pack_start(_button, False, False, 0)
@@ -425,17 +446,16 @@ class assistant():
 
 
     def go_step2(self, widget):
-	print "Step2"
 	self.rbox = rbox = gtk.VBox()
-	_desc = """
+	_desc = _("""
 	Step 2: Setup the clients
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	
-	_desc = """
+	_desc = _("""
 	Step 2a: Install program "drbl"
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	branch = gtk.combo_box_new_text()
@@ -447,14 +467,14 @@ class assistant():
 	branch.append_text('unstable')
 
 	branch.set_active(0)
-	_button = gtk.Button("Install")
+	_button = gtk.Button(_("Install"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_install_drbl)
 	rbox.pack_start(_button, False, False, 0)
 
-	_desc = """
+	_desc = _("""
 	Step 2b: do drblsrv -i
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	label = gtk.Label("Select ARCH ")
@@ -468,16 +488,16 @@ class assistant():
 	arch.append_text('DRBL')
 
 	arch.set_active(2)
-	sopt_button = gtk.CheckButton("Netinstall")
+	sopt_button = gtk.CheckButton(_("Netinstall"))
 	sopt_button.connect("clicked", self.go_config_netinst)
 	rbox.pack_start(sopt_button, False, False, 0)
 
-	_button = gtk.Button("drblsrv -i")
+	_button = gtk.Button(_("drblsrv -i"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_drblsrv_i)
 	rbox.pack_start(_button, False, False, 0)
 
-	_button = gtk.Button("Next")
+	_button = gtk.Button(_("Next"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_step3)
 	rbox.pack_start(_button, False, False, 0)
@@ -490,16 +510,15 @@ class assistant():
 
 
     def go_step3(self, widget):
-	get_uplink = "/opt/drbl/bin/get-all-nic-ip -u-all-nic-ip -u"
-	print "Step3"
+	get_uplink = "/opt/drbl/bin/get-all-nic-ip -u"
 	self.rbox = rbox = gtk.VBox()
-	_desc = """
+	_desc = _("""
 	Step 3: Set up the file system for the client in the Server
-	"""
+	""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 	
-	label = gtk.Label("Select mode for DRBL ")
+	label = gtk.Label(_("Select mode for DRBL "))
 	rbox.pack_start(label, False, False, 0)
 	dmode = gtk.combo_box_new_text()
 	dmode.connect("changed", self.go_config_mode, "DRBL")
@@ -511,7 +530,7 @@ class assistant():
 	dmode.set_active(0)
 	self.drbl_mode = "full_drbl_mode"
 
-	label = gtk.Label("Select mode for Clonezilla ")
+	label = gtk.Label(_("Select mode for Clonezilla"))
 	rbox.pack_start(label, False, False, 0)
 	cmode = gtk.combo_box_new_text()
 	cmode.connect("changed", self.go_config_mode, "Clonezilla")
@@ -565,11 +584,11 @@ class assistant():
 
 	rbox.pack_start(nbox, False, False, 0)
 
-	sopt_button = gtk.Button("drblpush")
+	sopt_button = gtk.Button(_("drblpush"))
 	id = sopt_button.connect("clicked", self.go_drblpush)
 	rbox.pack_start(sopt_button, False, False, 0)
 
-	_button = gtk.Button("Next")
+	_button = gtk.Button(_("Next"))
 	_button.set_size_request(80, 35)
 	id = _button.connect("clicked", self.go_step4)
 	rbox.pack_start(_button, False, False, 0)
@@ -581,14 +600,13 @@ class assistant():
 	rbox.show_all()
 
     def go_step4(self, widget):
-	print "Step4"
 	self.rbox = rbox = gtk.VBox()
-	_desc = """
-	Step 4: Setting up clients to use the DRBL"""
+	_desc = _("""
+	Step 4: Setting up clients to use the DRBL""")
 	label= gtk.Label(_desc)
 	rbox.pack_start(label, False, False, 0)
 
-	step4_desc = """
+	step4_desc = _("""
 	The client has a PXE network interface card
 
 	  * Set the client's BIOS to boot from "LAN" or "network".
@@ -606,7 +624,7 @@ class assistant():
 	The client do not support PXE network interface card
 	Please check http://drbl.sourceforge.net
 
-	That's it. Let client boot and enjoy DRBL!!!"""
+	That's it. Let client boot and enjoy DRBL!!!""")
 	
 	label= gtk.Label(step4_desc)
 	rbox.pack_start(label, False, False, 0)
@@ -647,7 +665,6 @@ class assistant():
 	    if has_dev == "no":
 		self.netdev.append(netdev)
 	    get_ip = "ifconfig %s | grep -A1 %s | grep -v %s | grep \"inet addr\" | sed -e \'s/^.*inet addr:\([0-9\.]\+\).*$/\\1/\'" % (netdev, netdev, netdev)
-	    print get_ip
 	    ip = os.popen(get_ip).readlines()
 	    if len(ip) == 1:
 		ip = ip[0][:-1]
@@ -704,10 +721,8 @@ class assistant():
 		return -1
 	    has_drbl_repo = 0
 	    for source in sourceslist:
-		print source.uri
 		if source.disabled == False:
 		    if source.uri == "http://free.nchc.org.tw/drbl-core":
-			print "drbl source added"
 			has_drbl_repo = 1
 	    if has_drbl_repo == 0:
 		drbl_uri = "http://free.nchc.org.tw/drbl-core"
@@ -718,14 +733,10 @@ class assistant():
 		sourceslist.save ()
 
 	    add_key_st = os.popen("wget -q http://drbl.nchc.org.tw/GPG-KEY-DRBL -O- | apt-key add -").readlines()[0][:-1]
-	    print add_key_st
 	    try:
 		cache = apt.Cache()
 		pkg = cache['drbl'] # Access the Package object for python-apt
-		print 'drbl is trusted:', pkg.candidate.origins[0].trusted
 		pkg.mark_install()
-		print 'drbl is marked for install:', pkg.marked_install
-		print 'drbl is (summary):', pkg.candidate.summary
 		# Now, really install it
 		cache.commit()
 	    except:
@@ -754,7 +765,6 @@ class assistant():
     def go_drblsrv_i(self, widget):
 
 	srvopt_i = "-i -x n -c n -a n -m n -t n -s -f -g n -l 0 -o 1 -k %s -n %s " % (self.arch, self.netinst)
-	print srvopt_i
 	cmd = "yes \"\" |/opt/drbl/sbin/drblsrv %s" % srvopt_i
 	os.system(cmd)
 
@@ -846,7 +856,6 @@ class assistant():
 	devbox.show()
 
     def go_CollectMacAddress(self, widget, dev):
-	print dev
 	collectmac(dev)
 
     def calculate_client_no(self):
@@ -871,7 +880,6 @@ class assistant():
 	    else:
 		dev_client_count = 0
 	    
-	    print dev,dev_client_count
 	    total = total + dev_client_count
 	    self.total_client_no = total
 

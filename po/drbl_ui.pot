@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-19 10:37+0800\n"
+"POT-Creation-Date: 2010-07-23 16:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,102 +16,270 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: drbl_ui.py:184
+#: ../drbl_ui.py:186
 msgid "Quit"
-msgstr "離開"
+msgstr ""
 
-#: drbl_ui.py:185
+#: ../drbl_ui.py:187
 msgid "drblsrv install"
-msgstr "安裝"
+msgstr ""
 
-#: drbl_ui.py:186
+#: ../drbl_ui.py:188
 msgid "drblsrv uninstall"
-msgstr "移除"
+msgstr ""
 
-#: drbl_ui.py:187
+#: ../drbl_ui.py:189 ../drbl_assistant.py:589
 msgid "drblpush"
-msgstr "設定"
+msgstr ""
 
-#: drbl_ui.py:188
+#: ../drbl_ui.py:190
 msgid "drbl-assistant"
-msgstr "DRBL安裝助手"
+msgstr ""
 
-#: drbl_ui.py:203
+#: ../drbl_ui.py:205
 msgid "DRBL"
 msgstr ""
 
-#: drbl_ui.py:220
+#: ../drbl_ui.py:222
 msgid "Linux-gra"
-msgstr "無碟Linux圖形介面"
+msgstr ""
 
-#: drbl_ui.py:221
+#: ../drbl_ui.py:223
 msgid "Linux-txt"
-msgstr "無碟Linux文字介面"
+msgstr ""
 
-#: drbl_ui.py:222
+#: ../drbl_ui.py:224
 msgid "local"
-msgstr "用戶端硬碟開機"
+msgstr ""
 
-#: drbl_ui.py:223
+#: ../drbl_ui.py:225
 msgid "memtest"
-msgstr "用戶端記憶體測試"
+msgstr ""
 
-#: drbl_ui.py:224
+#: ../drbl_ui.py:226
 msgid "Terminal"
-msgstr "用戶端Terminal介面"
+msgstr ""
 
-#: drbl_ui.py:239
+#: ../drbl_ui.py:241
 msgid "Remote"
 msgstr ""
 
-#: drbl_ui.py:244
+#: ../drbl_ui.py:246
 msgid "Shutdown"
-msgstr "遠端關機"
+msgstr ""
 
-#: drbl_ui.py:245
+#: ../drbl_ui.py:247
 msgid "Wake On Lan"
-msgstr "網路開機"
+msgstr ""
 
-#: drbl_ui.py:246
+#: ../drbl_ui.py:248
 msgid "Reboot"
-msgstr "重新開機"
+msgstr ""
 
-#: drbl_ui.py:247
+#: ../drbl_ui.py:249
 msgid "PXE MENU"
-msgstr "開機選單"
+msgstr ""
 
-#: drbl_ui.py:248
+#: ../drbl_ui.py:250
 msgid "PXE BG MODE"
-msgstr "開機選單介面"
+msgstr ""
 
-#: drbl_ui.py:263
+#: ../drbl_ui.py:265
 msgid "Boot"
 msgstr ""
 
-#: drbl_ui.py:269
+#: ../drbl_ui.py:271
 msgid "List User"
-msgstr "使用者列表"
+msgstr ""
 
-#: drbl_ui.py:270
+#: ../drbl_ui.py:272
 msgid "Add User"
-msgstr "增加使用者"
+msgstr ""
 
-#: drbl_ui.py:271
+#: ../drbl_ui.py:273
 msgid "Del User"
-msgstr "刪除使用者"
+msgstr ""
 
-#: drbl_ui.py:282
+#: ../drbl_ui.py:284
 msgid "User"
 msgstr ""
 
-#: drbl_ui.py:288
+#: ../drbl_ui.py:290
 msgid "About"
-msgstr "關於"
+msgstr ""
 
-#: drbl_ui.py:292
+#: ../drbl_ui.py:294
 msgid "Help"
 msgstr ""
 
-#: drbl_ui.py:598
+#: ../drbl_ui.py:599
 msgid "Diskless Remote Boot in Linux"
-msgstr "無碟系統"
+msgstr ""
+
+#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:964
+#: ../drbl_ui.py:1023 ../drbl_ui.py:1076 ../drbl_ui.py:1123
+msgid "Apply"
+msgstr ""
+
+#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:968
+#: ../drbl_ui.py:1027 ../drbl_ui.py:1080 ../drbl_ui.py:1127
+msgid "Cancel"
+msgstr ""
+
+#: ../drbl_ui.py:666 ../drbl_ui.py:805 ../drbl_ui.py:972 ../drbl_ui.py:1031
+#: ../drbl_ui.py:1084 ../drbl_ui.py:1131 ../drbl_assistant.py:187
+msgid "Reset"
+msgstr ""
+
+#: ../drbl_ui.py:721
+msgid "clicked"
+msgstr ""
+
+#: ../drbl_ui.py:1072 ../drbl_assistant.py:438 ../drbl_assistant.py:502
+#: ../drbl_assistant.py:593
+msgid "Next"
+msgstr ""
+
+#: ../drbl_ui.py:1368
+msgid "Abort"
+msgstr ""
+
+#: ../drbl_ui.py:1369 ../drbl_assistant.py:202
+msgid "Finish"
+msgstr ""
+
+#: ../drbl_assistant.py:177 ../drbl_assistant.py:382
+msgid "Start"
+msgstr ""
+
+#: ../drbl_assistant.py:182
+msgid "Stop"
+msgstr ""
+
+#: ../drbl_assistant.py:192
+msgid "Load"
+msgstr ""
+
+#: ../drbl_assistant.py:197
+msgid "Save"
+msgstr ""
+
+#: ../drbl_assistant.py:365
+msgid ""
+"\n"
+"\n"
+"\tWelcome to Diskless Remote Boot in Linux (DRBL)\n"
+"\t\n"
+"\tPlease follow the steps for DRBL Environment\n"
+"\n"
+"\tStep1: Setup the Linux Server\n"
+"\t\n"
+"\tStep2: Setup the clients\n"
+"\t\n"
+"\tStep3: Set up the file system for the client in the Server\n"
+"\t\n"
+"\tStep4: Setting up clients to use the DRBL environment\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:408
+msgid ""
+"\n"
+"\tStep 1: Setup the Linux Server\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:414
+msgid ""
+"\n"
+"\tStep 1a: Setup linux\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:427
+msgid ""
+"\n"
+"\tStep 1b: Setup Network\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:434
+msgid "Config Network"
+msgstr ""
+
+#: ../drbl_assistant.py:452
+msgid ""
+"\n"
+"\tStep 2: Setup the clients\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:458
+msgid ""
+"\n"
+"\tStep 2a: Install program \"drbl\"\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:472
+msgid "Install"
+msgstr ""
+
+#: ../drbl_assistant.py:477
+msgid ""
+"\n"
+"\tStep 2b: do drblsrv -i\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:493
+msgid "Netinstall"
+msgstr ""
+
+#: ../drbl_assistant.py:497
+msgid "drblsrv -i"
+msgstr ""
+
+#: ../drbl_assistant.py:517
+msgid ""
+"\n"
+"\tStep 3: Set up the file system for the client in the Server\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:523
+msgid "Select mode for DRBL "
+msgstr ""
+
+#: ../drbl_assistant.py:535
+msgid "Select mode for Clonezilla"
+msgstr ""
+
+#: ../drbl_assistant.py:606
+msgid ""
+"\n"
+"\tStep 4: Setting up clients to use the DRBL"
+msgstr ""
+
+#: ../drbl_assistant.py:611
+msgid ""
+"\n"
+"\tThe client has a PXE network interface card\n"
+"\n"
+"\t  * Set the client's BIOS to boot from \"LAN\" or \"network\".\n"
+"\n"
+"\t  * Take one of the Asus motherboards for example,\n"
+"\n"
+"\t      1. You will see OnBoard LAN, there is a subfuncton \n"
+"\t\t \"OnBoard LAN BOOT ROM\", normally it's disabled, \n"
+"\t\t you have to enable it.\n"
+"\t      2. Usually you have to reboot it now, make the \n"
+"\t\t function re-read by BIOS.\n"
+"\t      3. After rebooting, enter BIOS setting again, this time, \n"
+"\t\t you have to make LAN boot as the 1st boot device.\n"
+"\n"
+"\tThe client do not support PXE network interface card\n"
+"\tPlease check http://drbl.sourceforge.net\n"
+"\n"
+"\tThat's it. Let client boot and enjoy DRBL!!!"
+msgstr ""

@@ -134,50 +134,51 @@ pxe_bg_cmd = "switch-pxe-bg-mode"
 user_add_cmd = "/opt/drbl/sbin/drbl-useradd"
 user_del_cmd = "/opt/drbl/sbin/drbl-userdel"
 
+## i18n
+## Copy from "blog learning python" http://www.learningpython.com/2006/12/03/translating-your-pythonpygtk-application/
+#Translation stuff
+
+#Get the local directory since we are not installing anything
+local_path = os.path.realpath(os.path.dirname(sys.argv[0]))
+local_path = os.path.join (local_path, 'locale')
+
+# Init the list of languages to support
+langs = []
+#Check the default locale
+lc, encoding = locale.getdefaultlocale()
+if (lc):
+	#If we have a default, it's the first in the list
+	langs = [lc]
+# Now lets get all of the supported languages on the system
+language = os.environ.get('LANGUAGE', None)
+if (language):
+	"""langage comes back something like en_CA:en_US:en_GB:en
+	on linuxy systems, on Win32 it's nothing, so we need to
+	split it up into a list"""
+	langs += language.split(":")
+"""Now add on to the back of the list the translations that we
+know that we have, our defaults"""
+langs += ["en_CA", "en_US"]
+
+"""Now langs is a list of all of the languages that we are going
+to try to use.  First we check the default, then what the system
+told us, and finally the 'known' list"""
+
+gettext.bindtextdomain(APP_NAME, local_path)
+gettext.textdomain(APP_NAME)
+# Get the language to use
+lang = gettext.translation(APP_NAME, local_path
+	, languages=langs, fallback = True)
+"""Install the language, map _() (which we marked our
+strings to translate with) to lang.gettext() which will
+translate them."""
+_ = lang.gettext
+
+
 class DRBL_GUI_Template():
 	vterm = vte.Terminal()
 
 	def __init__(self):
-
-	    ## Copy from "blog learning python" http://www.learningpython.com/2006/12/03/translating-your-pythonpygtk-application/
-	    #Translation stuff
-
-	    #Get the local directory since we are not installing anything
-	    self.local_path = os.path.realpath(os.path.dirname(sys.argv[0]))
-	    self.local_path = os.path.join (self.local_path, 'locale')
-
-	    # Init the list of languages to support
-	    langs = []
-	    #Check the default locale
-	    lc, encoding = locale.getdefaultlocale()
-	    if (lc):
-		    #If we have a default, it's the first in the list
-		    langs = [lc]
-	    # Now lets get all of the supported languages on the system
-	    language = os.environ.get('LANGUAGE', None)
-	    if (language):
-		    """langage comes back something like en_CA:en_US:en_GB:en
-		    on linuxy systems, on Win32 it's nothing, so we need to
-		    split it up into a list"""
-		    langs += language.split(":")
-	    """Now add on to the back of the list the translations that we
-	    know that we have, our defaults"""
-	    langs += ["en_CA", "en_US"]
-
-	    """Now langs is a list of all of the languages that we are going
-	    to try to use.  First we check the default, then what the system
-	    told us, and finally the 'known' list"""
-
-	    gettext.bindtextdomain(APP_NAME, self.local_path)
-	    gettext.textdomain(APP_NAME)
-	    # Get the language to use
-	    self.lang = gettext.translation(APP_NAME, self.local_path
-		    , languages=langs, fallback = True)
-	    """Install the language, map _() (which we marked our
-	    strings to translate with) to self.lang.gettext() which will
-	    translate them."""
-	    _ = self.lang.gettext
-
 
 	    DRBL_menu = gtk.MenuBar()
 
@@ -584,7 +585,6 @@ class DRBL_GUI_Template():
 		    i = i+1
 
 	def drbl_about(self, widget):
-	    _ = self.lang.gettext
 	    _about = gtk.AboutDialog()
 	    _about.set_name('DRBL')
 	    _about.set_logo(gtk.gdk.pixbuf_new_from_file("drbl.png"))		
@@ -655,15 +655,15 @@ class DRBL_GUI_Template():
 		    sopt_box.show()
 
 	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
-	    reset_button = gtk.Button("Reset")
+	    reset_button = gtk.Button(_("Reset"))
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.drblsrv_i)
 
@@ -716,11 +716,11 @@ class DRBL_GUI_Template():
 	    option_box.show_all()
 
 	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
-	    id = apply_button.connect("clicked", self.do_apply, action)
+	    id = apply_button.connect(_("clicked"), self.do_apply, action)
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
@@ -790,7 +790,7 @@ class DRBL_GUI_Template():
 		    sopt_box.show()
 
 	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
@@ -798,11 +798,11 @@ class DRBL_GUI_Template():
 	    lazy_button.set_size_request(80, 35)
 	    id = lazy_button.connect("clicked", self.do_apply, "lazypush")
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
-	    reset_button = gtk.Button("Reset")
+	    reset_button = gtk.Button(_("Reset"))
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.drblpush)
 
@@ -941,16 +941,17 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		su_box.pack_start(entry_box, False, False, 0)
 		entry_box.show()
 
-		entry_box = gtk.HBox()
-		password_label = gtk.Label("password: ")
-		password_label.set_alignment(0, 0)
 		self.password = gtk.Entry()
-		entry_box.pack_start(password_label, False, False, 0)
-		entry_box.pack_start(self.password, False, False, 0)
-		password_label.show()
-		self.password.show()
-		su_box.pack_start(entry_box, False, False, 0)
-		entry_box.show()
+		if action == "useradd":
+		    entry_box = gtk.HBox()
+		    password_label = gtk.Label("password: ")
+		    password_label.set_alignment(0, 0)
+		    entry_box.pack_start(password_label, False, False, 0)
+		    entry_box.pack_start(self.password, False, False, 0)
+		    password_label.show()
+		    self.password.show()
+		    su_box.pack_start(entry_box, False, False, 0)
+		    entry_box.show()
 
 		mode_box.pack_start(su_box, False, False, 2)
 		su_box.show()
@@ -961,15 +962,15 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 
 	    if action != "userlist":
 		action_box = gtk.HBox()
-		apply_button = gtk.Button("Apply")
+		apply_button = gtk.Button(_("Apply"))
 		apply_button.set_size_request(80, 35)
 		id = apply_button.connect("clicked", self.do_apply, action)
 
-		cancel_button = gtk.Button("Cancel")
+		cancel_button = gtk.Button(_("Cancel"))
 		cancel_button.set_size_request(80, 35)
 		id = cancel_button.connect("clicked", self.do_cancel)
 		
-		reset_button = gtk.Button("Reset")
+		reset_button = gtk.Button(_("Reset"))
 		reset_button.set_size_request(80, 35)
 		id = reset_button.connect("clicked", self.action_for_user, action)
 
@@ -1020,15 +1021,15 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    self.list_hosts(box)
 
 	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
-	    reset_button = gtk.Button("Reset")
+	    reset_button = gtk.Button(_("Reset"))
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
 
@@ -1069,19 +1070,19 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		self.list_pxe_menu(box)
 
 	    action_box = gtk.HBox()
-	    next_button = gtk.Button("Next")
+	    next_button = gtk.Button(_("Next"))
 	    next_button.set_size_request(80, 35)
 	    id = next_button.connect("clicked", self.action_for_pxe_menu, action, 1)
 
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
-	    reset_button = gtk.Button("Reset")
+	    reset_button = gtk.Button(_("Reset"))
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
 
@@ -1120,15 +1121,15 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    self.list_hosts(box)
 
 	    action_box = gtk.HBox()
-	    apply_button = gtk.Button("Apply")
+	    apply_button = gtk.Button(_("Apply"))
 	    apply_button.set_size_request(80, 35)
 	    id = apply_button.connect("clicked", self.do_apply, action)
 
-	    cancel_button = gtk.Button("Cancel")
+	    cancel_button = gtk.Button(_("Cancel"))
 	    cancel_button.set_size_request(80, 35)
 	    id = cancel_button.connect("clicked", self.do_cancel)
 	    
-	    reset_button = gtk.Button("Reset")
+	    reset_button = gtk.Button(_("Reset"))
 	    reset_button.set_size_request(80, 35)
 	    id = reset_button.connect("clicked", self.action_for_host_mode, action)
 
@@ -1313,26 +1314,32 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		end = self.end.get_text()
 		rgroup = self.group.get_text()
 		password = self.password.get_text()
+		hash_password = ""
+		remove_home = "y"
+		remove_all_group = "y"
+		set_continue = "y"
 		if name != "":
 		    print (name, group)
 		    if group == "":
 			group = name
 		    if action == "useradd":
-			run_cmd = "%s -s %s %s" % (user_add_cmd, name, group)
+			run_cmd = "%s -s %s %s <<\'EOF\'\n%s\nEOF\n" % (user_add_cmd, name, group, hash_password)
 		    elif action == "userdel":
-			run_cmd = "%s -s %s %s" % (user_del_cmd, name, group)
+			run_cmd = "%s -s %s %s <<\'EOF\'\n%s\nEOF\n" % (user_del_cmd, name, group, remove_home)
 
-		elif prefix != "" and start !="" and end != "" and rgroup != "":
+		elif prefix != "" and start !="" and end != "":
 		    if password == "":
 			password = 8
 		    print (prefix, start, end, rgroup, password)
 		    if action == "useradd":
 			run_cmd = "%s -r %s %s %s %s %s" % (user_add_cmd, prefix, start, end, rgroup, password)
 		    elif action == "userdel":
-			run_cmd = "%s -r %s %s %s %s" % (user_del_cmd, prefix, start, end, rgroup)
+			run_cmd = "%s -r %s %s %s %s <<\'EOF\'\n%s\n%s\nEOF\n" % (user_del_cmd, prefix, start, end, rgroup, remove_home, remove_all_group)
 		elif prefix == "" and start == "" and  end == "" and rgroup != "" and action == "userdel":
-			run_cmd = "%s -g %s " % (user_del_cmd, rgroup)
-
+			run_cmd = "%s -g %s <<\'EOF\'\n%s\n%s\n%s\nEOF\n" % (user_del_cmd, rgroup, set_continue, remove_home, remove_all_group)
+		else:
+		    run_cmd = "exit\n"
+		    print "not impliement."
 	    else:
 		run_cmd = "exit\n"
 		print "not impliement."
@@ -1345,7 +1352,10 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    self.main_box.show()
 
 	    apply_box = gtk.VBox()
-	    display_cmd,other = run_cmd.split("\n", 1)
+	    try:
+		display_cmd,other = run_cmd.split("\n", 1)
+	    except:
+		display_cmd = run_cmd
 	    desc = "\nStart appling your action:\n%s \nPlease Wait...\n" % display_cmd
 	    label = gtk.Label(desc)
 	    label.set_alignment(0, 0)
@@ -1365,8 +1375,8 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		self.vterm.show()
 	    
 	    action_box = gtk.HBox()
-	    abort_button = gtk.Button("Abort")
-	    finish_button = gtk.Button("Finish")
+	    abort_button = gtk.Button(_("Abort"))
+	    finish_button = gtk.Button(_("Finish"))
 	    id = abort_button.connect("clicked", self.do_cancel)
 	    id = finish_button.connect("clicked", self.do_cancel)
 	    action_box.pack_end(finish_button, False, False, 0)
