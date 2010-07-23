@@ -1259,6 +1259,11 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		run_cmd_hide = ""
 		dcs_options = ""
 		dcs_options = "%s %s" % (dcs_options, self.get_host_option())
+		for st, menu, desc in update_pxe_menu:
+		    if st == True:
+			reveal_img.append(menu)
+		    else:
+			hide_img.append(menu)
 		
 		if len(reveal_img) > 0:
 		    reveal_options = " -i ".join(reveal_img)
