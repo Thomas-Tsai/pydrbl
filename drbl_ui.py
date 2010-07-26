@@ -1413,13 +1413,21 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    DRBL_BG_image = gtk.Image()
 	    DRBL_BG_image.set_from_file("drblwp.png")
 
+	    ## branch for hualien
+	    hualien_msg = _("Thanks donate from Hualien county government")
+	    label = gtk.Label(hualien_msg)
+	    fontdesc = pango.FontDescription("Purisa 16")
+	    label.modify_font(fontdesc)
+
 	    bg_box = gtk.VBox(False, 0)
 	    bg_box.pack_start(DRBL_BG_image, False, False, 0)
 	    DRBL_BG_image.show()
-	    self.main_box.pack_start(bg_box, False, False, 0)
+	    self.main_box.pack_start(label, False, False, 20)
+	    label.show()
+	    self.main_box.pack_end(bg_box, False, False, 0)
 	    bg_box.show()
 
-	    self.box.pack_start(self.main_box, True, True, 0)
+	    self.box.pack_end(self.main_box, True, True, 0)
 	    self.main_box.show()
 	    self.box.show()
 
