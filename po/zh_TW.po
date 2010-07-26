@@ -7,13 +7,259 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drbl_ui 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-23 16:52+0800\n"
+"POT-Creation-Date: 2010-07-26 13:42+0800\n"
 "PO-Revision-Date: 2010-07-11 22:00+0800\n"
 "Last-Translator: thomas <thomas@nchc.org.tw>\n"
 "Language-Team: Chinese (traditional)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../drbl_assistant.py:177 ../drbl_assistant.py:380
+msgid "Start"
+msgstr "開始"
+
+#: ../drbl_assistant.py:182
+msgid "Stop"
+msgstr "停止"
+
+#: ../drbl_assistant.py:187 ../drbl_ui.py:666 ../drbl_ui.py:805
+#: ../drbl_ui.py:973 ../drbl_ui.py:1032 ../drbl_ui.py:1085 ../drbl_ui.py:1132
+msgid "Reset"
+msgstr "重設"
+
+#: ../drbl_assistant.py:192
+msgid "Load"
+msgstr "載入"
+
+#: ../drbl_assistant.py:197
+msgid "Save"
+msgstr "存檔"
+
+#: ../drbl_assistant.py:202 ../drbl_ui.py:1379
+msgid "Finish"
+msgstr "完成"
+
+#: ../drbl_assistant.py:363
+msgid ""
+"\n"
+"\n"
+"\tWelcome to Diskless Remote Boot in Linux (DRBL)\n"
+"\t\n"
+"\tPlease follow the steps for DRBL Environment\n"
+"\n"
+"\tStep1: Setup the Linux Server\n"
+"\t\n"
+"\tStep2: Setup the clients\n"
+"\t\n"
+"\tStep3: Set up the file system for the client in the Server\n"
+"\t\n"
+"\tStep4: Setting up clients to use the DRBL environment\n"
+"\t"
+msgstr ""
+"\n"
+"\n"
+"\tDRBL 安裝助手\n"
+"\t\n"
+"\t請依照以下步驟完成安裝\n"
+"\n"
+"\tStep1: 安裝您的 GNU/Linux 套件\n"
+"\t\n"
+"\tStep2: 在 server 上相關套件的安裝\n"
+"\t\n"
+"\tStep3: 在 server 上建置 client 的檔案系統\n"
+"\t\n"
+"\tStep4: 讓client端(也就是學生用的機器)網路開機\n"
+"\t"
+
+#: ../drbl_assistant.py:406
+msgid ""
+"\n"
+"\tStep 1: Setup the Linux Server\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟一、安裝您的 GNU/Linux 套件\n"
+"\t"
+
+#: ../drbl_assistant.py:412
+msgid ""
+"\n"
+"\tStep 1a: Setup linux\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟1a, 設定 Linux 主機\n"
+"\t"
+
+#: ../drbl_assistant.py:425
+msgid ""
+"\n"
+"\tStep 1b: Setup Network\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟1b, 設定主機網路\n"
+"\t"
+
+#: ../drbl_assistant.py:432
+msgid "Config Network"
+msgstr "修改網路設定"
+
+#: ../drbl_assistant.py:436 ../drbl_assistant.py:500 ../drbl_assistant.py:591
+#: ../drbl_ui.py:1073
+msgid "Next"
+msgstr "繼續"
+
+#: ../drbl_assistant.py:450
+msgid ""
+"\n"
+"\tStep 2: Setup the clients\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟二、在 server 上相關套件的安裝\n"
+"\t"
+
+#: ../drbl_assistant.py:456
+msgid ""
+"\n"
+"\tStep 2a: Install program \"drbl\"\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟2a, 安裝DRBL主程式\n"
+"\t"
+
+#: ../drbl_assistant.py:470
+msgid "Install"
+msgstr "安裝"
+
+#: ../drbl_assistant.py:475
+msgid ""
+"\n"
+"\tStep 2b: do drblsrv -i\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟2b, 進行 drbldrv -i\n"
+"\t"
+
+#: ../drbl_assistant.py:491
+msgid "Netinstall"
+msgstr "提供網路安裝套件"
+
+#: ../drbl_assistant.py:495
+msgid "drblsrv -i"
+msgstr ""
+
+#: ../drbl_assistant.py:515
+msgid ""
+"\n"
+"\tStep 3: Set up the file system for the client in the Server\n"
+"\t"
+msgstr ""
+"\n"
+"\t步驟三、在 server 上建置 client 的檔案系統\n"
+"\t"
+
+#: ../drbl_assistant.py:521
+msgid "Select mode for DRBL "
+msgstr "選擇 DRBL 模式"
+
+#: ../drbl_assistant.py:533
+msgid "Select mode for Clonezilla"
+msgstr "選擇 Clonezilla 模式"
+
+#: ../drbl_assistant.py:587 ../drbl_ui.py:189
+msgid "drblpush"
+msgstr "drblpush"
+
+#: ../drbl_assistant.py:604
+msgid ""
+"\n"
+"\tStep 4: Setting up clients to use the DRBL"
+msgstr ""
+"\n"
+"\t步驟四、讓client端(也就是學生用的機器)網路開機"
+
+#: ../drbl_assistant.py:609
+msgid ""
+"\n"
+"\tThe client has a PXE network interface card\n"
+"\n"
+"\t  * Set the client's BIOS to boot from \"LAN\" or \"network\".\n"
+"\n"
+"\t  * Take one of the Asus motherboards for example,\n"
+"\n"
+"\t      1. You will see OnBoard LAN, there is a subfuncton \n"
+"\t\t \"OnBoard LAN BOOT ROM\", normally it's disabled, \n"
+"\t\t you have to enable it.\n"
+"\t      2. Usually you have to reboot it now, make the \n"
+"\t\t function re-read by BIOS.\n"
+"\t      3. After rebooting, enter BIOS setting again, this time, \n"
+"\t\t you have to make LAN boot as the 1st boot device.\n"
+"\n"
+"\tThe client do not support PXE network interface card\n"
+"\tPlease check http://drbl.sourceforge.net\n"
+"\n"
+"\tThat's it. Let client boot and enjoy DRBL!!!"
+msgstr ""
+"\n"
+"\t用戶端機器的網卡有PXE網路開機功能\n"
+"\t將用戶端電腦的BIOS設定成網路開機就可以當DRBL client了。\n"
+"\t2003年以後新購的電腦，主機板內建的網卡幾乎都有PXE功能，\n"
+"\t把PXE網路開機功能開啟。請參考你的主機板手冊為準。\n"
+"\n"
+"\t一般設定方式：\n"
+"\tBIOS->Advanced->Onboard Devices Configuration \n"
+"\t->Onboard LAN->Onboard LAN Boot Rom->Enabled。\n"
+"\n"
+"\t另外，以下建議調整，以方便由DRBL server集中管理: \n"
+"\n"
+"\t(1) Boot order設成優先順序為LAN -> CDROM -> HD \n"
+"\t(2)開啟Wake on LAN (可能在APM Configuration \n"
+"\t-> Power On By PCI Devices)。\n"
+"\n"
+"\t如果不支援，請參考DRBL網頁說明。\n"
+"\t設定設好後，把用戶端的電腦開機，正常的話，\n"
+"\t您應該可以看到用戶端電腦已經開機進去了X-window了"
+
+#: ../drbl_ui.py:64
+msgid "Shutdown DRBL clients now"
+msgstr "關閉用戶端機器"
+
+#: ../drbl_ui.py:65
+msgid "Turn on DRBL clients by Wake-on-LAN now"
+msgstr "網路啟動用戶端機器"
+
+#: ../drbl_ui.py:66
+msgid "Reboot DRBL clients now"
+msgstr "重新啟動用戶端機器"
+
+#: ../drbl_ui.py:67
+msgid ""
+"Client machine will boot from DRBL server, and enter graphic mode, for "
+"powerful client."
+msgstr "用戶端機器設定為無碟圖形模式"
+
+#: ../drbl_ui.py:68
+msgid ""
+"Client machine will boot from DRBL server, and enter text mode, for powerful "
+"client."
+msgstr "用戶端機器設定為無碟文字模式"
+
+#: ../drbl_ui.py:69
+msgid "Remote boot to run memtest86"
+msgstr "用戶端設定為記憶體測試"
+
+#: ../drbl_ui.py:70
+msgid "Remote display Linux, terminal mode"
+msgstr "用戶端設定為終端機模式"
+
+#: ../drbl_ui.py:71
+msgid "Client machine will boot from local (now PXE only)"
+msgstr "用戶端設定為本機開機模式"
 
 #: ../drbl_ui.py:186
 msgid "Quit"
@@ -26,10 +272,6 @@ msgstr "安裝 DRBL"
 #: ../drbl_ui.py:188
 msgid "drblsrv uninstall"
 msgstr "移除 DRBL"
-
-#: ../drbl_ui.py:189 ../drbl_assistant.py:589
-msgid "drblpush"
-msgstr "drblpush"
 
 #: ../drbl_ui.py:190
 msgid "drbl-assistant"
@@ -115,226 +357,128 @@ msgstr ""
 msgid "Diskless Remote Boot in Linux"
 msgstr "無碟系統"
 
-#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:964
-#: ../drbl_ui.py:1023 ../drbl_ui.py:1076 ../drbl_ui.py:1123
+#: ../drbl_ui.py:606
+msgid ""
+"\n"
+"\t    Start to install DRBL and related packages by drblsrv\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+"\n"
+"\t    在 server 上相關套件的安裝\n"
+"\n"
+"\t    "
+
+#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:965
+#: ../drbl_ui.py:1024 ../drbl_ui.py:1077 ../drbl_ui.py:1124
 msgid "Apply"
 msgstr "套用"
 
-#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:968
-#: ../drbl_ui.py:1027 ../drbl_ui.py:1080 ../drbl_ui.py:1127
+#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:969
+#: ../drbl_ui.py:1028 ../drbl_ui.py:1081 ../drbl_ui.py:1128
 msgid "Cancel"
 msgstr "取消"
 
-#: ../drbl_ui.py:666 ../drbl_ui.py:805 ../drbl_ui.py:972 ../drbl_ui.py:1031
-#: ../drbl_ui.py:1084 ../drbl_ui.py:1131 ../drbl_assistant.py:187
-msgid "Reset"
-msgstr "重設"
+#: ../drbl_ui.py:692
+msgid ""
+"\n"
+"\t    Uninstall DRBL and data by drblsrv -u\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+"\n"
+"\t   移除DRBL相關套件與用戶端檔案系統\n"
+"\n"
+"\t    "
 
 #: ../drbl_ui.py:721
 msgid "clicked"
 msgstr ""
 
-#: ../drbl_ui.py:1072 ../drbl_assistant.py:438 ../drbl_assistant.py:502
-#: ../drbl_assistant.py:593
-msgid "Next"
-msgstr "繼續"
+#: ../drbl_ui.py:742
+msgid ""
+"\n"
+"\t    Start to config drbl environment with drblpush\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+"\n"
+"\t   在 server 上建置 client 的檔案系統\n"
+"\n"
+"\t    "
 
-#: ../drbl_ui.py:1368
+#: ../drbl_ui.py:834
+msgid ""
+"\n"
+"generate a single user <username> with group <groupname>\n"
+"\t\t"
+msgstr ""
+"\n"
+"新增使用者\n"
+"\t\t"
+
+#: ../drbl_ui.py:837
+msgid ""
+"\n"
+"generate a range of users from <prefix><start> to <prefix><end> with group "
+"<groupname>,\n"
+"passwd_opt:\n"
+"If one digit, it's the length of randomly created password.\n"
+"If blank, it will be randomly generated with some (say:8) characters.\n"
+"Other setting is the password itself.\n"
+msgstr ""
+"\n"
+"新增大量使用者， 開始新增 <prefix><start> 到 <prefix><end> 到群組 "
+"<groupname>,\n"
+"passwd_opt:\n"
+"輸入一個數字代表自動亂數密碼長度\n"
+"保持空白，自動建立8字元亂數密碼\n"
+"其他則是密碼明碼\n"
+
+#: ../drbl_ui.py:848
+msgid ""
+"\n"
+"delete a single user <username> with group <groupname>\n"
+"\t\t"
+msgstr ""
+"\n"
+"刪除使用者\n"
+"\t\t"
+
+#: ../drbl_ui.py:851
+msgid ""
+"\n"
+"delete a range of users from <prefix><start> to <prefix><end> with group "
+"<groupname>,\n"
+msgstr ""
+"\n"
+"大量刪除使用者\n"
+"\n"
+
+#: ../drbl_ui.py:995
+msgid ""
+"\n"
+"\t    To set the default PXE client menu:\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+"\n"
+"\t    設定PXE選單介面\n"
+"\t    請設定以下選項:\n"
+"\t    "
+
+#: ../drbl_ui.py:1054
+msgid ""
+"\n"
+"\t    To hide, reveal or set default PXE client menu:\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+"\n"
+"\t    設定PXE項目選單\n"
+"\t    請設定以下選項:\n"
+"\t    "
+
+#: ../drbl_ui.py:1378
 msgid "Abort"
 msgstr "關於"
-
-#: ../drbl_ui.py:1369 ../drbl_assistant.py:202
-msgid "Finish"
-msgstr "完成"
-
-#: ../drbl_assistant.py:177 ../drbl_assistant.py:382
-msgid "Start"
-msgstr "開始"
-
-#: ../drbl_assistant.py:182
-msgid "Stop"
-msgstr "停止"
-
-#: ../drbl_assistant.py:192
-msgid "Load"
-msgstr "載入"
-
-#: ../drbl_assistant.py:197
-msgid "Save"
-msgstr "存檔"
-
-#: ../drbl_assistant.py:365
-msgid ""
-"\n"
-"\n"
-"\tWelcome to Diskless Remote Boot in Linux (DRBL)\n"
-"\t\n"
-"\tPlease follow the steps for DRBL Environment\n"
-"\n"
-"\tStep1: Setup the Linux Server\n"
-"\t\n"
-"\tStep2: Setup the clients\n"
-"\t\n"
-"\tStep3: Set up the file system for the client in the Server\n"
-"\t\n"
-"\tStep4: Setting up clients to use the DRBL environment\n"
-"\t"
-msgstr ""
-"\n"
-"\n"
-"\tDRBL 安裝助手\n"
-"\t\n"
-"\t請依照以下步驟完成安裝\n"
-"\n"
-"\tStep1: 安裝您的 GNU/Linux 套件\n"
-"\t\n"
-"\tStep2: 在 server 上相關套件的安裝\n"
-"\t\n"
-"\tStep3: 在 server 上建置 client 的檔案系統\n"
-"\t\n"
-"\tStep4: 讓client端(也就是學生用的機器)網路開機\n"
-"\t"
-
-#: ../drbl_assistant.py:408
-msgid ""
-"\n"
-"\tStep 1: Setup the Linux Server\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟一、安裝您的 GNU/Linux 套件\n"
-"\t"
-
-#: ../drbl_assistant.py:414
-msgid ""
-"\n"
-"\tStep 1a: Setup linux\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟1a, 設定 Linux 主機\n"
-"\t"
-
-#: ../drbl_assistant.py:427
-msgid ""
-"\n"
-"\tStep 1b: Setup Network\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟1b, 設定主機網路\n"
-"\t"
-
-#: ../drbl_assistant.py:434
-msgid "Config Network"
-msgstr "修改網路設定"
-
-#: ../drbl_assistant.py:452
-msgid ""
-"\n"
-"\tStep 2: Setup the clients\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟二、在 server 上相關套件的安裝\n"
-"\t"
-
-#: ../drbl_assistant.py:458
-msgid ""
-"\n"
-"\tStep 2a: Install program \"drbl\"\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟2a, 安裝DRBL主程式\n"
-"\t"
-
-#: ../drbl_assistant.py:472
-msgid "Install"
-msgstr "安裝"
-
-#: ../drbl_assistant.py:477
-msgid ""
-"\n"
-"\tStep 2b: do drblsrv -i\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟2b, 進行 drbldrv -i\n"
-"\t"
-
-#: ../drbl_assistant.py:493
-msgid "Netinstall"
-msgstr "提供網路安裝套件"
-
-#: ../drbl_assistant.py:497
-msgid "drblsrv -i"
-msgstr ""
-
-#: ../drbl_assistant.py:517
-msgid ""
-"\n"
-"\tStep 3: Set up the file system for the client in the Server\n"
-"\t"
-msgstr ""
-"\n"
-"\t步驟三、在 server 上建置 client 的檔案系統\n"
-"\t"
-
-#: ../drbl_assistant.py:523
-msgid "Select mode for DRBL "
-msgstr "選擇 DRBL 模式"
-
-#: ../drbl_assistant.py:535
-msgid "Select mode for Clonezilla"
-msgstr "選擇 Clonezilla 模式"
-
-#: ../drbl_assistant.py:606
-msgid ""
-"\n"
-"\tStep 4: Setting up clients to use the DRBL"
-msgstr ""
-"\n"
-"\t步驟四、讓client端(也就是學生用的機器)網路開機"
-
-#: ../drbl_assistant.py:611
-msgid ""
-"\n"
-"\tThe client has a PXE network interface card\n"
-"\n"
-"\t  * Set the client's BIOS to boot from \"LAN\" or \"network\".\n"
-"\n"
-"\t  * Take one of the Asus motherboards for example,\n"
-"\n"
-"\t      1. You will see OnBoard LAN, there is a subfuncton \n"
-"\t\t \"OnBoard LAN BOOT ROM\", normally it's disabled, \n"
-"\t\t you have to enable it.\n"
-"\t      2. Usually you have to reboot it now, make the \n"
-"\t\t function re-read by BIOS.\n"
-"\t      3. After rebooting, enter BIOS setting again, this time, \n"
-"\t\t you have to make LAN boot as the 1st boot device.\n"
-"\n"
-"\tThe client do not support PXE network interface card\n"
-"\tPlease check http://drbl.sourceforge.net\n"
-"\n"
-"\tThat's it. Let client boot and enjoy DRBL!!!"
-msgstr ""
-"\n"
-"\t用戶端機器的網卡有PXE網路開機功能\n"
-"\t將用戶端電腦的BIOS設定成網路開機就可以當DRBL client了。\n"
-"\t2003年以後新購的電腦，主機板內建的網卡幾乎都有PXE功能，\n"
-"\t把PXE網路開機功能開啟。請參考你的主機板手冊為準。\n"
-"\n"
-"\t一般設定方式：\n"
-"\tBIOS->Advanced->Onboard Devices Configuration \n"
-"\t->Onboard LAN->Onboard LAN Boot Rom->Enabled。\n"
-"\n"
-"\t另外，以下建議調整，以方便由DRBL server集中管理: \n"
-"\n"
-"\t(1) Boot order設成優先順序為LAN -> CDROM -> HD \n"
-"\t(2)開啟Wake on LAN (可能在APM Configuration \n"
-"\t-> Power On By PCI Devices)。\n"
-"\n"
-"\t如果不支援，請參考DRBL網頁說明。\n"
-"\t設定設好後，把用戶端的電腦開機，正常的話，\n"
-"\t您應該可以看到用戶端電腦已經開機進去了X-window了"

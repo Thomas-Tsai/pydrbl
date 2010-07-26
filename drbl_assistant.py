@@ -682,13 +682,19 @@ class assistant():
 	nm = os.popen("ps ax | grep nm-applet | wc -l").readlines()[0][:-1]
 	nm = string.atoi(nm)
 	if nm >= 2:
-	    if self.linux_dist == "Fedora":
-		os.system('chkconfig --del NetworkManager')
-		os.system('chkconfig --del NetworkManagerDispatcher')
-		os.system('chkconfig network on')
-	    else:
-		os.system('apt-get install -y gnome-network-admin')
-		os.system('apt-get --purge -y remove network-manager')
+	    remove_nm_msg = _("Remove NetworkManager and Install gnome-network-admin")
+	    dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, remove_nm_msg)
+	    ret = dlg.run ()
+	    dlg.destroy ()
+	    if ret == gtk.RESPONSE_YES:
+		if self.linux_dist == "Fedora":
+		    os.system('chkconfig --del NetworkManager')
+		    os.system('chkconfig --del NetworkManagerDispatcher')
+		    os.system('chkconfig network on')
+		    os.system('yum install gnome-network-admin')
+		else:
+		    os.system('apt-get --purge -y remove network-manager')
+		    os.system('apt-get install -y gnome-network-admin')
 		os.system('network-admin')
 	self.go_step1(widget)
 

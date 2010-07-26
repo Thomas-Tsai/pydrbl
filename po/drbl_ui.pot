@@ -8,13 +8,203 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-23 16:52+0800\n"
+"POT-Creation-Date: 2010-07-26 13:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../drbl_assistant.py:177 ../drbl_assistant.py:380
+msgid "Start"
+msgstr ""
+
+#: ../drbl_assistant.py:182
+msgid "Stop"
+msgstr ""
+
+#: ../drbl_assistant.py:187 ../drbl_ui.py:666 ../drbl_ui.py:805
+#: ../drbl_ui.py:973 ../drbl_ui.py:1032 ../drbl_ui.py:1085 ../drbl_ui.py:1132
+msgid "Reset"
+msgstr ""
+
+#: ../drbl_assistant.py:192
+msgid "Load"
+msgstr ""
+
+#: ../drbl_assistant.py:197
+msgid "Save"
+msgstr ""
+
+#: ../drbl_assistant.py:202 ../drbl_ui.py:1379
+msgid "Finish"
+msgstr ""
+
+#: ../drbl_assistant.py:363
+msgid ""
+"\n"
+"\n"
+"\tWelcome to Diskless Remote Boot in Linux (DRBL)\n"
+"\t\n"
+"\tPlease follow the steps for DRBL Environment\n"
+"\n"
+"\tStep1: Setup the Linux Server\n"
+"\t\n"
+"\tStep2: Setup the clients\n"
+"\t\n"
+"\tStep3: Set up the file system for the client in the Server\n"
+"\t\n"
+"\tStep4: Setting up clients to use the DRBL environment\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:406
+msgid ""
+"\n"
+"\tStep 1: Setup the Linux Server\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:412
+msgid ""
+"\n"
+"\tStep 1a: Setup linux\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:425
+msgid ""
+"\n"
+"\tStep 1b: Setup Network\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:432
+msgid "Config Network"
+msgstr ""
+
+#: ../drbl_assistant.py:436 ../drbl_assistant.py:500 ../drbl_assistant.py:591
+#: ../drbl_ui.py:1073
+msgid "Next"
+msgstr ""
+
+#: ../drbl_assistant.py:450
+msgid ""
+"\n"
+"\tStep 2: Setup the clients\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:456
+msgid ""
+"\n"
+"\tStep 2a: Install program \"drbl\"\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:470
+msgid "Install"
+msgstr ""
+
+#: ../drbl_assistant.py:475
+msgid ""
+"\n"
+"\tStep 2b: do drblsrv -i\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:491
+msgid "Netinstall"
+msgstr ""
+
+#: ../drbl_assistant.py:495
+msgid "drblsrv -i"
+msgstr ""
+
+#: ../drbl_assistant.py:515
+msgid ""
+"\n"
+"\tStep 3: Set up the file system for the client in the Server\n"
+"\t"
+msgstr ""
+
+#: ../drbl_assistant.py:521
+msgid "Select mode for DRBL "
+msgstr ""
+
+#: ../drbl_assistant.py:533
+msgid "Select mode for Clonezilla"
+msgstr ""
+
+#: ../drbl_assistant.py:587 ../drbl_ui.py:189
+msgid "drblpush"
+msgstr ""
+
+#: ../drbl_assistant.py:604
+msgid ""
+"\n"
+"\tStep 4: Setting up clients to use the DRBL"
+msgstr ""
+
+#: ../drbl_assistant.py:609
+msgid ""
+"\n"
+"\tThe client has a PXE network interface card\n"
+"\n"
+"\t  * Set the client's BIOS to boot from \"LAN\" or \"network\".\n"
+"\n"
+"\t  * Take one of the Asus motherboards for example,\n"
+"\n"
+"\t      1. You will see OnBoard LAN, there is a subfuncton \n"
+"\t\t \"OnBoard LAN BOOT ROM\", normally it's disabled, \n"
+"\t\t you have to enable it.\n"
+"\t      2. Usually you have to reboot it now, make the \n"
+"\t\t function re-read by BIOS.\n"
+"\t      3. After rebooting, enter BIOS setting again, this time, \n"
+"\t\t you have to make LAN boot as the 1st boot device.\n"
+"\n"
+"\tThe client do not support PXE network interface card\n"
+"\tPlease check http://drbl.sourceforge.net\n"
+"\n"
+"\tThat's it. Let client boot and enjoy DRBL!!!"
+msgstr ""
+
+#: ../drbl_ui.py:64
+msgid "Shutdown DRBL clients now"
+msgstr ""
+
+#: ../drbl_ui.py:65
+msgid "Turn on DRBL clients by Wake-on-LAN now"
+msgstr ""
+
+#: ../drbl_ui.py:66
+msgid "Reboot DRBL clients now"
+msgstr ""
+
+#: ../drbl_ui.py:67
+msgid ""
+"Client machine will boot from DRBL server, and enter graphic mode, for "
+"powerful client."
+msgstr ""
+
+#: ../drbl_ui.py:68
+msgid ""
+"Client machine will boot from DRBL server, and enter text mode, for powerful "
+"client."
+msgstr ""
+
+#: ../drbl_ui.py:69
+msgid "Remote boot to run memtest86"
+msgstr ""
+
+#: ../drbl_ui.py:70
+msgid "Remote display Linux, terminal mode"
+msgstr ""
+
+#: ../drbl_ui.py:71
+msgid "Client machine will boot from local (now PXE only)"
+msgstr ""
 
 #: ../drbl_ui.py:186
 msgid "Quit"
@@ -26,10 +216,6 @@ msgstr ""
 
 #: ../drbl_ui.py:188
 msgid "drblsrv uninstall"
-msgstr ""
-
-#: ../drbl_ui.py:189 ../drbl_assistant.py:589
-msgid "drblpush"
 msgstr ""
 
 #: ../drbl_ui.py:190
@@ -116,170 +302,92 @@ msgstr ""
 msgid "Diskless Remote Boot in Linux"
 msgstr ""
 
-#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:964
-#: ../drbl_ui.py:1023 ../drbl_ui.py:1076 ../drbl_ui.py:1123
+#: ../drbl_ui.py:606
+msgid ""
+"\n"
+"\t    Start to install DRBL and related packages by drblsrv\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+
+#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:965
+#: ../drbl_ui.py:1024 ../drbl_ui.py:1077 ../drbl_ui.py:1124
 msgid "Apply"
 msgstr ""
 
-#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:968
-#: ../drbl_ui.py:1027 ../drbl_ui.py:1080 ../drbl_ui.py:1127
+#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:969
+#: ../drbl_ui.py:1028 ../drbl_ui.py:1081 ../drbl_ui.py:1128
 msgid "Cancel"
 msgstr ""
 
-#: ../drbl_ui.py:666 ../drbl_ui.py:805 ../drbl_ui.py:972 ../drbl_ui.py:1031
-#: ../drbl_ui.py:1084 ../drbl_ui.py:1131 ../drbl_assistant.py:187
-msgid "Reset"
+#: ../drbl_ui.py:692
+msgid ""
+"\n"
+"\t    Uninstall DRBL and data by drblsrv -u\n"
+"\t    Please check all option here:\n"
+"\t    "
 msgstr ""
 
 #: ../drbl_ui.py:721
 msgid "clicked"
 msgstr ""
 
-#: ../drbl_ui.py:1072 ../drbl_assistant.py:438 ../drbl_assistant.py:502
-#: ../drbl_assistant.py:593
-msgid "Next"
+#: ../drbl_ui.py:742
+msgid ""
+"\n"
+"\t    Start to config drbl environment with drblpush\n"
+"\t    Please check all option here:\n"
+"\t    "
 msgstr ""
 
-#: ../drbl_ui.py:1368
+#: ../drbl_ui.py:834
+msgid ""
+"\n"
+"generate a single user <username> with group <groupname>\n"
+"\t\t"
+msgstr ""
+
+#: ../drbl_ui.py:837
+msgid ""
+"\n"
+"generate a range of users from <prefix><start> to <prefix><end> with group "
+"<groupname>,\n"
+"passwd_opt:\n"
+"If one digit, it's the length of randomly created password.\n"
+"If blank, it will be randomly generated with some (say:8) characters.\n"
+"Other setting is the password itself.\n"
+msgstr ""
+
+#: ../drbl_ui.py:848
+msgid ""
+"\n"
+"delete a single user <username> with group <groupname>\n"
+"\t\t"
+msgstr ""
+
+#: ../drbl_ui.py:851
+msgid ""
+"\n"
+"delete a range of users from <prefix><start> to <prefix><end> with group "
+"<groupname>,\n"
+msgstr ""
+
+#: ../drbl_ui.py:995
+msgid ""
+"\n"
+"\t    To set the default PXE client menu:\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+
+#: ../drbl_ui.py:1054
+msgid ""
+"\n"
+"\t    To hide, reveal or set default PXE client menu:\n"
+"\t    Please check all option here:\n"
+"\t    "
+msgstr ""
+
+#: ../drbl_ui.py:1378
 msgid "Abort"
-msgstr ""
-
-#: ../drbl_ui.py:1369 ../drbl_assistant.py:202
-msgid "Finish"
-msgstr ""
-
-#: ../drbl_assistant.py:177 ../drbl_assistant.py:382
-msgid "Start"
-msgstr ""
-
-#: ../drbl_assistant.py:182
-msgid "Stop"
-msgstr ""
-
-#: ../drbl_assistant.py:192
-msgid "Load"
-msgstr ""
-
-#: ../drbl_assistant.py:197
-msgid "Save"
-msgstr ""
-
-#: ../drbl_assistant.py:365
-msgid ""
-"\n"
-"\n"
-"\tWelcome to Diskless Remote Boot in Linux (DRBL)\n"
-"\t\n"
-"\tPlease follow the steps for DRBL Environment\n"
-"\n"
-"\tStep1: Setup the Linux Server\n"
-"\t\n"
-"\tStep2: Setup the clients\n"
-"\t\n"
-"\tStep3: Set up the file system for the client in the Server\n"
-"\t\n"
-"\tStep4: Setting up clients to use the DRBL environment\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:408
-msgid ""
-"\n"
-"\tStep 1: Setup the Linux Server\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:414
-msgid ""
-"\n"
-"\tStep 1a: Setup linux\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:427
-msgid ""
-"\n"
-"\tStep 1b: Setup Network\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:434
-msgid "Config Network"
-msgstr ""
-
-#: ../drbl_assistant.py:452
-msgid ""
-"\n"
-"\tStep 2: Setup the clients\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:458
-msgid ""
-"\n"
-"\tStep 2a: Install program \"drbl\"\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:472
-msgid "Install"
-msgstr ""
-
-#: ../drbl_assistant.py:477
-msgid ""
-"\n"
-"\tStep 2b: do drblsrv -i\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:493
-msgid "Netinstall"
-msgstr ""
-
-#: ../drbl_assistant.py:497
-msgid "drblsrv -i"
-msgstr ""
-
-#: ../drbl_assistant.py:517
-msgid ""
-"\n"
-"\tStep 3: Set up the file system for the client in the Server\n"
-"\t"
-msgstr ""
-
-#: ../drbl_assistant.py:523
-msgid "Select mode for DRBL "
-msgstr ""
-
-#: ../drbl_assistant.py:535
-msgid "Select mode for Clonezilla"
-msgstr ""
-
-#: ../drbl_assistant.py:606
-msgid ""
-"\n"
-"\tStep 4: Setting up clients to use the DRBL"
-msgstr ""
-
-#: ../drbl_assistant.py:611
-msgid ""
-"\n"
-"\tThe client has a PXE network interface card\n"
-"\n"
-"\t  * Set the client's BIOS to boot from \"LAN\" or \"network\".\n"
-"\n"
-"\t  * Take one of the Asus motherboards for example,\n"
-"\n"
-"\t      1. You will see OnBoard LAN, there is a subfuncton \n"
-"\t\t \"OnBoard LAN BOOT ROM\", normally it's disabled, \n"
-"\t\t you have to enable it.\n"
-"\t      2. Usually you have to reboot it now, make the \n"
-"\t\t function re-read by BIOS.\n"
-"\t      3. After rebooting, enter BIOS setting again, this time, \n"
-"\t\t you have to make LAN boot as the 1st boot device.\n"
-"\n"
-"\tThe client do not support PXE network interface card\n"
-"\tPlease check http://drbl.sourceforge.net\n"
-"\n"
-"\tThat's it. Let client boot and enjoy DRBL!!!"
 msgstr ""
