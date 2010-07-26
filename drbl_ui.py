@@ -307,9 +307,8 @@ class DRBL_GUI_Template():
 	    bg_box = gtk.VBox(False, 0)
 	    bg_box.pack_start(DRBL_BG_image, False, False, 0)
 
-	    ## branch for hualien
-	    hualien_msg = _("Thanks donate from Hualien county government")
-	    label = gtk.Label(hualien_msg)
+	    welcome_msg = _("Enjoy DRBL right now!")
+	    label = gtk.Label(welcome_msg)
 	    fontdesc = pango.FontDescription("Purisa 16")
 	    label.modify_font(fontdesc)
 
