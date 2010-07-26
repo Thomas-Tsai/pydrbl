@@ -639,7 +639,7 @@ class assistant():
 	    scroll.add_with_viewport(rbox)
 	rbox.show_all()
 
-    def show_linux_dist(self):
+    def get_linux_dist(self):
 	lsb = os.popen("lsb_release -is").readlines()
 	issue = os.popen("cat /etc/issue").readlines()
 	if len(lsb) > 0:
@@ -649,7 +649,10 @@ class assistant():
 	    self.linux_dist, other = linux_dist_str.split(" ", 1)
 	else:
 	    self.linux_dist = "not support"
+	return self.linux_dist
 
+    def show_linux_dist(self):
+	self.linux_dist = self.get_linux_dist()
 	_desc = "Linux Distribution: %s" % self.linux_dist
 	label= gtk.Label(_desc)
 	self.rbox.pack_start(label, False, False, 0)
@@ -708,6 +711,12 @@ class assistant():
 	    self.comps = ["stable testing unstable"]
 
     def go_install_drbl(self, widget):
+	if self.linux_dist == "":
+	    self.linux_dist = self.get_linux_dist()
+
+	if self.linux_dist == "not support":
+	    return -1
+	
 	if self.linux_dist == "Fedora":
 	    os.system('yum -y install perl-Digest-SHA1')
 	    os.system('yum -y install wget')
@@ -726,11 +735,18 @@ class assistant():
 		print "your distribution is remix release!"
 		return -1
 	    has_drbl_repo = 0
+	    has_drbl_comps = 0
 	    for source in sourceslist:
 		if source.disabled == False:
 		    if source.uri == "http://free.nchc.org.tw/drbl-core":
 			has_drbl_repo = 1
-	    if has_drbl_repo == 0:
+			if source.comps == self.comps:
+			    has_drbl_comps = 1
+			else:
+			    print "remove drbl repo"
+			    sourceslist.remove(source)
+
+	    if has_drbl_repo == 0 or has_drbl_comps == 0:
 		drbl_uri = "http://free.nchc.org.tw/drbl-core"
 		drbl_dist = "drbl"
 		drbl_comps = self.comps
@@ -739,6 +755,7 @@ class assistant():
 		sourceslist.save ()
 
 	    add_key_st = os.popen("wget -q http://drbl.nchc.org.tw/GPG-KEY-DRBL -O- | apt-key add -").readlines()[0][:-1]
+
 	    try:
 		cache = apt.Cache()
 		pkg = cache['drbl'] # Access the Package object for python-apt
@@ -749,6 +766,8 @@ class assistant():
 		print "apt-get install drbl"
 		os.system("apt-get update")
 		os.system("apt-get install drbl")
+	else:
+	    print "Unknown linux"
 	print "install finish"
 
     def check_selinux(self):
