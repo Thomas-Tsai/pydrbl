@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-26 13:42+0800\n"
+"POT-Creation-Date: 2010-07-26 17:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,8 +24,8 @@ msgstr ""
 msgid "Stop"
 msgstr ""
 
-#: ../drbl_assistant.py:187 ../drbl_ui.py:666 ../drbl_ui.py:805
-#: ../drbl_ui.py:973 ../drbl_ui.py:1032 ../drbl_ui.py:1085 ../drbl_ui.py:1132
+#: ../drbl_assistant.py:187 ../drbl_ui.py:677 ../drbl_ui.py:816
+#: ../drbl_ui.py:994 ../drbl_ui.py:1053 ../drbl_ui.py:1106 ../drbl_ui.py:1153
 msgid "Reset"
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ../drbl_assistant.py:202 ../drbl_ui.py:1379
+#: ../drbl_assistant.py:202 ../drbl_ui.py:1400
 msgid "Finish"
 msgstr ""
 
@@ -85,7 +85,7 @@ msgid "Config Network"
 msgstr ""
 
 #: ../drbl_assistant.py:436 ../drbl_assistant.py:500 ../drbl_assistant.py:591
-#: ../drbl_ui.py:1073
+#: ../drbl_ui.py:1094
 msgid "Next"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Select mode for Clonezilla"
 msgstr ""
 
-#: ../drbl_assistant.py:587 ../drbl_ui.py:189
+#: ../drbl_assistant.py:587 ../drbl_ui.py:191
 msgid "drblpush"
 msgstr ""
 
@@ -170,139 +170,151 @@ msgid ""
 "\tThat's it. Let client boot and enjoy DRBL!!!"
 msgstr ""
 
-#: ../drbl_ui.py:64
+#: ../drbl_assistant.py:688
+msgid "Remove NetworkManager and Install gnome-network-admin"
+msgstr ""
+
+#: ../drbl_ui.py:160
 msgid "Shutdown DRBL clients now"
 msgstr ""
 
-#: ../drbl_ui.py:65
+#: ../drbl_ui.py:161
 msgid "Turn on DRBL clients by Wake-on-LAN now"
 msgstr ""
 
-#: ../drbl_ui.py:66
+#: ../drbl_ui.py:162
 msgid "Reboot DRBL clients now"
 msgstr ""
 
-#: ../drbl_ui.py:67
+#: ../drbl_ui.py:163
 msgid ""
 "Client machine will boot from DRBL server, and enter graphic mode, for "
 "powerful client."
 msgstr ""
 
-#: ../drbl_ui.py:68
+#: ../drbl_ui.py:164
 msgid ""
 "Client machine will boot from DRBL server, and enter text mode, for powerful "
 "client."
 msgstr ""
 
-#: ../drbl_ui.py:69
+#: ../drbl_ui.py:165
 msgid "Remote boot to run memtest86"
 msgstr ""
 
-#: ../drbl_ui.py:70
+#: ../drbl_ui.py:166
 msgid "Remote display Linux, terminal mode"
 msgstr ""
 
-#: ../drbl_ui.py:71
+#: ../drbl_ui.py:167
 msgid "Client machine will boot from local (now PXE only)"
 msgstr ""
 
-#: ../drbl_ui.py:186
+#: ../drbl_ui.py:188
 msgid "Quit"
 msgstr ""
 
-#: ../drbl_ui.py:187
+#: ../drbl_ui.py:189
 msgid "drblsrv install"
 msgstr ""
 
-#: ../drbl_ui.py:188
+#: ../drbl_ui.py:190
 msgid "drblsrv uninstall"
 msgstr ""
 
-#: ../drbl_ui.py:190
+#: ../drbl_ui.py:192
 msgid "drbl-assistant"
 msgstr ""
 
-#: ../drbl_ui.py:205
+#: ../drbl_ui.py:207
 msgid "DRBL"
 msgstr ""
 
-#: ../drbl_ui.py:222
+#: ../drbl_ui.py:224
 msgid "Linux-gra"
 msgstr ""
 
-#: ../drbl_ui.py:223
+#: ../drbl_ui.py:225
 msgid "Linux-txt"
 msgstr ""
 
-#: ../drbl_ui.py:224
+#: ../drbl_ui.py:226
 msgid "local"
 msgstr ""
 
-#: ../drbl_ui.py:225
+#: ../drbl_ui.py:227
 msgid "memtest"
 msgstr ""
 
-#: ../drbl_ui.py:226
+#: ../drbl_ui.py:228
 msgid "Terminal"
 msgstr ""
 
-#: ../drbl_ui.py:241
+#: ../drbl_ui.py:243
 msgid "Remote"
 msgstr ""
 
-#: ../drbl_ui.py:246
+#: ../drbl_ui.py:248
 msgid "Shutdown"
 msgstr ""
 
-#: ../drbl_ui.py:247
+#: ../drbl_ui.py:249
 msgid "Wake On Lan"
 msgstr ""
 
-#: ../drbl_ui.py:248
+#: ../drbl_ui.py:250
 msgid "Reboot"
 msgstr ""
 
-#: ../drbl_ui.py:249
+#: ../drbl_ui.py:251
 msgid "PXE MENU"
 msgstr ""
 
-#: ../drbl_ui.py:250
+#: ../drbl_ui.py:252
 msgid "PXE BG MODE"
 msgstr ""
 
-#: ../drbl_ui.py:265
+#: ../drbl_ui.py:267
 msgid "Boot"
 msgstr ""
 
-#: ../drbl_ui.py:271
+#: ../drbl_ui.py:273
 msgid "List User"
 msgstr ""
 
-#: ../drbl_ui.py:272
+#: ../drbl_ui.py:274
 msgid "Add User"
 msgstr ""
 
-#: ../drbl_ui.py:273
+#: ../drbl_ui.py:275
 msgid "Del User"
 msgstr ""
 
-#: ../drbl_ui.py:284
+#: ../drbl_ui.py:286
 msgid "User"
 msgstr ""
 
-#: ../drbl_ui.py:290
+#: ../drbl_ui.py:292
 msgid "About"
 msgstr ""
 
-#: ../drbl_ui.py:294
+#: ../drbl_ui.py:296
 msgid "Help"
 msgstr ""
 
-#: ../drbl_ui.py:599
-msgid "Diskless Remote Boot in Linux"
+#: ../drbl_ui.py:311 ../drbl_ui.py:1427
+msgid "Thanks donate from Hualien county government"
 msgstr ""
 
-#: ../drbl_ui.py:606
+#: ../drbl_ui.py:599
+msgid "Diskless Remote Boot in Linux (DRBL)"
+msgstr ""
+
+#: ../drbl_ui.py:610
+msgid "Thanks for donate from Hualien county government"
+msgstr ""
+
+#: ../drbl_ui.py:617
 msgid ""
 "\n"
 "\t    Start to install DRBL and related packages by drblsrv\n"
@@ -310,17 +322,17 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:965
-#: ../drbl_ui.py:1024 ../drbl_ui.py:1077 ../drbl_ui.py:1124
+#: ../drbl_ui.py:669 ../drbl_ui.py:730 ../drbl_ui.py:804 ../drbl_ui.py:986
+#: ../drbl_ui.py:1045 ../drbl_ui.py:1098 ../drbl_ui.py:1145
 msgid "Apply"
 msgstr ""
 
-#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:969
-#: ../drbl_ui.py:1028 ../drbl_ui.py:1081 ../drbl_ui.py:1128
+#: ../drbl_ui.py:673 ../drbl_ui.py:734 ../drbl_ui.py:812 ../drbl_ui.py:990
+#: ../drbl_ui.py:1049 ../drbl_ui.py:1102 ../drbl_ui.py:1149
 msgid "Cancel"
 msgstr ""
 
-#: ../drbl_ui.py:692
+#: ../drbl_ui.py:703
 msgid ""
 "\n"
 "\t    Uninstall DRBL and data by drblsrv -u\n"
@@ -328,11 +340,11 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: ../drbl_ui.py:721
+#: ../drbl_ui.py:732
 msgid "clicked"
 msgstr ""
 
-#: ../drbl_ui.py:742
+#: ../drbl_ui.py:753
 msgid ""
 "\n"
 "\t    Start to config drbl environment with drblpush\n"
@@ -340,39 +352,41 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: ../drbl_ui.py:834
+#: ../drbl_ui.py:845
 msgid ""
 "\n"
-"generate a single user <username> with group <groupname>\n"
+"    generate a single user <username> with group <groupname>\n"
 "\t\t"
-msgstr ""
-
-#: ../drbl_ui.py:837
-msgid ""
-"\n"
-"generate a range of users from <prefix><start> to <prefix><end> with group "
-"<groupname>,\n"
-"passwd_opt:\n"
-"If one digit, it's the length of randomly created password.\n"
-"If blank, it will be randomly generated with some (say:8) characters.\n"
-"Other setting is the password itself.\n"
 msgstr ""
 
 #: ../drbl_ui.py:848
 msgid ""
 "\n"
-"delete a single user <username> with group <groupname>\n"
+"    generate a range of users from <prefix><start> to <prefix><end> with "
+"group <groupname>,\n"
+"    passwd_opt:\n"
+"    If one digit, it's the length of randomly created password.\n"
+"    If blank, it will be randomly generated with some (say:8) characters.\n"
+"    Other setting is the password itself.\n"
+"    "
+msgstr ""
+
+#: ../drbl_ui.py:859
+msgid ""
+"\n"
+"    delete a single user <username> with group <groupname>\n"
 "\t\t"
 msgstr ""
 
-#: ../drbl_ui.py:851
+#: ../drbl_ui.py:862
 msgid ""
 "\n"
-"delete a range of users from <prefix><start> to <prefix><end> with group "
+"    delete a range of users from <prefix><start> to <prefix><end> with group "
 "<groupname>,\n"
+"    "
 msgstr ""
 
-#: ../drbl_ui.py:995
+#: ../drbl_ui.py:1016
 msgid ""
 "\n"
 "\t    To set the default PXE client menu:\n"
@@ -380,7 +394,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: ../drbl_ui.py:1054
+#: ../drbl_ui.py:1075
 msgid ""
 "\n"
 "\t    To hide, reveal or set default PXE client menu:\n"
@@ -388,6 +402,6 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: ../drbl_ui.py:1378
+#: ../drbl_ui.py:1399
 msgid "Abort"
 msgstr ""

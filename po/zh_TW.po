@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drbl_ui 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-26 13:42+0800\n"
+"POT-Creation-Date: 2010-07-26 17:09+0800\n"
 "PO-Revision-Date: 2010-07-11 22:00+0800\n"
 "Last-Translator: thomas <thomas@nchc.org.tw>\n"
 "Language-Team: Chinese (traditional)\n"
@@ -23,8 +23,8 @@ msgstr "開始"
 msgid "Stop"
 msgstr "停止"
 
-#: ../drbl_assistant.py:187 ../drbl_ui.py:666 ../drbl_ui.py:805
-#: ../drbl_ui.py:973 ../drbl_ui.py:1032 ../drbl_ui.py:1085 ../drbl_ui.py:1132
+#: ../drbl_assistant.py:187 ../drbl_ui.py:677 ../drbl_ui.py:816
+#: ../drbl_ui.py:994 ../drbl_ui.py:1053 ../drbl_ui.py:1106 ../drbl_ui.py:1153
 msgid "Reset"
 msgstr "重設"
 
@@ -36,7 +36,7 @@ msgstr "載入"
 msgid "Save"
 msgstr "存檔"
 
-#: ../drbl_assistant.py:202 ../drbl_ui.py:1379
+#: ../drbl_assistant.py:202 ../drbl_ui.py:1400
 msgid "Finish"
 msgstr "完成"
 
@@ -107,7 +107,7 @@ msgid "Config Network"
 msgstr "修改網路設定"
 
 #: ../drbl_assistant.py:436 ../drbl_assistant.py:500 ../drbl_assistant.py:591
-#: ../drbl_ui.py:1073
+#: ../drbl_ui.py:1094
 msgid "Next"
 msgstr "繼續"
 
@@ -171,7 +171,7 @@ msgstr "選擇 DRBL 模式"
 msgid "Select mode for Clonezilla"
 msgstr "選擇 Clonezilla 模式"
 
-#: ../drbl_assistant.py:587 ../drbl_ui.py:189
+#: ../drbl_assistant.py:587 ../drbl_ui.py:191
 msgid "drblpush"
 msgstr "drblpush"
 
@@ -225,139 +225,151 @@ msgstr ""
 "\t設定設好後，把用戶端的電腦開機，正常的話，\n"
 "\t您應該可以看到用戶端電腦已經開機進去了X-window了"
 
-#: ../drbl_ui.py:64
+#: ../drbl_assistant.py:688
+msgid "Remove NetworkManager and Install gnome-network-admin"
+msgstr "是否移除NetworkManager並安裝gnome-network-admin"
+
+#: ../drbl_ui.py:160
 msgid "Shutdown DRBL clients now"
 msgstr "關閉用戶端機器"
 
-#: ../drbl_ui.py:65
+#: ../drbl_ui.py:161
 msgid "Turn on DRBL clients by Wake-on-LAN now"
 msgstr "網路啟動用戶端機器"
 
-#: ../drbl_ui.py:66
+#: ../drbl_ui.py:162
 msgid "Reboot DRBL clients now"
 msgstr "重新啟動用戶端機器"
 
-#: ../drbl_ui.py:67
+#: ../drbl_ui.py:163
 msgid ""
 "Client machine will boot from DRBL server, and enter graphic mode, for "
 "powerful client."
 msgstr "用戶端機器設定為無碟圖形模式"
 
-#: ../drbl_ui.py:68
+#: ../drbl_ui.py:164
 msgid ""
 "Client machine will boot from DRBL server, and enter text mode, for powerful "
 "client."
 msgstr "用戶端機器設定為無碟文字模式"
 
-#: ../drbl_ui.py:69
+#: ../drbl_ui.py:165
 msgid "Remote boot to run memtest86"
 msgstr "用戶端設定為記憶體測試"
 
-#: ../drbl_ui.py:70
+#: ../drbl_ui.py:166
 msgid "Remote display Linux, terminal mode"
 msgstr "用戶端設定為終端機模式"
 
-#: ../drbl_ui.py:71
+#: ../drbl_ui.py:167
 msgid "Client machine will boot from local (now PXE only)"
 msgstr "用戶端設定為本機開機模式"
 
-#: ../drbl_ui.py:186
+#: ../drbl_ui.py:188
 msgid "Quit"
 msgstr "離開"
 
-#: ../drbl_ui.py:187
+#: ../drbl_ui.py:189
 msgid "drblsrv install"
 msgstr "安裝 DRBL"
 
-#: ../drbl_ui.py:188
+#: ../drbl_ui.py:190
 msgid "drblsrv uninstall"
 msgstr "移除 DRBL"
 
-#: ../drbl_ui.py:190
+#: ../drbl_ui.py:192
 msgid "drbl-assistant"
 msgstr "DRBL安裝助手"
 
-#: ../drbl_ui.py:205
+#: ../drbl_ui.py:207
 msgid "DRBL"
 msgstr ""
 
-#: ../drbl_ui.py:222
+#: ../drbl_ui.py:224
 msgid "Linux-gra"
 msgstr "無碟Linux圖形介面"
 
-#: ../drbl_ui.py:223
+#: ../drbl_ui.py:225
 msgid "Linux-txt"
 msgstr "無碟Linux文字介面"
 
-#: ../drbl_ui.py:224
+#: ../drbl_ui.py:226
 msgid "local"
 msgstr "用戶端硬碟開機"
 
-#: ../drbl_ui.py:225
+#: ../drbl_ui.py:227
 msgid "memtest"
 msgstr "用戶端記憶體測試"
 
-#: ../drbl_ui.py:226
+#: ../drbl_ui.py:228
 msgid "Terminal"
 msgstr "用戶端Terminal介面"
 
-#: ../drbl_ui.py:241
+#: ../drbl_ui.py:243
 msgid "Remote"
 msgstr ""
 
-#: ../drbl_ui.py:246
+#: ../drbl_ui.py:248
 msgid "Shutdown"
 msgstr "遠端關機"
 
-#: ../drbl_ui.py:247
+#: ../drbl_ui.py:249
 msgid "Wake On Lan"
 msgstr "網路開機"
 
-#: ../drbl_ui.py:248
+#: ../drbl_ui.py:250
 msgid "Reboot"
 msgstr "重新開機"
 
-#: ../drbl_ui.py:249
+#: ../drbl_ui.py:251
 msgid "PXE MENU"
 msgstr "開機選單"
 
-#: ../drbl_ui.py:250
+#: ../drbl_ui.py:252
 msgid "PXE BG MODE"
 msgstr "開機選單介面"
 
-#: ../drbl_ui.py:265
+#: ../drbl_ui.py:267
 msgid "Boot"
 msgstr ""
 
-#: ../drbl_ui.py:271
+#: ../drbl_ui.py:273
 msgid "List User"
 msgstr "使用者列表"
 
-#: ../drbl_ui.py:272
+#: ../drbl_ui.py:274
 msgid "Add User"
 msgstr "增加使用者"
 
-#: ../drbl_ui.py:273
+#: ../drbl_ui.py:275
 msgid "Del User"
 msgstr "刪除使用者"
 
-#: ../drbl_ui.py:284
+#: ../drbl_ui.py:286
 msgid "User"
 msgstr ""
 
-#: ../drbl_ui.py:290
+#: ../drbl_ui.py:292
 msgid "About"
 msgstr "關於"
 
-#: ../drbl_ui.py:294
+#: ../drbl_ui.py:296
 msgid "Help"
 msgstr ""
 
-#: ../drbl_ui.py:599
-msgid "Diskless Remote Boot in Linux"
-msgstr "無碟系統"
+#: ../drbl_ui.py:311 ../drbl_ui.py:1427
+msgid "Thanks donate from Hualien county government"
+msgstr "感謝花蓮縣政府贊助本專案"
 
-#: ../drbl_ui.py:606
+#: ../drbl_ui.py:599
+msgid "Diskless Remote Boot in Linux (DRBL)"
+msgstr "無碟系統 (DRBL)"
+
+#: ../drbl_ui.py:610
+msgid "Thanks for donate from Hualien county government"
+msgstr "感謝花蓮縣政府贊助本專案"
+
+#: ../drbl_ui.py:617
 msgid ""
 "\n"
 "\t    Start to install DRBL and related packages by drblsrv\n"
@@ -369,17 +381,17 @@ msgstr ""
 "\n"
 "\t    "
 
-#: ../drbl_ui.py:658 ../drbl_ui.py:719 ../drbl_ui.py:793 ../drbl_ui.py:965
-#: ../drbl_ui.py:1024 ../drbl_ui.py:1077 ../drbl_ui.py:1124
+#: ../drbl_ui.py:669 ../drbl_ui.py:730 ../drbl_ui.py:804 ../drbl_ui.py:986
+#: ../drbl_ui.py:1045 ../drbl_ui.py:1098 ../drbl_ui.py:1145
 msgid "Apply"
 msgstr "套用"
 
-#: ../drbl_ui.py:662 ../drbl_ui.py:723 ../drbl_ui.py:801 ../drbl_ui.py:969
-#: ../drbl_ui.py:1028 ../drbl_ui.py:1081 ../drbl_ui.py:1128
+#: ../drbl_ui.py:673 ../drbl_ui.py:734 ../drbl_ui.py:812 ../drbl_ui.py:990
+#: ../drbl_ui.py:1049 ../drbl_ui.py:1102 ../drbl_ui.py:1149
 msgid "Cancel"
 msgstr "取消"
 
-#: ../drbl_ui.py:692
+#: ../drbl_ui.py:703
 msgid ""
 "\n"
 "\t    Uninstall DRBL and data by drblsrv -u\n"
@@ -391,11 +403,11 @@ msgstr ""
 "\n"
 "\t    "
 
-#: ../drbl_ui.py:721
+#: ../drbl_ui.py:732
 msgid "clicked"
 msgstr ""
 
-#: ../drbl_ui.py:742
+#: ../drbl_ui.py:753
 msgid ""
 "\n"
 "\t    Start to config drbl environment with drblpush\n"
@@ -407,25 +419,28 @@ msgstr ""
 "\n"
 "\t    "
 
-#: ../drbl_ui.py:834
+#: ../drbl_ui.py:845
+#, fuzzy
 msgid ""
 "\n"
-"generate a single user <username> with group <groupname>\n"
+"    generate a single user <username> with group <groupname>\n"
 "\t\t"
 msgstr ""
 "\n"
 "新增使用者\n"
 "\t\t"
 
-#: ../drbl_ui.py:837
+#: ../drbl_ui.py:848
+#, fuzzy
 msgid ""
 "\n"
-"generate a range of users from <prefix><start> to <prefix><end> with group "
-"<groupname>,\n"
-"passwd_opt:\n"
-"If one digit, it's the length of randomly created password.\n"
-"If blank, it will be randomly generated with some (say:8) characters.\n"
-"Other setting is the password itself.\n"
+"    generate a range of users from <prefix><start> to <prefix><end> with "
+"group <groupname>,\n"
+"    passwd_opt:\n"
+"    If one digit, it's the length of randomly created password.\n"
+"    If blank, it will be randomly generated with some (say:8) characters.\n"
+"    Other setting is the password itself.\n"
+"    "
 msgstr ""
 "\n"
 "新增大量使用者， 開始新增 <prefix><start> 到 <prefix><end> 到群組 "
@@ -435,27 +450,30 @@ msgstr ""
 "保持空白，自動建立8字元亂數密碼\n"
 "其他則是密碼明碼\n"
 
-#: ../drbl_ui.py:848
+#: ../drbl_ui.py:859
+#, fuzzy
 msgid ""
 "\n"
-"delete a single user <username> with group <groupname>\n"
+"    delete a single user <username> with group <groupname>\n"
 "\t\t"
 msgstr ""
 "\n"
 "刪除使用者\n"
 "\t\t"
 
-#: ../drbl_ui.py:851
+#: ../drbl_ui.py:862
+#, fuzzy
 msgid ""
 "\n"
-"delete a range of users from <prefix><start> to <prefix><end> with group "
+"    delete a range of users from <prefix><start> to <prefix><end> with group "
 "<groupname>,\n"
+"    "
 msgstr ""
 "\n"
 "大量刪除使用者\n"
 "\n"
 
-#: ../drbl_ui.py:995
+#: ../drbl_ui.py:1016
 msgid ""
 "\n"
 "\t    To set the default PXE client menu:\n"
@@ -467,7 +485,7 @@ msgstr ""
 "\t    請設定以下選項:\n"
 "\t    "
 
-#: ../drbl_ui.py:1054
+#: ../drbl_ui.py:1075
 msgid ""
 "\n"
 "\t    To hide, reveal or set default PXE client menu:\n"
@@ -479,6 +497,6 @@ msgstr ""
 "\t    請設定以下選項:\n"
 "\t    "
 
-#: ../drbl_ui.py:1378
+#: ../drbl_ui.py:1399
 msgid "Abort"
 msgstr "關於"
