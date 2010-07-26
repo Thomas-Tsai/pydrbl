@@ -6,6 +6,7 @@ import gobject
 import gettext
 import locale
 import drbl_assistant
+import pango
 
 try:
 	import gtk
@@ -306,14 +307,22 @@ class DRBL_GUI_Template():
 	    bg_box = gtk.VBox(False, 0)
 	    bg_box.pack_start(DRBL_BG_image, False, False, 0)
 
+	    ## branch for hualien
+	    hualien_msg = _("Thanks donate from Hualien county government")
+	    label = gtk.Label(hualien_msg)
+	    fontdesc = pango.FontDescription("Purisa 16")
+	    label.modify_font(fontdesc)
+
 	    main_box = gtk.VBox(False, 0)
 	    self.main_box = main_box
-	    main_box.pack_start(bg_box, False, False, 0)
+	    main_box.pack_start(label, False, False, 20)
+	    main_box.pack_end(bg_box, False, False, 0)
 
 	    box = gtk.VBox(False,0)
 	    self.box = box
 	    box.pack_start(menu_box, False, False, 0)
-	    box.pack_start(main_box, False, False, 0)
+	    box.pack_end(main_box, True, True, 0)
+
 
 	    window = gtk.Window()
 	    self.window = window
@@ -326,7 +335,7 @@ class DRBL_GUI_Template():
 		print e.message
 		sys.exit(1)
 
-	    window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+	    window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#E6E6E6"))
 	    window.add(box)
 	    window.connect('delete-event', lambda window, event: gtk.main_quit())
 	    window.show_all()
@@ -587,7 +596,8 @@ class DRBL_GUI_Template():
 
 	def drbl_about(self, widget):
 	    _about = gtk.AboutDialog()
-	    _about.set_name('DRBL')
+	    name = _(_("Diskless Remote Boot in Linux (DRBL)"))
+	    _about.set_name(name)
 	    _about.set_logo(gtk.gdk.pixbuf_new_from_file("drbl.png"))		
 	    _about.set_authors([
 		'Steven  <steven@nchc.org.tw>',
@@ -597,7 +607,7 @@ class DRBL_GUI_Template():
 		])
 	    _about.set_copyright('Copyright (C) 2010 by DRBL/Clonezilla project')
 	    _about.set_license('GNU General Public License V2')
-	    _about.set_comments(_("Diskless Remote Boot in Linux"))
+	    _about.set_comments(_("Thanks for donate from Hualien county government"))
 	    _about.set_website("http://drbl.name")
 	    _about.run()
 	    _about.destroy()
@@ -1140,7 +1150,7 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 	    cancel_button.show()
 	    apply_button.show()
 	    reset_button.show()
-	    box.pack_end(action_box, True, False, 0)
+	    box.pack_end(action_box, False, False, 2)
 	    action_box.show()
 
 	    self.main_box.pack_start(box, True, True, 0)
