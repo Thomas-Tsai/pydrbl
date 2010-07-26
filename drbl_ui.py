@@ -684,7 +684,7 @@ class DRBL_GUI_Template():
 	    cancel_button.show()
 	    apply_button.show()
 	    reset_button.show()
-	    box.pack_end(action_box, True, False, 0)
+	    box.pack_end(action_box, False, False, 2)
 	    action_box.show()
 
 	    self.main_box.pack_start(box, True, True, 0)
@@ -825,7 +825,7 @@ class DRBL_GUI_Template():
 	    apply_button.show()
 	    lazy_button.show()
 	    reset_button.show()
-	    box.pack_end(action_box, True, False, 0)
+	    box.pack_end(action_box, False, False, 2)
 	    action_box.show()
 
 	    self.main_box.pack_start(box, True, True, 0)
@@ -843,25 +843,25 @@ class DRBL_GUI_Template():
 		## add user
 		todo_desc = "\n            DRBL User add:\n"
 		desc_of_single = _("""
-generate a single user <username> with group <groupname>
+    generate a single user <username> with group <groupname>
 		""")
 		desc_of_range = _("""
-generate a range of users from <prefix><start> to <prefix><end> with group <groupname>,
-passwd_opt:
-If one digit, it's the length of randomly created password.
-If blank, it will be randomly generated with some (say:8) characters.
-Other setting is the password itself.
-""")
+    generate a range of users from <prefix><start> to <prefix><end> with group <groupname>,
+    passwd_opt:
+    If one digit, it's the length of randomly created password.
+    If blank, it will be randomly generated with some (say:8) characters.
+    Other setting is the password itself.
+    """)
 
 	    elif action == "userdel":
 		## del user
 		todo_desc = "\n            DRBL User Delete:\n"
 		desc_of_single = _("""
-delete a single user <username> with group <groupname>
+    delete a single user <username> with group <groupname>
 		""")
 		desc_of_range = _("""
-delete a range of users from <prefix><start> to <prefix><end> with group <groupname>,
-""")
+    delete a range of users from <prefix><start> to <prefix><end> with group <groupname>,
+    """)
 
 
 	    self.main_box.hide()
@@ -884,16 +884,17 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		mode_box.pack_start(single_label, False, False, 0)
 		single_label.show()
 		
+		tlabel = gtk.Label("    ")
 		ulabel = gtk.Label("Name: ")
-		ulabel.set_alignment(0, 0)
 		glabel = gtk.Label("Group: ")
-		glabel.set_alignment(0, 0)
 		self.uentry = uname_entry = gtk.Entry()
 		self.gentry = gname_entry = gtk.Entry()
+		su_box.pack_start(tlabel, False, False, 0)
 		su_box.pack_start(ulabel, False, False, 0)
 		su_box.pack_start(uname_entry, False, False, 0)
 		su_box.pack_start(glabel, False, False, 0)
 		su_box.pack_start(gname_entry, False, False, 0)
+		tlabel.show()
 		ulabel.show()
 		uname_entry.show()
 		glabel.show()
@@ -904,49 +905,56 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		## add range user
 		su_box = gtk.VBox()
 		range_label = gtk.Label(desc_of_range)
-		range_label.set_alignment(0, 0)
 		mode_box.pack_start(range_label, False, False, 0)
 		range_label.show()
 
 		entry_box = gtk.HBox()
+		tlabel = gtk.Label("    ")
 		prefix_label = gtk.Label("prefix: ")
-		prefix_label.set_alignment(0, 0)
 		self.prefix = gtk.Entry()
+		entry_box.pack_start(tlabel, False, False, 0)
 		entry_box.pack_start(prefix_label, False, False, 0)
 		entry_box.pack_start(self.prefix, False, False, 0)
+		tlabel.show()
 		prefix_label.show()
 		self.prefix.show()
 		su_box.pack_start(entry_box, False, False, 0)
 		entry_box.show()
 
 		entry_box = gtk.HBox()
+		tlabel = gtk.Label("    ")
 		start_label = gtk.Label("start: ")
-		start_label.set_alignment(0, 0)
 		self.start = gtk.Entry()
+		entry_box.pack_start(tlabel, False, False, 0)
 		entry_box.pack_start(start_label, False, False, 0)
 		entry_box.pack_start(self.start, False, False, 0)
+		tlabel.show()
 		start_label.show()
 		self.start.show()
 		su_box.pack_start(entry_box, False, False, 0)
 		entry_box.show()
 
 		entry_box = gtk.HBox()
+		tlabel = gtk.Label("    ")
 		end_label = gtk.Label("end: ")
-		end_label.set_alignment(0, 0)
 		self.end = gtk.Entry()
+		entry_box.pack_start(tlabel, False, False, 0)
 		entry_box.pack_start(end_label, False, False, 0)
 		entry_box.pack_start(self.end, False, False, 0)
+		tlabel.show()
 		end_label.show()
 		self.end.show()
 		su_box.pack_start(entry_box, False, False, 0)
 		entry_box.show()
 
 		entry_box = gtk.HBox()
+		tlabel = gtk.Label("    ")
 		group_label = gtk.Label("group: ")
-		group_label.set_alignment(0, 0)
 		self.group = gtk.Entry()
+		entry_box.pack_start(tlabel, False, False, 0)
 		entry_box.pack_start(group_label, False, False, 0)
 		entry_box.pack_start(self.group, False, False, 0)
+		tlabel.show()
 		group_label.show()
 		self.group.show()
 		su_box.pack_start(entry_box, False, False, 0)
@@ -955,10 +963,12 @@ delete a range of users from <prefix><start> to <prefix><end> with group <groupn
 		self.password = gtk.Entry()
 		if action == "useradd":
 		    entry_box = gtk.HBox()
+		    tlabel = gtk.Label("    ")
 		    password_label = gtk.Label("password: ")
-		    password_label.set_alignment(0, 0)
+		    entry_box.pack_start(tlabel, False, False, 0)
 		    entry_box.pack_start(password_label, False, False, 0)
 		    entry_box.pack_start(self.password, False, False, 0)
+		    tlabel.show()
 		    password_label.show()
 		    self.password.show()
 		    su_box.pack_start(entry_box, False, False, 0)
