@@ -435,15 +435,6 @@ class DRBL_GUI_Template():
 	    scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 	    scroll.set_shadow_type(gtk.SHADOW_IN)
 
-	    #render = gtk.CellRendererToggle()
-	    #render.set_property('activatable', True)
-	    #render.set_property('width', 20)
-	    #render.connect ('toggled', self.on_toggled_pxe_menu, liststore)
-	    #col = gtk.TreeViewColumn()
-	    #col.pack_start(render)
-	    #col.set_attributes(render, active=0)
-	    #treeview.append_column(col)
-
 	    column_name = gtk.TreeViewColumn('Name')
 	    column_group = gtk.TreeViewColumn('Group')
 	    treeview.append_column(column_name)	
@@ -526,6 +517,10 @@ class DRBL_GUI_Template():
 	    treeview.set_rules_hint(True)
 	    treeview.get_selection().set_mode(gtk.SELECTION_NONE)
 
+	    scroll = gtk.ScrolledWindow()
+	    scroll.add(treeview)
+	    scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+	    scroll.set_shadow_type(gtk.SHADOW_IN)
 	    render = gtk.CellRendererToggle()
 	    render.set_property('activatable', True)
 	    render.set_property('width', 20)
@@ -557,7 +552,7 @@ class DRBL_GUI_Template():
 	    column_ip.set_sort_column_id(0)
 	    treeview.set_reorderable(True)
 
-	    box.pack_start(treeview, False, False, 0)
+	    box.pack_start(scroll, False, False, 0)
 	    treeview.show()
 	
 	def on_toggled_bg_mode(self, render, mode):
